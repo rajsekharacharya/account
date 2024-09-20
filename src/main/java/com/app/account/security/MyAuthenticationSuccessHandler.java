@@ -33,22 +33,8 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         MyUserDetails user = (MyUserDetails) auth.getPrincipal();
 
-        String redirectUrl;
-        String logMessage;
-
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority("SUPERADMIN"))) {
-            redirectUrl = "/super-admin-home";
-            logMessage = user.getUser().getName() + " has logged in.";
-        } else if (user.getAuthorities().contains(new SimpleGrantedAuthority("C"))) {
-            redirectUrl = "/company-home";
-            logMessage = user.getUser().getName() + " has logged in.";
-        } else if (user.getAuthorities().contains(new SimpleGrantedAuthority("P"))) {
-            redirectUrl = "/plant-home";
-            logMessage = user.getUser().getName() + " has logged in.";
-        } else {
-            redirectUrl = "/403";
-            logMessage = "Not Authorize";
-        }
+        String redirectUrl = "/dashboard";
+        String logMessage = user.getUser().getName() + " has logged in.";
 
         // Log the login
         logLogin(user, logMessage);
@@ -64,7 +50,6 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
         login.setName(user.getUser().getName());
         login.setSessionId(sessionId);
         login.setLoginTime(LocalDateTime.now());
-        login.setCoId(user.getCompanyId());
         loginHistoryRepository.save(login);
     }
 }

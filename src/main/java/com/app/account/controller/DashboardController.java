@@ -15,19 +15,10 @@ public class DashboardController {
     @Autowired
     DashboardService dashboardService;
 
-    @GetMapping(value = "/getDashboardForSuperAdmin")
-    public ResponseEntity<?> getDashboardForSuperAdmin() {
-        return dashboardService.getDashboardForSuperAdmin();
+    @GetMapping(value = "/getDashboardData")
+    public ResponseEntity<?> getDashboardData() {
+        return dashboardService.getDashboardData();
     }
 
-    @GetMapping(value = "/getDashboardForAdmin")
-    public ResponseEntity<?> getDashboardForAdmin() {
-        return dashboardService.getDashboardForAdmin();
-    }
-
-    @GetMapping(value = "/getDashboardForPlant")
-    public ResponseEntity<?> getDashboardForPlant() {
-        return dashboardService.getDashboardForPlant();
-    }
 
 }

@@ -1,5 +1,4 @@
 package com.app.account.controller;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,44 +15,46 @@ import com.app.account.model.User;
 import com.app.account.service.UserService;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/user")
 public class UserController {
 
     @Autowired
     UserService service;
 
-    @GetMapping(value = "/getUsersByLogin")
-    public ResponseEntity<?> getUsersByLogin() {
-        return service.getUsersByLogin();
+    @GetMapping(value = "/getCurrentUser")
+    public ResponseEntity<?> getCurrentUser() {
+        return service.getCurrentUser();
     }
 
-    @GetMapping(value = "/getUsersForSuperAdmin")
-    public ResponseEntity<?> getUsersForSuperAdmin() {
-        return service.getUsersForSuperAdmin();
-    }
     @GetMapping(value = "/getUsers")
     public ResponseEntity<?> getUsers() {
         return service.getUsers();
     }
-    @GetMapping(value = "/getUser")
-    public ResponseEntity<?> getUser(@RequestParam Integer userId) {
-        return service.getUser(userId);
+
+    @GetMapping(value = "/getUserById")
+    public ResponseEntity<?> getUserById(@RequestParam Integer id) {
+        return service.getUserById(id);
     }
 
-    @PostMapping(value = "/postUserForSuperAdmin")
-    public ResponseEntity<?> postUserForSuperAdmin(@RequestBody User user) {
-        return service.postUserForSuperAdmin(user);
-    }
-    @PostMapping(value = "/postUser")
-    public ResponseEntity<?> postUser(@RequestBody User user) {
-        return service.postUser(user);
-    }
-    
-    @PutMapping(value = "/putUser")
-    public ResponseEntity<?> putUser(@RequestBody User user) {
-        return service.putUser(user);
+    @PostMapping(value = "/addUser", consumes = "application/json")
+    public ResponseEntity<?> addUser(@RequestBody User user) {
+        return service.addUser(user);
     }
 
+    @PutMapping(value = "/updateUser", consumes = "application/json")
+    public ResponseEntity<?> updateUser(@RequestBody User user) {
+        return service.updateUser(user);
+    }
+
+    @DeleteMapping(value = "/deleteUser")
+    public ResponseEntity<?> deleteUser(@RequestParam Integer id) {
+        return service.deleteUser(id);
+    }
+
+    @PutMapping(value = "/accountStatusToggle")
+    public ResponseEntity<?> accountStatusToggle(@RequestParam Integer id) {
+        return service.accountStatusToggle(id);
+    }
 
     @GetMapping(value = "/usernameAvailability")
     public Boolean usernameAvailability(@RequestParam String username) {
@@ -65,20 +66,9 @@ public class UserController {
         return service.emailAvailability(email);
     }
 
-    @DeleteMapping(value = "/deleteUser")
-    public ResponseEntity<?> deleteUser(@RequestParam Integer id) {
-        return service.deleteUser(id);
-    }
-
-
-    @GetMapping(value = "/getMenu")
-    public ResponseEntity<?> getMenu() {
-        return service.getMenu();
-    }
-
-    @PutMapping(value = "/updatePermission")
-    public ResponseEntity<?> updatePermission(@RequestParam Integer id, @RequestParam List<String> permission) {
-        return service.updatePermission(id,permission);
+    @GetMapping(value = "/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestParam Integer id, @RequestParam String password) {
+        return service.resetPassword(id, password);
     }
 
 }

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html
+    th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+</html>
+
+<head>
+    <title>SRMPS | Weigh bridges</title>
+</head>
+
+<body>
+    <section>
+        <div ng-controller="WeighBridgeController">
+            <div class="breadcrumb-container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/plant-home}">
+                                <span class="icon-common icon-breadcrumb icon-dashboard"></span><span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span class="icon-common icon-breadcrumb icon-weighbridge"></span><span>Weigh Bridges</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="body-area" ng-show="views.list">
+                <div class="body-area-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="body-area-tittle">Weigh Bridges</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div sec:authorize="hasAnyAuthority('ADD','ADMIN')" class="body-area-action">
+                                <a ng-click="AddWeighBridges()" class="float-end btn btn-icon btn-add me-2"
+                                    title="ADD Weigh Bridges"><span class="icon-common icon-add"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="body-area-content">
+                    <div class="user-table-container">
+                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                            <thead>
+                                <tr class="table-head-primary">
+                                    <th>SL No.</th>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Location</th>
+                                    <th>Manual Entry</th>
+                                    <th>Camera Status</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="bridge in weighBridges">
+                                    <td>{{$index + 1}}</td>
+                                    <td><span class="user-role">{{bridge.code}}</span></td>
+                                    <td><span class="user-role">{{bridge.name}}</span></td>
+                                    <td><span class="user-role">{{bridge.location}}</span></td>
+                                    <td><span class="user-role">{{bridge.manualStatus}}</span></td>
+                                    <td><span class="user-role">{{bridge.cameraEnable}}</span><span ng-if="bridge.cameraEnable === 'YES'">({{bridge.ip}})</span></td>
+                                    <td>
+                                        <form method="POST">
+                                            <input type="hidden" name="_token"
+                                                value="FsM848SirJ6QKs0CFziA4j7n5KkBtIkiG32c4lng">
+                                            <label class="switch">
+                                                <input class="user" type="checkbox" data-id="2"
+                                                    ng-click="changeStatus(bridge.id)" ng-model="bridge.status"
+                                                    name="status" checked="">
+                                                <span class="knob"></span>
+                                            </label>
+                                        </form>
+                                    </td>
+
+                                    <td class="d-flex">
+                                        <span sec:authorize="hasAnyAuthority('EDIT','ADMIN')" class="me-2"><a title="Edit" ng-click="editWeighBridges(bridge)"
+                                                class="btn btn-action btn-action-edit"><span
+                                                    class="lbl-btn-action"></span><span
+                                                    class="icon-common icon-btn icon-edit"></span></a></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ====================Modal View======================= -->
+            <div class="modal fade" id="add_edit_WeighBridges_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span ng-if="form.id==null || form.id==undefined">Add Weigh Bridges</span>
+                                <span ng-if="form.id!=null && form.id!=undefined">Edit Weigh Bridges</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                ng-click="close()">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form"
+                                ng-submit="addEditSaveWeighBridges()">
+                                <div class="row">
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Code: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.code" class="form-control" ng-disabled="form.id!=null && form.id!=undefined"
+                                                placeholder="Enter Name" ng-change="form.code = (form.code | uppercase)"
+                                                required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Name: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.name" class="form-control"
+                                                placeholder="Enter Name" ng-change="form.name = (form.name | uppercase)"
+                                                required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Location: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.location" class="form-control"
+                                                placeholder="Enter Name" ng-change="form.location = (form.location | uppercase)"
+                                                required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Manual Entry: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="manualStatus" ng-model="form.manualStatus"
+                                                class="form-control select2" required>
+                                                <option value="" disabled selected>Select an item</option>
+                                                <option value="YES">YES</option>
+                                                <option value="NO">NO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Camera Enable: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="manualStatus" ng-model="form.cameraEnable"
+                                                class="form-control select2" required>
+                                                <option value="" disabled selected>Select an item</option>
+                                                <option value="YES">YES</option>
+                                                <option value="NO">NO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Camera IP: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.ip" class="form-control"
+                                                placeholder="Enter Name" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-modal-action"
+                                        data-bs-dismiss="modal" ng-click="close()">Close</button>
+                                    <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </section>
+
+    <script src="private/controller/PlantServiceController.js"></script>
+
+</body>
+
+</html>

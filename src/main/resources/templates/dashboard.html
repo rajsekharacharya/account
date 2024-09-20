@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html
+  th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+<head>
+  <title>SRMPS | Home</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7f6;
+      margin: 0;
+      padding: 0;
+    }
+  
+    .dashboard-container {
+      padding: 20px;
+    }
+  
+    .row {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+    }
+  
+    .card {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      margin: 15px;
+      padding: 20px;
+      flex: 1 1 22%;
+      max-width: 22%;
+      text-align: center;
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+  
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+  
+    .card h3 {
+      margin: 0;
+      color: #fff;
+      font-size: 1.2em;
+    }
+  
+    .card p {
+      color: #fff;
+      font-size: 1.4em;
+      margin: 10px 0 0;
+    }
+  
+    .card.icon {
+      font-size: 50px;
+      margin-bottom: 15px;
+    }
+  
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+  
+      50% {
+        transform: scale(1.05);
+      }
+  
+      100% {
+        transform: scale(1);
+      }
+    }
+  
+    .card {
+      animation: pulse 5s infinite;
+    }
+  
+    .graph-container {
+      margin: 20px 0;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      display: flex;
+      justify-content: space-between; /* Adjusted from space-around */
+      flex-wrap: wrap;
+      gap: 10px; /* Added gap between graphs */
+    }
+  
+    .graph {
+      flex: 1 1 45%;
+      max-width: 45%;
+      height: 400px; /* Adjusted height */
+      box-sizing: border-box; /* Ensure padding and borders are included in the element's total width and height */
+    }
+  </style>
+  
+</head>
+
+<body>
+  <section class="dashboard-container">
+    <div ng-controller="Dashboard">
+      <div class="row">
+        <div class="card">
+          <div class="icon">&#128202;</div>
+          <h3>Total Token</h3>
+          <p>{{ data.ViewData.totalToken }}</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128200;</div>
+          <h3>Incomplete Token</h3>
+          <p>{{ data.ViewData.incompleteToken }}</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128176;</div>
+          <h3>Total Amount</h3>
+          <p>{{ data.ViewData.totalAmount | currency:"₹" }}</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128179;</div>
+          <h3>Expenses</h3>
+          <p>{{ data.ViewData.paidAmount | currency:"₹" }}</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128205;</div>
+          <h3>Pending Amount</h3>
+          <p>{{ data.ViewData.remainingAmount | currency:"₹" }}</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128203;</div>
+          <h3>Hold Bill Amount</h3>
+          <p>{{ data.ViewData.holdBillAmount | currency:"₹" }}</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128201;</div>
+          <h3>Paid Hold Bill</h3>
+          <p>{{ data.ViewData.holdBillPaidAmount | currency:"₹" }}</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128230;</div>
+          <h3>Item Count</h3>
+          <p>{{ data.ViewData.item }}</p>
+        </div>
+      </div>
+      <!-- Graph Section -->
+      <div class="graph-container">
+        <canvas id="myBarChart" class="graph"></canvas>
+        <canvas id="myDoughnutChart" class="graph"></canvas>
+      </div>
+    </div>
+  </section>
+  <script src="private/controller/DashboardController.js"></script>
+  <script>
+    const colors = [
+      "#8E86ED", "#B4D5A9", "#63CDEE", "#CA78C6", "#8EDFE4", "#EEAE4D", "#E98787",
+      "#6A7DE2", "#EE6363", "#EE914D", "#F3BD32", "#ED86AB", "#058CD8", "#DC8C13",
+      "#3D8F29", "#7C5A03", "#7C3603", "#D6691B", "#007DA5", "#219983", "#B54179",
+      "#762A2A", "#B46A8D", "#CE7A68", "#24477B", "#219951", "#A885C5", "#B2AA59",
+      "#AAC65A", "#3BBDE5",
+    ];
+
+    // Get all cards
+    const cards = document.querySelectorAll('.card');
+
+    // Loop through each card and assign a random color
+    cards.forEach(card => {
+      const randomIndex = Math.floor(Math.random() * colors.length); // Get a random index
+      const color = colors[randomIndex]; // Select the color
+      card.style.backgroundColor = color; // Apply the color
+    });
+  </script>
+</body>
+
+</html>

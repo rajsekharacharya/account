@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import com.app.account.repository.UserRepository;
-import com.app.account.service.impl.UserDetailsServiceImpl;
+import com.app.account.service.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity
@@ -38,7 +38,7 @@ public class WebSecurityConfig {
     public WebSecurityConfig(
             AuthenticationSuccessHandler successHandler,
             AuthenticationFailureHandler FailureHandler,
-            AccessDeniedHandler DeniedHandler,UserRepository UserRepository) {
+            AccessDeniedHandler DeniedHandler, UserRepository UserRepository) {
         this.successHandler = successHandler;
         this.FailureHandler = FailureHandler;
         this.DeniedHandler = DeniedHandler;
@@ -78,21 +78,13 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SessionAuthenticationStrategy sessionAuthenticationStrategy(SessionRegistry sessionRegistry) {
-        // Optional<SystemConfig> byId = systemConfigRepository.findById(1);
-        // return new CustomGlobalSessionControlStrategy(sessionRegistry,
-        // byId.get().getAccessPermission()); // Set maximum 5 sessions globally
-        return new CustomGlobalSessionControlStrategy(sessionRegistry, 100); // Set maximum 5 sessions globally
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/assets/**").permitAll()
                         .requestMatchers("/private/**", "/403", "/privacy-policy", "/login",
-                                "/private/forgot-password.js", "/api/v1/weightData/postWeight/**")
+                                "/private/forgot-password.js")
                         .permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(httpBasic -> httpBasic
@@ -110,22 +102,8 @@ public class WebSecurityConfig {
                         .logoutSuccessUrl("/")
                         .permitAll())
                 .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .accessDeniedHandler(DeniedHandler))
-                .sessionManagement(sessionManagement -> sessionManagement
-                        .maximumSessions(1)
-                        .maxSessionsPreventsLogin(true)
-                        .sessionRegistry(sessionRegistry()));
-        // .sessionManagement(sessionManagement -> sessionManagement
-        // .sessionAuthenticationStrategy(sessionAuthenticationStrategy(sessionRegistry()))
-        // );;
-
+                        .accessDeniedHandler(DeniedHandler));
         return http.build();
     }
-
-    // @Bean
-    // public WebSecurityCustomizer webSecurityCustomizer() {
-    // return web -> web.ignoring()
-    // .requestMatchers("/assets/**", "/public/**");
-    // }
 
 }

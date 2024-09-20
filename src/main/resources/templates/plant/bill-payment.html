@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html
+    th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+</html>
+
+<head>
+    <title>SRMPS | Bill Payment</title>
+</head>
+
+<body>
+
+    <section>
+        <div ng-controller="PaymentAuthorization">
+            <div class="breadcrumb-container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/plant-home}">
+                                <span class="icon-common icon-breadcrumb icon-dashboard"></span><span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span class="icon-common icon-breadcrumb icon-bill-payment"></span><span>Bill Payment</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- // List Token -->
+
+            <div class="body-area" ng-show="views.list">
+                <div class="body-area-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="body-area-tittle">Bill Payment</div>
+                        </div>
+                        <div sec:authorize="hasAnyAuthority('ADD','ADMIN')" class="col-md-6">
+                            <div class="body-area-action">
+                                <a ng-click="payBill()" class="float-end btn btn-icon btn-add me-2"
+                                    title="Add Contract"><span class="icon-common icon-add"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="body-area-content">
+                    <div class="user-table-container">
+                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                            <thead>
+                                <tr class="table-head-primary">
+                                    <th>SL No.</th>
+                                    <th>Date</th>
+                                    <th>Token</th>
+                                    <th>Vendor</th>
+                                    <th>Info</th>
+                                    <th>Product</th>
+                                    <th>Remarks</th>
+                                    <th>Token Status</th>
+                                    <th>Payment Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="token in tokens">
+                                    <td>{{$index + 1}}</td>
+                                    <td><span class="user-role">{{token.inDate}}</span></td>
+                                    <td><span class="user-role">{{token.tokenNumber}}</span></td>
+                                    <td><span class="user-role">{{token.vendorName}}</span></td>
+                                    <td>
+                                        <div>
+                                            <span class="user-details-caption">Driver: </span>
+                                            <span class="user-details-value">{{token.driver}}</span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Vehicle Number: </span>
+                                            <span class="user-details-value">{{token.vehicleNumber}}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="user-details-caption">Type: </span>
+                                            <span class="user-details-value">{{token.itemType}} </span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Item: </span>
+                                            <span class="user-details-value">{{token.item}}</span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Unit: </span>
+                                            <span class="user-details-value">{{token.unit}}</span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Rate: </span>
+                                            <span class="user-details-value">{{token.rate}}Rs</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="user-role">{{token.remarks}}</span></td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="user-details-caption">Gross Weight: </span>
+                                            <span ng-if="token.grossWeightStatus"
+                                                class="icon-common icon-list-status icon-done"></span>
+                                            <span ng-if="!token.grossWeightStatus"
+                                                class="icon-common icon-list-status icon-not-done"></span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">QC: </span>
+                                            <span ng-if="token.qcStatus"
+                                                class="icon-common icon-list-status icon-done"></span>
+                                            <span ng-if="!token.qcStatus"
+                                                class="icon-common icon-list-status icon-not-done"></span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Tare Weight: </span>
+                                            <span ng-if="token.tareWeightStatus"
+                                                class="icon-common icon-list-status icon-done"></span>
+                                            <span ng-if="!token.tareWeightStatus"
+                                                class="icon-common icon-list-status icon-not-done"></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="user-details-caption">Gross: </span>
+                                            <span class="user-details-value">{{token.grandTotal}} </span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Paid: </span>
+                                            <span class="user-details-value">{{token.paidAmount}}</span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Remaining: </span>
+                                            <span class="user-details-value">{{token.grandTotal-token.paidAmount}}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====================Modal View======================= -->
+            <div class="modal fade" id="billing_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span ng-if="token.paymentStatus" style="color: red;">Bill Already Paid!</span>
+                                <span ng-if !="token.paymentStatus">Bill Payment</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                ng-click="close()">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form" ng-submit="saveBill()"
+                                autocomplete="off">
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Token: <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="d-flex me-2">
+
+                                                <input name="name" type="text" ng-model="tokenNumber"
+                                                    ng-change="getToken(tokenNumber)" class="form-control"
+                                                    placeholder="Enter Name" required />
+
+                                                <span>
+                                                    <a title="Print" ng-click="getToken(tokenNumber)"
+                                                        class="btn btn-action btn-action-edit ms-2">
+                                                        <span class="lbl-btn-action"></span>
+                                                        <span class="icon-common icon-btn icon-search"></span>
+                                                    </a>
+                                                </span>
+                                                <span ng-hide="token.paymentStatus">
+                                                    <a  title="Add " ng-click="getBillData()"
+                                                        class="btn btn-action btn-action-edit ms-2">
+                                                        <span class="lbl-btn-action"></span>
+                                                        <span class="icon-common icon-btn icon-add"></span>
+                                                    </a>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div ng-hide="controlDisable">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="page-content">
+                                                    <div class="section-wrapper">
+                                                        <table class="table-border table-info">
+                                                            <tr>
+                                                                <td class="w-50" rowspan="2">
+                                                                    <div class="lbl-header">Vendor Details: </div>
+                                                                    <div class="value-wrapper">
+                                                                        <div class="value-container">
+                                                                            <span
+                                                                                class="lbl-medium">{{token.vendorName}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="w-25">
+                                                                    <div class="lbl-row-caption">Token</div>
+                                                                    <div class="lbl-value">{{token.tokenNumber}}
+                                                                    </div>
+                                                                </td>
+                                                                <td class="w-25">
+                                                                    <div class="lbl-row-caption">Date</div>
+                                                                    <div class="lbl-value">{{token.inDate}}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">In Time</div>
+                                                                    <div class="lbl-value">{{token.inTime | timeFormat}}
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Out Time</div>
+                                                                    <div class="lbl-value">{{token.outTime | timeFormat}}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Gross Weight</div>
+                                                                    <div class="lbl-value">
+                                                                        {{token.grossWeight}}</div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Tare Weight</div>
+                                                                    <div class="lbl-value">
+                                                                        {{token.tareWeight}}</div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Net Weight</div>
+                                                                    <div class="lbl-value">{{token.netWeight}}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Moisture</div>
+                                                                    <div class="lbl-value">{{token.moist}} %
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Dust</div>
+                                                                    <div class="lbl-value">{{token.dust}} %
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Deduction</div>
+                                                                    <div class="lbl-value">
+                                                                        {{token.deductionPercentage}}
+                                                                        %</div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+    
+                                                    <div class="section-wrapper">
+                                                        <table class="table-border table-details">
+                                                            <tr>
+                                                                <th>S/N</th>
+                                                                <th class="text-center">Driver</th>
+                                                                <th class="text-center">Vehicle Type</th>
+                                                                <th class="text-center">Vehicle Number</th>
+                                                                <th class="text-center">Item Type</th>
+                                                                <th class="text-center">Item</th>
+                                                                <th class="text-end">Rate</th>
+                                                                <th class="text-end">Net Amount</th>
+                                                                <th class="text-end">Gross Amount</th>
+                                                                <th class="text-end">Paid Amount</th>
+                                                                <th class="text-end">Remaining Amount</th>
+                                                            </tr>
+    
+                                                            <tr>
+                                                                <th>1</th>
+                                                                <th class="text-center">{{token.driver}}</th>
+                                                                <th class="text-center">{{token.vehicleType}}
+                                                                </th>
+                                                                <th class="text-center">
+                                                                    {{token.vehicleNumber}}</th>
+                                                                <th class="text-center">{{token.itemType}}
+                                                                </th>
+                                                                <th class="text-center">{{token.item}}</th>
+                                                                <th class="text-end">{{token.rate}}</th>
+                                                                <th class="text-end">{{token.netAmount}}</th>
+                                                                <th class="text-end">{{token.grandTotal}}</th>
+                                                                <th class="text-end">{{token.paidAmount}}</th>
+                                                                <th class="text-end">{{token.grandTotal-token.paidAmount}}</th>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+    
+                                                    <div class="section-wrapper">
+                                                        <table class="table-sign-off">
+    
+                                                            <tr>
+                                                                <td class="w-50">
+                                                                    <table class="w-100">
+                                                                        <tr>
+                                                                            <td colspan="2"><span
+                                                                                    class="value-container lbl-bold">Vendor
+                                                                                    Bank Details</span></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">Bank Name:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{token.bank}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">Account No:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{token.accountNo}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">Branch:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{token.branch}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">IFSC Code:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{token.ifsc}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">MMID Code:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{token.mmid}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </div>
+
+
+                                <br>
+                                <div ng-hide="controlDisable" class="row justify-content-center">
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Paid TO: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="paidTo" class="form-control"
+                                                placeholder="Enter Name" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Contact Number: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="mobile" class="form-control"
+                                                placeholder="Enter Name" required />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div ng-if="tokenBill.length>0" class="section-wrapper">
+                                    <table class="table-border table-details">
+                                        <thead>
+                                            <tr class="table-head-primary">
+                                                <th>S/N</th>
+                                                <th class="text-center">Bill Number</th>
+                                                <th class="text-center">Item</th>
+                                                <th class="text-center">Gross Amount</th>
+                                                <th class="text-center">Paid Amount</th>
+                                                <th class="text-center">Reaming Amount</th>
+                                                <th class="text-center">Payable Amount</th>
+                                                <th class="text-center">Paid To</th>
+                                                <th class="text-end">Contact Number</th>
+                                                <th class="text-end">Remove</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="bill in tokenBill">
+                                                <th>{{$index + 1}}</th>
+                                                <th class="text-center">{{bill.billNumber}}</th>
+                                                <th class="text-center">{{bill.item}}</th>
+                                                <th class="text-center">{{bill.grossAmount}}</th>
+                                                <th class="text-center">{{bill.paidAmount}}</th>
+                                                <th class="text-center">{{bill.remainingAmount}}</th>
+                                                <th class="text-center"><input type="number" step="0.01" min="0.00" max="{{bill.remainingAmount}}" ng-model="bill.payable" class="form-group form-control text"></th>
+                                                <th class="text-center">{{bill.paidTo}}</th>
+                                                <th class="text-end">{{bill.contactNumber}}</th>
+                                                <th>
+                                                    <span>
+                                                        <a title="Add " ng-click="rowRemove($index)"
+                                                            class="btn btn-action btn-action-edit ms-2">
+                                                            <span class="lbl-btn-action"></span>
+                                                            <span class="icon-common icon-btn icon-delete"></span>
+                                                        </a>
+                                                    </span>
+                                                </th>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+
+
+
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-modal-action"
+                                        data-bs-dismiss="modal" ng-click="close()">Close</button>
+                                    <button type="submit" ng-hide="controlDisable"
+                                        class="btn btn-success btn-modal-action">Save</button>
+                                </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="print_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content" id="modalContentToPrint">
+                        <div class="modal-header">
+                            <h5 ng-if="printData.billData[0].holdBill" class="modal-title" id="staticBackdropLabel">
+                                Hold Bill Payment Voucher
+                            </h5>
+                            <h5 ng-if="!printData.billData[0].holdBill" class="modal-title" id="staticBackdropLabel">
+                                Payment Voucher
+                            </h5>
+                            <button type="button" class="btn-close d-print-none" data-bs-dismiss="modal"
+                                aria-label="Close" ng-click="close()">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+
+                        </div>
+                        <div class="modal-body" id="modalContentToPrint">
+
+                            <div class="report-page">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <td>
+                                                <div class="page-header">
+                                                    <table class="table-page-header">
+                                                        <tr>
+                                                            <td class="w-20 text-start">
+                                                                <img class="img-brand"
+                                                                    ng-src="{{printData.company.imageLink}}">
+                                                            </td>
+                                                            <td class="w-60 text-center brand-details">
+                                                                <div class="brand-header">{{printData.company.name}}
+                                                                </div>
+                                                                <div class="brand-info">
+                                                                    <div class="brand-address">
+                                                                        <div class="lbl-location">
+                                                                            {{printData.company.address}}</div>
+                                                                        <div class="lbl-contact">
+                                                                            <span class="lbl-info-caption">Phone:
+                                                                            </span><span
+                                                                                class="lbl-info-value">{{printData.company.mobile}}</span>
+                                                                            <span class="lbl-info-caption">Email:
+                                                                            </span><span
+                                                                                class="lbl-info-value">{{printData.company.email}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-20">
+                                                                <div class="img-brand">&nbsp;</div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="page-content">
+                                                    <div class="page-content-header">Payment Voucher</div>
+                                                    <div class="section-wrapper">
+                                                        <table class="table-border table-info">
+                                                            <tr>
+                                                                <td class="w-50" rowspan="2">
+                                                                    <div class="lbl-header">Vendor Details: </div>
+                                                                    <div class="value-wrapper">
+                                                                        <div class="value-container">
+                                                                            <span
+                                                                                class="lbl-medium">{{printData.vendor.name}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.address}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.city}}-
+                                                                                {{printData.vendor.pinCode}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span class="lbl-caption">Contact No:
+                                                                            </span>
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.phone}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span class="lbl-caption">PAN: </span>
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.pan}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span class="lbl-caption">Aadhaar: </span>
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.aadhaar}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="w-25">
+                                                                    <div class="lbl-row-caption">Bill Number</div>
+                                                                    <div class="lbl-value">
+                                                                        {{printData.billData[0].transactionNumber}}
+                                                                    </div>
+                                                                </td>
+                                                                <td class="w-25">
+                                                                    <div class="lbl-row-caption">Location</div>
+                                                                    <div class="lbl-value">{{printData.plant.name}}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Date</div>
+                                                                    <div class="lbl-value">
+                                                                        {{printData.billData[0].date}}
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">TIme</div>
+                                                                    <div class="lbl-value">{{printData.billData[0].time
+                                                                        | timeFormat}}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+
+
+                                                    <div ng-if="!printData.billData[0].holdBill"
+                                                        class="section-wrapper">
+                                                        <table class="table-border table-details">
+                                                            <tr>
+                                                                <th>S/N</th>
+                                                                <th class="text-center">Bill Number</th>
+                                                                <th class="text-center">Paid To</th>
+                                                                <th class="text-center">Contact Number</th>
+                                                                <th class="text-end">Gross Amount</th>
+                                                                <th class="text-end">Pay Amount</th>
+                                                            </tr>
+
+                                                            <tr ng-repeat="bill in printData.billData">
+                                                                <th>1</th>
+                                                                <th class="text-end">{{bill.billNumber}}</th>
+                                                                <th class="text-end">{{bill.paidTo}}</th>
+                                                                <th class="text-end">{{bill.contactNumber}}</th>
+                                                                <th class="text-end">{{bill.grossAmount}}</th>
+                                                                <th class="text-end">{{bill.payable}}</th>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td colspan="4">
+                                                                    <div class="d-flex">
+                                                                        <span class="lbl-bold lbl-word-caption">Amount
+                                                                            In Words: </span>
+                                                                        <span>{{printData.totalAmountWord}}</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td colspan="1" class="text-end">Total:</td>
+                                                                <td class="text-end lbl-bold">{{printData.totalAmount}}
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+
+                                                    </div>
+                                                    <div ng-if="printData.billData[0].holdBill" class="section-wrapper">
+                                                        <table class="table-border table-details">
+                                                            <tr>
+                                                                <th>S/N</th>
+                                                                <th class="text-center">Bill Number</th>
+                                                                <th class="text-center">Paid To</th>
+                                                                <th class="text-center">Contact Number</th>
+                                                                <th class="text-end">Pay Amount</th>
+                                                            </tr>
+
+                                                            <tr ng-repeat="bill in printData.billData">
+                                                                <th>1</th>
+                                                                <th class="text-end">{{bill.billNumber}}</th>
+                                                                <th class="text-end">{{bill.paidTo}}</th>
+                                                                <th class="text-end">{{bill.contactNumber}}</th>
+                                                                <th class="text-end">{{bill.payable}}</th>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td colspan="3">
+                                                                    <div class="d-flex">
+                                                                        <span class="lbl-bold lbl-word-caption">Amount
+                                                                            In Words: </span>
+                                                                        <span>{{printData.totalAmountWord}}</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td colspan="1" class="text-end">Total:</td>
+                                                                <td class="text-end lbl-bold">{{printData.totalAmount}}
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+
+                                                    </div>
+
+                                                    <div class="section-wrapper">
+                                                        <table class="table-sign-off">
+
+                                                            <tr>
+                                                                <td class="w-50">
+                                                                    <table class="w-100">
+                                                                        <tr>
+                                                                            <td colspan="2"><span
+                                                                                    class="value-container lbl-bold">Vendor
+                                                                                    Bank Details</span></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">Bank Name:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{printData.vendor.bank}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">Account No:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{printData.vendor.accountNo}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">Branch:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{printData.vendor.branch}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">IFSC Code:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{printData.vendor.ifsc}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">MMID Code:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{printData.vendor.mmid}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                        <br>
+                                                        <br>
+                                                        <br>
+
+                                                        <div class="section-wrapper">
+                                                            <table class="table-sign-off">
+                                                                <tr>
+                                                                    <td class="text-center">
+                                                                        <span class="sign-line"></span>
+                                                                        <span>Paid By</span>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <span class="sign-line"></span>
+                                                                        <span>Approved By</span>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <span class="sign-line"></span>
+                                                                        <span>Checked By</span>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <span class="sign-line"></span>
+                                                                        <span>Payment Received</span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                    <tfoot>
+                                        <tr>
+                                            <td>
+                                                <div class="page-footer">
+                                                    <table class="footer-table">
+                                                        <tr>
+                                                            <td class="w-33">
+                                                                <div>
+                                                                    <span class="lbl-value">Phones: </span>
+                                                                    <span
+                                                                        class="lbl-caption">{{printData.company.mobile}}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-33 text-center">
+                                                                <div>
+                                                                    <span class="lbl-value">Website: </span>
+                                                                    <span
+                                                                        class="lbl-caption">{{printData.company.website}}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-33 text-end">
+                                                                <div>
+                                                                    <span class="lbl-value">E-mail: </span>
+                                                                    <span
+                                                                        class="lbl-caption">{{printData.company.email}}</span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                            </div>
+                            <div class="mt-3 text-center d-print-none">
+
+                                <button type="button" class="btn btn-secondary btn-modal-action" data-bs-dismiss="modal"
+                                    ng-click="close()">Close</button>
+                                <button type="submit" onclick="printDataModel('modalContentToPrint')"
+                                    class="btn btn-success btn-modal-print">Print</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <script src="private/controller/PlantServiceController.js"></script>
+
+</body>
+
+</html>

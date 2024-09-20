@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html
+    th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+</html>
+
+<head>
+    <title>SRMPS | Contract</title>
+</head>
+
+<body>
+
+    <section>
+        <div ng-controller="ContractFormController">
+            <div class="breadcrumb-container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/plant-home}">
+                                <span class="icon-common icon-breadcrumb icon-dashboard"></span><span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span class="icon-common icon-breadcrumb icon-contract-form"></span><span>Contract</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="body-area" ng-show="views.list">
+                <div class="body-area-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="body-area-tittle">Contract</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div sec:authorize="hasAnyAuthority('ADD','ADMIN')" class="body-area-action">
+                                <a ng-click="AddContract()" class="float-end btn btn-icon btn-add me-2"
+                                    title="Add Contract"><span class="icon-common icon-add"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="body-area-content">
+                    <div class="user-table-container">
+                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                            <thead>
+                                <tr class="table-head-primary">
+                                    <th>SL No.</th>
+                                    <th>Vendor</th>
+                                    <th>Product</th>
+                                    <th>Contract Date</th>
+                                    <th>Contract</th>
+                                    <th>Quantity Position</th>
+                                    <th>Amount Position</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="contract in contracts | orderBy:'-status'">
+                                    <td>{{$index + 1}}</td>
+                                    <td><span class="user-role">{{contract.vendorName}}</span></td>
+                                    <td>
+                                        <div>
+                                            <span class="user-details-caption">Type: </span>
+                                            <span class="user-details-value">{{contract.itemType}} </span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Item: </span>
+                                            <span class="user-details-value">{{contract.item}}</span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Unit: </span>
+                                            <span class="user-details-value">{{contract.unit}}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="user-details-caption">Start Date: </span>
+                                            <span class="user-details-value">{{contract.startDate}} </span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">End Date: </span>
+                                            <span class="user-details-value">{{contract.endDate}} </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="user-details-caption">Contract Terms: </span>
+                                            <span class="user-details-value">{{contract.terms}}</span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Contract Remarks: </span>
+                                            <span class="user-details-value">{{contract.remarks}}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="user-details-caption">Quantity: </span>
+                                            <span class="user-details-value">{{contract.quantity}} {{contract.unit}}</span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Pending Quantity: </span>
+                                            <span class="user-details-value">{{contract.pendingQuantity}} {{contract.unit}}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="user-details-caption">Amount: </span>
+                                            <span class="user-details-value">{{contract.amount}} Rs</span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Pending Amount: </span>
+                                            <span class="user-details-value">{{contract.pendingAmount}} Rs</span>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <form method="POST">
+                                            <input type="hidden" name="_token"
+                                                value="FsM848SirJ6QKs0CFziA4j7n5KkBtIkiG32c4lng">
+                                            <label class="switch">
+                                                <input class="user" type="checkbox" data-id="2"
+                                                    ng-click="changeStatus(contract.id)" ng-model="contract.status"
+                                                    name="status" checked="">
+                                                <span class="knob"></span>
+                                            </label>
+                                        </form>
+                                    </td>
+
+
+                                    <td>
+                                        <span sec:authorize="hasAnyAuthority('EDIT','ADMIN')" class="me-2"><a title="Edit" ng-click="editContract(contract)"
+                                                class="btn btn-action btn-action-edit"><span
+                                                    class="lbl-btn-action"></span><span
+                                                    class="icon-common icon-btn icon-edit"></span></a></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ====================Modal View======================= -->
+            <div class="modal fade" id="add_edit_contract_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span ng-if="form.id==null || form.id==undefined">Add Contract</span>
+                                <span ng-if="form.id!=null && form.id!=undefined">Edit Contract</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ng-click="close()">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form" ng-submit="saveContract()"
+                                autocomplete="off">
+                                <div class="row">
+                                    <div ng-if="form.id==null || form.id==undefined" class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Vendor: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="vendorId" ng-model="form.vendorId"
+                                                class="form-control select2" ng-change="selectVendor(form.vendorId)"
+                                                ng-options="vendor.id as vendor.name for vendor in vendors" required>
+                                                <option value="" disabled selected>Select an item</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="form.id!=null && form.id!=undefined" class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Date: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.vendorName"
+                                                class="form-control" placeholder="Enter Name" required readonly
+                                                disabled />
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="form.vendorId" class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Date: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.date" class="form-control"
+                                                placeholder="Enter Name" required readonly />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Contract Start Date: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.startDate"
+                                                class="form-control" id="datepicker1" placeholder="Enter Name" required
+                                                readonly />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Contract End Date: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.endDate" class="form-control"
+                                                id="datepicker2" placeholder="Enter Name" required readonly />
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Terms: <span class="text-danger">*</span>
+                                            </label>
+                                            <textarea name="remarks" ng-model="form.terms" class="form-control"
+                                                placeholder="Enter Remarks" required></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Remarks: <span class="text-danger">*</span>
+                                            </label>
+                                            <textarea name="remarks" ng-model="form.remarks" class="form-control"
+                                                placeholder="Enter Remarks" required></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div class="row">
+                                    <div ng-if="form.id==null || form.id==undefined" class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Item Type: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="itemType" ng-model="form.itemType"
+                                                class="form-control select2" ng-change="findItem(form.itemType)"
+                                                ng-options="type.name as type.name for type in itemTypes" required>
+                                                <option value="" disabled selected>Select an item</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="form.id!=null && form.id!=undefined" class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Item Type: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.itemType" class="form-control"
+                                                placeholder="Enter Name" required readonly disabled />
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="form.id==null || form.id==undefined" class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Item: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="vendorId" ng-model="form.item" class="form-control select2"
+                                                ng-change="getItemData(form.item)"
+                                                ng-options="item.name as item.name for item in items" required>
+                                                <option value="" disabled selected>Select an item</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="form.id!=null && form.id!=undefined" class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Item: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.item" class="form-control"
+                                                placeholder="Enter Name" required readonly disabled />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Unit: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.unit" class="form-control"
+                                                placeholder="Enter Name" required readonly disabled />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Rate: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="number" step="0.01" min="0.00" ng-model="form.rate"
+                                                class="form-control" placeholder="Enter Name" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Quantity: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="number" step="0.01" min="0.00"
+                                                ng-model="form.quantity" class="form-control" placeholder="Enter Name"
+                                                required />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Amount: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="amount" step="0.01" min="0.00"
+                                                ng-model="form.amount" class="form-control" placeholder="Enter Name"
+                                                required readonly disabled />
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Moist: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="number" step="0.01" min="0.00"
+                                                ng-model="form.moist" class="form-control" placeholder="Enter Name"
+                                                disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Dust: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="number" step="0.01" min="0.00" ng-model="form.dust"
+                                                class="form-control" placeholder="Enter Name" disabled/>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Freight: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="number" step="0.01" min="0.00"
+                                                ng-model="form.freight" class="form-control" placeholder="Enter Name"
+                                                required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Cheeping: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="number" step="0.01" min="0.00"
+                                                ng-model="form.cheeping" class="form-control" placeholder="Enter Name"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Load: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="number" step="0.01" min="0.00"
+                                                ng-model="form.loadAmount" class="form-control" placeholder="Enter Name"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Type: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="vendorId" ng-model="form.type" class="form-control select2">
+                                                <option value="" disabled selected>Please Select</option>
+                                                <option selected value="FIXED">FIXED</option>
+                                                <option value="VARIABLE">By Weight</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Hold: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="number" step="0.01" min="0.00" ng-model="form.hold"
+                                                class="form-control" placeholder="Hold Data" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary btn-modal-action"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script src="private/controller/PlantServiceController.js"></script>
+
+    <script>
+        $("#datepicker1").flatpickr({
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            disableMobile: true,
+            onClose: function (selectedDates, dateStr, instance) {
+                // When a date is selected in datepicker2, set the minimum date in datepicker3
+                if (selectedDates.length > 0) {
+                    var minDate = selectedDates[0];
+                    $("#datepicker2").flatpickr({
+                        dateFormat: "Y-m-d",
+                        allowInput: true,
+                        disableMobile: true,
+                        minDate: minDate,
+                    });
+                }
+            }
+        });
+        $("#datepicker2").flatpickr({
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            disableMobile: "true",
+        });
+
+    </script>
+
+</body>
+
+</html>

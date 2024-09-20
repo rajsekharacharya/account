@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+</htmlth:replace=>
+
+<head>
+    <title>SRMPS | Token</title>
+</head>
+
+<body>
+
+    <section>
+        <div ng-controller="TokenController">
+            <div class="breadcrumb-container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/plant-home}">
+                                <span class="icon-common icon-breadcrumb icon-dashboard"></span><span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span class="icon-common icon-breadcrumb icon-token"></span><span>Token</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            <!-- // List Token -->
+
+            <div class="body-area" ng-show="views.list">
+                <div class="body-area-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="body-area-tittle">Token</div>
+                        </div>
+                        <div class="col-md-8 d-flex justify-content-end">
+                            <span class="me-2"><button title="Upload" class="btn btn-action-header btn-action-upload"
+                                    ng-click="search()"><span class="lbl-btn-action"></span>
+                                    <span
+                                        class="icon-common icon-btn-header icon-search"></span></button></button></span>
+                            <span sec:authorize="hasAnyAuthority('ADD','ADMIN')"><button title="Upload" class="btn btn-action-header btn-action-upload"
+                                    ng-click="AddToken()"><span class="lbl-btn-action"></span>
+                                    <span class="icon-common icon-btn-header icon-add"></span></button></button></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="body-area-content">
+                    <div class="user-table-container">
+                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                            <thead>
+                                <tr class="table-head-primary">
+                                    <th>SL No.</th>
+                                    <th>Token Number</th>
+                                    <th>Vendor</th>
+                                    <th>Info</th>
+                                    <th>Product</th>
+                                    <th>Token Status</th>
+                                    <th>Status</th>
+                                    <th>Remarks</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="token in tokens">
+                                    <td>{{$index + 1}}</td>
+                                    <td><span class="user-role">{{token.tokenNumber}}</span></td>
+                                    <td>
+                                        <div>
+                                            <span class="user-details-caption">Vendor Type: </span>
+                                            <span class="user-details-value">{{token.vendorType}}</span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Vendor Name: </span>
+                                            <span class="user-details-value">{{token.vendorName}}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="user-details-caption">Driver: </span>
+                                            <span class="user-details-value">{{token.driver}}</span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Vehicle Number: </span>
+                                            <span class="user-details-value">{{token.vehicleNumber}}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="user-details-caption">Type: </span>
+                                            <span class="user-details-value">{{token.itemType}} </span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Item: </span>
+                                            <span class="user-details-value">{{token.item}}</span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Unit: </span>
+                                            <span class="user-details-value">{{token.unit}}</span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Rate: </span>
+                                            <span class="user-details-value">{{token.rate}}Rs</span>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="user-details-caption">Gross Weight: </span>
+                                            <span ng-if="token.grossWeightStatus"
+                                                class="icon-common icon-list-status icon-done"></span>
+                                            <span ng-if="!token.grossWeightStatus"
+                                                class="icon-common icon-list-status icon-not-done"></span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">QC: </span>
+                                            <span ng-if="token.qcStatus"
+                                                class="icon-common icon-list-status icon-done"></span>
+                                            <span ng-if="!token.qcStatus"
+                                                class="icon-common icon-list-status icon-not-done"></span>
+                                        </div>
+                                        <div>
+                                            <span class="user-details-caption">Tare Weight: </span>
+                                            <span ng-if="token.tareWeightStatus"
+                                                class="icon-common icon-list-status icon-done"></span>
+                                            <span ng-if="!token.tareWeightStatus"
+                                                class="icon-common icon-list-status icon-not-done"></span>
+                                        </div>
+                                    </td>
+                                    <td><span class="user-role">{{token.remarks}}</span></td>
+                                    <td>
+                                        <form method="POST">
+                                            <input type="hidden" name="_token"
+                                                value="FsM848SirJ6QKs0CFziA4j7n5KkBtIkiG32c4lng">
+                                            <label class="switch">
+                                                <input ng-disabled="token.billStatus" class="user" type="checkbox"
+                                                    data-id="2" ng-click="changeStatus(token.id)"
+                                                    ng-model="token.status" name="status" checked="">
+                                                <span class="knob"></span>
+                                            </label>
+                                        </form>
+                                    </td>
+
+
+                                    <!-- <td>
+                                        <div class="d-flex">
+
+                                            <span ng-hide="token.billStatus" class="me-2"><a title="Edit"
+                                                    ng-click="editToken(token)"
+                                                    class="btn btn-action btn-action-edit"><span
+                                                        class="lbl-btn-action"></span><span
+                                                        class="icon-common icon-btn icon-edit"></span></a></span>
+
+                                            <span><a title="Print" ng-click="tokenPrint(token.id)"
+                                                    class="btn btn-action btn-action-edit"><span
+                                                        class="lbl-btn-action"></span><span
+                                                        class="icon-common icon-btn icon-print"></span></a></span>
+                                        </div>
+                                    </td> -->
+
+                                    <td>
+                                        <div class="dropdown">
+                                            <a class="btn btn-icon btn-option" href="#" role="button"
+                                                id="userActionOption" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <span class="icon-common icon-option icon-btn-circle"></span>
+                                            </a>
+
+                                            <ul class="dropdown-menu" aria-labelledby="userActionOption">
+                                                <li sec:authorize="hasAnyAuthority('EDIT','ADMIN')">
+                                                    <a class="dropdown-item" ng-click="editToken(token)">
+                                                        <span
+                                                            class="icon-common icon-action-dropdown icon-edit"></span><span>Edit</span>
+                                                    </a>
+                                                </li>
+                                                <li sec:authorize="hasAnyAuthority('PRINT','ADMIN')">
+                                                    <a class="dropdown-item" ng-click="tokenPrint(token.id,'N')"><span
+                                                            class="icon-common icon-dropdown icon-print"></span><span>Print</span></a>
+                                                </li>
+                                                <li sec:authorize="hasAnyAuthority('PRINT','ADMIN')" ng-if="token.grossWeightStatus">
+                                                    <a class="dropdown-item" ng-click="tokenPrint(token.id,'G')"><span
+                                                            class="icon-common icon-action-dropdown icon-gross-weight"></span><span>Gross
+                                                            Weight Slip</span></a>
+                                                </li>
+                                                <li sec:authorize="hasAnyAuthority('PRINT','ADMIN')" ng-if="token.qcStatus">
+                                                    <a class="dropdown-item" ng-click="tokenPrint(token.id,'QC')"><span
+                                                            class="icon-common icon-action-dropdown icon-quality-check"></span><span>QC
+                                                            Slip</span></a>
+                                                </li>
+
+                                                <li sec:authorize="hasAnyAuthority('PRINT','ADMIN')" ng-if="token.tareWeightStatus && token.qcStatus">
+                                                    <a class="dropdown-item" ng-click="tokenPrint(token.id,'GRN')"><span
+                                                            class="icon-common icon-action-dropdown icon-bill-generation "></span><span>Good
+                                                            Receive Note Slip</span></a>
+                                                </li>
+                                                <li  ng-if="token.unloadingPointImageLink">
+                                                    <a class="dropdown-item" ng-click="viewPicture(token.unloadingPointImageLink)"><span
+                                                            class="icon-common icon-action-dropdown icon-bill-generation "></span><span>Unloading Picture</span></a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====================Modal View======================= -->
+            <div class="modal fade" id="add_edit_token_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span ng-if="form.id==null || form.id==undefined">Add Token</span>
+                                <span ng-if="form.id!=null && form.id!=undefined">Edit Token:
+                                    {{form.tokenNumber}}</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                ng-click="close()">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form" ng-submit="saveToken()"
+                                autocomplete="off">
+                                <div class="row">
+                                    <div ng-if="form.id==null || form.id==undefined" class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Type: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="state" ng-model="form.vendorType" class="form-control select2"
+                                                ng-change="getVendor(form.vendorType)" required>
+                                                <option value="" disabled selected>Please Select</option>
+                                                <option value="Contractor">Contractor</option>
+                                                <option value="Supplier">Supplier</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="form.id!=null && form.id!=undefined" class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Type: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.vendorType"
+                                                class="form-control" placeholder="Enter Type" required readonly
+                                                disabled />
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="form.id==null || form.id==undefined" class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Vendor: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="contractId" ng-model="form.vendorId"
+                                                class="form-control select2"
+                                                ng-change="selectData(form.vendorId);getItem(form.vendorType,form.vendorId)"
+                                                ng-options="vendor.id as vendor.name for vendor in vendors" required>
+                                                <option value="" disabled selected>Select an item</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="form.id!=null && form.id!=undefined" class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Vendor: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.vendorName"
+                                                class="form-control" placeholder="Enter Vendor" required readonly
+                                                disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Pan: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.pan" class="form-control"
+                                                placeholder="Enter Pan" required readonly disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Aadhaar: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.aadhaar" class="form-control"
+                                                placeholder="Enter Aadhaar" required readonly disabled />
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <hr>
+                                <div class="row justify-content-center">
+                                    <div ng-if="form.id==null || form.id==undefined" class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Vehicle Type: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="vendorId" ng-model="form.vehicleType"
+                                                class="form-control select2"
+                                                ng-options="vehicle.name as vehicle.name for vehicle in vehicles"
+                                                required>
+                                                <option value="" disabled selected>Select an item</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="form.id!=null && form.id!=undefined" class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Vehicle Type: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.vehicleType"
+                                                class="form-control" placeholder="Enter Vehicle Type" required readonly
+                                                disabled />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Transporter:<span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.transporter"
+                                                class="form-control" placeholder="Enter Transporter" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Vehicle Number: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.vehicleNumber"
+                                                class="form-control" placeholder="Enter Vehicle Number" required />
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Driver: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.driver" class="form-control"
+                                                placeholder="Enter Driver" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Contact Number: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.driverContact"
+                                                class="form-control" placeholder="Enter Contact Number" required pattern="^\d{10}$"
+                                                oninvalid="this.setCustomValidity('Please enter valid phone number')"
+                                                oninput="this.setCustomValidity('')" />
+                                        </div>
+                                    </div>
+
+
+
+
+                                </div>
+                                <hr ng-show="form.vendorType === 'Contractor' || form.vendorType === 'Supplier'">
+                                <div ng-show="form.vendorType === 'Contractor' || form.vendorType === 'Supplier'" class="row justify-content-center">
+                                    <div ng-if="form.vendorType === 'Contractor' && (form.id==null || form.id==undefined)"
+                                        class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                item: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="item" ng-model="form.contractId" class="form-control select2"
+                                                ng-change="getContactDeData(form.contractId)"
+                                                ng-options="item.id as item.itemType+'-'+item.item for item in itemData"
+                                                required>
+                                                <option value="" disabled selected>Select an item</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div ng-if="form.vendorType === 'Supplier' && (form.id==null || form.id==undefined)"
+                                        class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                item: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="item" ng-model="form.itemId" class="form-control select2"
+                                                ng-change="getItemData(form.itemId)"
+                                                ng-options="item.id as item.type+'-'+item.name for item in itemData"
+                                                ng-required="form.vendorType === 'Supplier' && (form.id==null || form.id==undefined)">
+                                                <option value="" disabled selected>Select an item</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="form.id!=null && form.id!=undefined" class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                item: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.getFullItemName"
+                                                class="form-control" placeholder="Enter item" required readonly
+                                                disabled />
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                unit: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.unit" class="form-control"
+                                                placeholder="Enter unit" required readonly disabled />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Rate: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="number" ng-model="form.rate" class="form-control"
+                                                placeholder="Rate" required readonly disabled />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Chipper:
+                                            </label>
+                                            <input name="name" type="number" min="0" step="0.01" ng-model="form.chipper"
+                                                class="form-control" placeholder="Chipper" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Load & Unload Fee:
+                                            </label>
+                                            <input name="name" type="number" min="0" step="0.01"
+                                                ng-model="form.loadingFee" class="form-control"
+                                                placeholder="Load & Unload Fee" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Transportation Fee:
+                                            </label>
+                                            <input name="name" type="number" min="0" step="0.01"
+                                                ng-model="form.freightFee" class="form-control"
+                                                placeholder="Transportation Fee" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Remarks: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.remarks" class="form-control"
+                                                placeholder="Enter Remarks" required />
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Bank: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="bank" type="text" ng-model="form.bank" class="form-control"
+                                                placeholder="Enter Bank Name" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Branch:<span class="text-danger">*</span>
+                                            </label>
+                                            <input name="branch" type="text" ng-model="form.branch" class="form-control"
+                                                placeholder="Enter branch name" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Account Name: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="accountName" type="text" ng-model="form.accountName"
+                                                class="form-control" placeholder="Enter Account Name" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Account No.:<span class="text-danger">*</span>
+                                            </label>
+                                            <input name="accountNo" type="text" ng-model="form.accountNo"
+                                                class="form-control" placeholder="Enter Account No." required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                IFSC: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="ifsc" type="text" ng-model="form.ifsc" class="form-control"
+                                                placeholder="Enter IFSC" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                MMID:
+                                            </label>
+                                            <input name="mmid" type="text" ng-model="form.mmid" class="form-control"
+                                                placeholder="Enter MMID" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary btn-modal-action"
+                                            data-bs-dismiss="modal" ng-click="close()">Close</button>
+                                        <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="search_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span>Search</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                ng-click="close()">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form" ng-submit="searchToken()"
+                                autocomplete="off">
+                                <div class="row">
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Start Date: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="searchForm.startDate"
+                                                class="form-control" id="datepicker1" placeholder="Enter Name" required
+                                                readonly />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                End Date: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="searchForm.endDate"
+                                                class="form-control" id="datepicker2" placeholder="Enter Name" required
+                                                readonly />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-modal-action"
+                                        data-bs-dismiss="modal" ng-click="close()">Close</button>
+                                    <button type="submit" class="btn btn-success btn-modal-action">search</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="print_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content" id="modalContentToPrint">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                Token
+                            </h5>
+                            <button type="button" class="btn-close d-print-none" data-bs-dismiss="modal"
+                                aria-label="Close" ng-click="close()">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+
+                        </div>
+                        <div class="modal-body" id="modalContentToPrint">
+
+                            <div class="report-page">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <td>
+                                                <div class="page-header">
+                                                    <table class="table-page-header">
+                                                        <tr>
+                                                            <td class="w-20 text-start">
+                                                                <img class="img-brand"
+                                                                    ng-src="{{printData.company.imageLink}}">
+                                                            </td>
+                                                            <td class="w-60 text-center brand-details">
+                                                                <div class="brand-header">{{printData.company.name}}
+                                                                </div>
+                                                                <div class="brand-info">
+                                                                    <div class="brand-address">
+                                                                        <div class="lbl-location">
+                                                                            {{printData.company.address}}</div>
+                                                                        <div class="lbl-contact">
+                                                                            <span class="lbl-info-caption">Phone:
+                                                                            </span><span
+                                                                                class="lbl-info-value">{{printData.company.mobile}}</span>
+                                                                            <span class="lbl-info-caption">Email:
+                                                                            </span><span
+                                                                                class="lbl-info-value">{{printData.company.email}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-20">
+                                                                <div class="img-brand">&nbsp;</div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="page-content">
+                                                    <div class="page-content-header">Token({{printData.dayIndex}})</div>
+                                                    <div class="section-wrapper">
+                                                        <table class="table-border table-info">
+                                                            <tr>
+                                                                <td class="w-50" rowspan="2">
+                                                                    <div class="lbl-header">Vendor Details: </div>
+                                                                    <div class="value-wrapper">
+                                                                        <div class="value-container">
+                                                                            <span
+                                                                                class="lbl-medium">{{printData.vendor.name}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.address}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.city}}-
+                                                                                {{printData.vendor.pinCode}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span class="lbl-caption">Contact No:
+                                                                            </span>
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.phone}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span class="lbl-caption">PAN: </span>
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.pan}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span class="lbl-caption">Aadhaar: </span>
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.aadhaar}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="w-25">
+                                                                    <div class="lbl-row-caption">Date</div>
+                                                                    <div class="lbl-value">{{printData.token.inDate}}
+                                                                    </div>
+                                                                </td>
+                                                                <td class="w-25">
+                                                                    <canvas style="display:none;" id="barcode"></canvas>
+                                                                    <img class="img-bar-code" ng-src="{{imageBarCode}}">
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Time</div>
+                                                                    <div class="lbl-value">{{printData.token.inTime}}
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Remarks</div>
+                                                                    <div class="lbl-value">{{printData.token.remarks}}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+
+
+                                                    <div class="section-wrapper">
+                                                        <table class="table-border table-details">
+                                                            <tr>
+                                                                <th>S/N</th>
+                                                                <th class="text-center">Driver</th>
+                                                                <th class="text-center">Vehicle Type</th>
+                                                                <th class="text-center">Vehicle Number</th>
+                                                                <th class="text-center">Item Type</th>
+                                                                <th class="text-center">Item</th>
+                                                                <th class="text-end">Rate</th>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <th>1</th>
+                                                                <th class="text-center">{{printData.token.driver}}</th>
+                                                                <th class="text-center">{{printData.token.vehicleType}}
+                                                                </th>
+                                                                <th class="text-center">
+                                                                    {{printData.token.vehicleNumber}}</th>
+                                                                <th class="text-center">{{printData.token.itemType}}
+                                                                </th>
+                                                                <th class="text-center">{{printData.token.item}}</th>
+                                                                <th class="text-end">{{printData.token.rate}}</th>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+
+                                                    <div class="section-wrapper">
+                                                        <table class="table-sign-off">
+
+                                                            <tr>
+                                                                <td class="w-50">
+                                                                    <table class="w-100">
+                                                                        <tr>
+                                                                            <td colspan="2"><span
+                                                                                    class="value-container lbl-bold">Vendor
+                                                                                    Bank Details</span></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">Bank Name:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{printData.token.bank}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">Account No:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{printData.token.accountNo}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">Branch:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{printData.token.branch}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">IFSC Code:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{printData.token.ifsc}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">MMID Code:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{printData.token.mmid}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                                <td class="w-50">
+                                                                    <table class="w-100">
+                                                                        <tr>
+                                                                            <td colspan="2"><span
+                                                                                    class="value-container lbl-bold">Plant
+                                                                                    Details</span></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">Plant Name:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{printData.plant.name}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">Location:
+                                                                                </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{printData.plant.address}},{{printData.plant.city}},{{printData.plant.country}}-{{printData.plant.pinCode}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">Contact
+                                                                                    Person: </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{printData.plant.contactPerson}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td><span class="lbl-caption">Contact Person
+                                                                                    Number: </span></td>
+                                                                            <td><span
+                                                                                    class="lbl-value lbl-medium">{{printData.plant.contactPersonNumber}}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td colspan="2" class="text-end">
+                                                                    <div class="lbl-bold">..............................
+                                                                    </div>
+                                                                    <div class="lbl-bold">Operator Signature</div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                    <tfoot>
+                                        <tr>
+                                            <td>
+                                                <div class="page-footer">
+                                                    <table class="footer-table">
+                                                        <tr>
+                                                            <td class="w-33">
+                                                                <div>
+                                                                    <span class="lbl-value">Phones: </span>
+                                                                    <span
+                                                                        class="lbl-caption">{{printData.company.mobile}}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-33 text-center">
+                                                                <div>
+                                                                    <span class="lbl-value">Website: </span>
+                                                                    <span
+                                                                        class="lbl-caption">{{printData.company.website}}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-33 text-end">
+                                                                <div>
+                                                                    <span class="lbl-value">E-mail: </span>
+                                                                    <span
+                                                                        class="lbl-caption">{{printData.company.email}}</span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                            </div>
+                            <div class="mt-3 text-center d-print-none">
+
+                                <button type="button" class="btn btn-secondary btn-modal-action" data-bs-dismiss="modal"
+                                    ng-click="close()">Close</button>
+                                <button type="submit" onclick="printDataModel('modalContentToPrint')"
+                                    class="btn btn-success btn-modal-print">Print</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="print_modal_gross_weight" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content" id="modalContentToPrintGross">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                Token
+                            </h5>
+                            <button type="button" class="btn-close d-print-none" data-bs-dismiss="modal"
+                                aria-label="Close" ng-click="close()">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+
+                        </div>
+                        <div class="modal-body" id="modalContentToPrintGross">
+
+                            <div class="report-page">
+
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <td>
+                                                <div class="page-header">
+                                                    <table class="table-page-header">
+                                                        <tr>
+                                                            <td class="w-20 text-start">
+                                                                <img class="img-brand"
+                                                                    ng-src="{{printData.company.imageLink}}">
+                                                            </td>
+                                                            <td class="w-60 text-center brand-details">
+                                                                <div class="brand-header">{{printData.company.name}}
+                                                                </div>
+                                                                <div class="brand-info">
+                                                                    <div class="brand-address">
+                                                                        <div class="lbl-location">
+                                                                            {{printData.company.address}}</div>
+                                                                        <div class="lbl-contact">
+                                                                            <span class="lbl-info-caption">Phone:
+                                                                            </span><span
+                                                                                class="lbl-info-value">{{printData.company.mobile}}</span>
+                                                                            <span class="lbl-info-caption">Email:
+                                                                            </span><span
+                                                                                class="lbl-info-value">{{printData.company.email}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-20">
+                                                                <div class="img-brand">&nbsp;</div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="page-content">
+                                                    <div class="page-content-header">Weighing Slip</div>
+                                                    <div class="section-wrapper">
+                                                        <table class="table-border table-info">
+                                                            <tr>
+                                                                <td class="w-50" rowspan="2">
+                                                                    <div class="value-wrapper">
+                                                                        <div class="value-container">
+                                                                            <span
+                                                                                class="lbl-medium">{{printData.vendor.name}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.address}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span class="lbl-caption">Contact No:
+                                                                            </span>
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.phone}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="w-25">
+                                                                    <div class="lbl-row-caption">Date</div>
+                                                                    <div class="lbl-value">{{printData.token.inDate}}
+                                                                    </div>
+                                                                </td>
+                                                                <td class="w-25">
+                                                                    <canvas style="display:none;" id="barcode"></canvas>
+                                                                    <img class="img-bar-code" ng-src="{{imageBarCode}}">
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+
+
+                                                    <div class="section-wrapper">
+                                                        <table class="table-border table-details">
+                                                            <tr>
+                                                                <th>S/N</th>
+                                                                <th class="text-center">Driver</th>
+                                                                <th class="text-center">Vehicle Type</th>
+                                                                <th class="text-center">Vehicle Number</th>
+                                                                <th class="text-center">Item Type</th>
+                                                                <th class="text-center">Item</th>
+                                                                <th class="text-center">UOM</th>
+                                                                <th class="text-end">Rate</th>
+                                                                <th class="text-end">Gross Weight</th>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <th>1</th>
+                                                                <th class="text-center">{{printData.token.driver}}</th>
+                                                                <th class="text-center">{{printData.token.vehicleType}}
+                                                                </th>
+                                                                <th class="text-center">
+                                                                    {{printData.token.vehicleNumber}}</th>
+                                                                <th class="text-center">{{printData.token.itemType}}
+                                                                </th>
+                                                                <th class="text-center">{{printData.token.item}}</th>
+                                                                <th class="text-center">{{printData.token.unit}}</th>
+                                                                <th class="text-end">{{printData.token.rate}}</th>
+                                                                <th class="text-end">{{printData.token.grossWeight}} KG
+                                                                </th>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+
+                                                    <br>
+                                                    <br>
+
+                                                    <div class="section-wrapper">
+                                                        <table class="table-sign-off">
+                                                            <tr>
+                                                                <td class="text-center">
+                                                                    <span class="sign-line"></span>
+                                                                    <span>Operator Signature</span>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <span class="sign-line"></span>
+                                                                    <span>Farmer</span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <!-- <tfoot>
+                                    <tr>
+                                        <td>
+                                            <div class="page-footer">
+                                                <table class="footer-table">
+                                                    <tr>
+                                                        <td class="w-33">
+                                                            <div>
+                                                                <span class="lbl-value">Phones: </span>
+                                                                <span class="lbl-caption">{{printData.company.mobile}}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="w-33 text-center">
+                                                            <div>
+                                                                <span class="lbl-value">Website: </span>
+                                                                <span class="lbl-caption">{{printData.company.website}}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="w-33 text-end">
+                                                            <div>
+                                                                <span class="lbl-value">E-mail: </span>
+                                                                <span class="lbl-caption">{{printData.company.email}}</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tfoot> -->
+                                </table>
+
+                                <br>
+                                <br>
+                                <br>
+
+                                <div class="lbl-bold-hr">✂</div>
+                                <div class="dotted-hr"></div>
+
+                                <br>
+                                <br>
+                                <br>
+
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <td>
+                                                <div class="page-header">
+                                                    <table class="table-page-header">
+                                                        <tr>
+                                                            <td class="w-20 text-start">
+                                                                <img class="img-brand"
+                                                                    ng-src="{{printData.company.imageLink}}">
+                                                            </td>
+                                                            <td class="w-60 text-center brand-details">
+                                                                <div class="brand-header">{{printData.company.name}}
+                                                                </div>
+                                                                <div class="brand-info">
+                                                                    <div class="brand-address">
+                                                                        <div class="lbl-location">
+                                                                            {{printData.company.address}}</div>
+                                                                        <div class="lbl-contact">
+                                                                            <span class="lbl-info-caption">Phone:
+                                                                            </span><span
+                                                                                class="lbl-info-value">{{printData.company.mobile}}</span>
+                                                                            <span class="lbl-info-caption">Email:
+                                                                            </span><span
+                                                                                class="lbl-info-value">{{printData.company.email}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-20">
+                                                                <div class="img-brand">&nbsp;</div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="page-content">
+                                                    <div class="page-content-header">QC Slip</div>
+                                                    <div class="section-wrapper">
+                                                        <table class="table-border table-info">
+                                                            <tr>
+                                                                <td class="w-50">
+                                                                    <div class="lbl-row-caption">Date</div>
+                                                                    <div class="lbl-value">{{printData.token.inDate}}
+                                                                    </div>
+                                                                </td>
+                                                                <td class="w-50">
+                                                                    <canvas style="display:none;" id="barcodeTrn"></canvas>
+                                                                    <img class="img-bar-code" ng-src="{{imageBarCodeTrn}}">
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+
+
+                                                    <div class="section-wrapper">
+                                                        <table class="table-border table-details">
+                                                            <tr>
+                                                                <th class="text-center">Item Type</th>
+                                                                <th class="text-center">Item</th>
+                                                                <th class="text-center">Uploading Point</th>
+                                                                <th class="text-center">Moist %</th>
+                                                                <th class="text-center">Dust %</th>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <th class="text-center">{{printData.token.itemType}}
+                                                                </th>
+                                                                <th class="text-center">{{printData.token.item}}</th>
+                                                                <th class="text-center"></th>
+                                                                <th class="text-center"></th>
+                                                                <th class="text-center"></th>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+
+                                                    <br>
+                                                    <br>
+
+                                                    <div class="section-wrapper">
+                                                        <table class="table-sign-off">
+                                                            <tr>
+                                                                <td class="text-center">
+                                                                    <span class="sign-line"></span>
+                                                                    <span>Lab Chemist</span>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <span class="sign-line"></span>
+                                                                    <span>Quality Checker</span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <!-- <tfoot>
+                                    <tr>
+                                        <td>
+                                            <div class="page-footer">
+                                                <table class="footer-table">
+                                                    <tr>
+                                                        <td class="w-33">
+                                                            <div>
+                                                                <span class="lbl-value">Phones: </span>
+                                                                <span class="lbl-caption">{{printData.company.mobile}}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="w-33 text-center">
+                                                            <div>
+                                                                <span class="lbl-value">Website: </span>
+                                                                <span class="lbl-caption">{{printData.company.website}}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="w-33 text-end">
+                                                            <div>
+                                                                <span class="lbl-value">E-mail: </span>
+                                                                <span class="lbl-caption">{{printData.company.email}}</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tfoot> -->
+                                </table>
+
+                            </div>
+                            <div class="mt-3 text-center d-print-none">
+
+                                <button type="button" class="btn btn-secondary btn-modal-action" data-bs-dismiss="modal"
+                                    ng-click="close()">Close</button>
+                                <button type="submit" onclick="printDataModel('modalContentToPrintGross')"
+                                    class="btn btn-success btn-modal-print">Print</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="print_modal_QC" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content" id="modalContentToPrintQC">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                Token
+                            </h5>
+                            <button type="button" class="btn-close d-print-none" data-bs-dismiss="modal"
+                                aria-label="Close" ng-click="close()">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+
+                        </div>
+                        <div class="modal-body" id="modalContentToPrintQC">
+
+                            <div class="report-page">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <td>
+                                                <div class="page-header">
+                                                    <table class="table-page-header">
+                                                        <tr>
+                                                            <td class="w-20 text-start">
+                                                                <img class="img-brand"
+                                                                    ng-src="{{printData.company.imageLink}}">
+                                                            </td>
+                                                            <td class="w-60 text-center brand-details">
+                                                                <div class="brand-header">{{printData.company.name}}
+                                                                </div>
+                                                                <div class="brand-info">
+                                                                    <div class="brand-address">
+                                                                        <div class="lbl-location">
+                                                                            {{printData.company.address}}</div>
+                                                                        <div class="lbl-contact">
+                                                                            <span class="lbl-info-caption">Phone:
+                                                                            </span><span
+                                                                                class="lbl-info-value">{{printData.company.mobile}}</span>
+                                                                            <span class="lbl-info-caption">Email:
+                                                                            </span><span
+                                                                                class="lbl-info-value">{{printData.company.email}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-20">
+                                                                <div class="img-brand">&nbsp;</div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="page-content">
+                                                    <div class="page-content-header">Quality Report</div>
+                                                    <div class="section-wrapper">
+                                                        <table class="table-border table-info">
+                                                            <tr>
+                                                                <td class="w-25">
+                                                                    <div class="lbl-row-caption">Date</div>
+                                                                    <div class="lbl-value">{{printData.token.inDate}}
+                                                                    </div>
+                                                                </td>
+                                                                <td class="w-25">
+                                                                    <canvas style="display:none;" id="barcode"></canvas>
+                                                                    <img class="img-bar-code" ng-src="{{imageBarCode}}">
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+
+
+                                                    <div class="section-wrapper">
+                                                        <table class="table-border table-details">
+                                                            <tr>
+                                                                <th class="text-center">Item Type</th>
+                                                                <th class="text-center">Item</th>
+                                                                <th class="text-center">Uploading Point</th>
+                                                                <th class="text-center">Moist %</th>
+                                                                <th class="text-center">Dust %</th>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <th class="text-center">{{printData.token.itemType}}
+                                                                </th>
+                                                                <th class="text-center">{{printData.token.item}}</th>
+                                                                <th class="text-center">
+                                                                    {{printData.token.unloadingPoint}}</th>
+                                                                <th class="text-center">{{printData.token.moist}}</th>
+                                                                <th class="text-center">{{printData.token.dust}}</th>
+
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+
+                                                    <div class="section-wrapper">
+                                                        <table class="table-sign-off">
+                                                            <tr>
+                                                                <td class="text-center">
+                                                                    <span class="sign-line"></span>
+                                                                    <span>Signature</span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                    <tfoot>
+                                        <tr>
+                                            <td>
+                                                <div class="page-footer">
+                                                    <table class="footer-table">
+                                                        <tr>
+                                                            <td class="w-33">
+                                                                <div>
+                                                                    <span class="lbl-value">Phones: </span>
+                                                                    <span
+                                                                        class="lbl-caption">{{printData.company.mobile}}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-33 text-center">
+                                                                <div>
+                                                                    <span class="lbl-value">Website: </span>
+                                                                    <span
+                                                                        class="lbl-caption">{{printData.company.website}}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-33 text-end">
+                                                                <div>
+                                                                    <span class="lbl-value">E-mail: </span>
+                                                                    <span
+                                                                        class="lbl-caption">{{printData.company.email}}</span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                            </div>
+                            <div class="mt-3 text-center d-print-none">
+
+                                <button type="button" class="btn btn-secondary btn-modal-action" data-bs-dismiss="modal"
+                                    ng-click="close()">Close</button>
+                                <button type="submit" onclick="printDataModel('modalContentToPrintQC')"
+                                    class="btn btn-success btn-modal-print">Print</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="print_modal_tare_weight" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content" id="modalContentToPrintTare">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                Token
+                            </h5>
+                            <button type="button" class="btn-close d-print-none" data-bs-dismiss="modal"
+                                aria-label="Close" ng-click="close()">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+
+                        </div>
+                        <div class="modal-body" id="modalContentToPrintTare">
+
+                            <div class="report-page">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <td>
+                                                <div class="page-header">
+                                                    <table class="table-page-header">
+                                                        <tr>
+                                                            <td class="w-20 text-start">
+                                                                <img class="img-brand"
+                                                                    ng-src="{{printData.company.imageLink}}">
+                                                            </td>
+                                                            <td class="w-60 text-center brand-details">
+                                                                <div class="brand-header">{{printData.company.name}}
+                                                                </div>
+                                                                <div class="brand-info">
+                                                                    <div class="brand-address">
+                                                                        <div class="lbl-location">
+                                                                            {{printData.company.address}}</div>
+                                                                        <div class="lbl-contact">
+                                                                            <span class="lbl-info-caption">Phone:
+                                                                            </span><span
+                                                                                class="lbl-info-value">{{printData.company.mobile}}</span>
+                                                                            <span class="lbl-info-caption">Email:
+                                                                            </span><span
+                                                                                class="lbl-info-value">{{printData.company.email}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-20">
+                                                                <div class="img-brand">&nbsp;</div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="page-content">
+                                                    <div class="page-content-header">GOODS RECEIPT NOTE</div>
+                                                    <div class="section-wrapper">
+                                                        <table class="table-border table-info">
+                                                            <tr>
+                                                                <td class="w-50" rowspan="2">
+                                                                    <div class="lbl-header">Vendor Details: </div>
+                                                                    <div class="value-wrapper">
+                                                                        <div class="value-container">
+                                                                            <span
+                                                                                class="lbl-medium">{{printData.vendor.name}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.address}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.city}}-
+                                                                                {{printData.vendor.pinCode}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span class="lbl-caption">Contact No:
+                                                                            </span>
+                                                                            <span
+                                                                                class="lbl-value">{{printData.vendor.phone}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span class="lbl-caption">Chipper: </span>
+                                                                            <span
+                                                                                class="lbl-value">{{printData.token.chipper}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span class="lbl-caption">Transporter:
+                                                                            </span>
+                                                                            <span
+                                                                                class="lbl-value">{{printData.token.transporter}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span class="lbl-caption">Driver Name:
+                                                                            </span>
+                                                                            <span
+                                                                                class="lbl-value">{{printData.token.driver}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span class="lbl-caption">Vehicle: </span>
+                                                                            <span
+                                                                                class="lbl-value">{{printData.token.vehicleNumber}}({{printData.token.vehicleType}})</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span class="lbl-caption">Supervisor:
+                                                                            </span>
+                                                                            <span
+                                                                                class="lbl-value">{{printData.token.supervisor}}</span>
+                                                                        </div>
+                                                                        <div class="value-container">
+                                                                            <span class="lbl-caption">Field Officer:
+                                                                            </span>
+                                                                            <span
+                                                                                class="lbl-value">{{printData.token.fieldOfficer}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="w-25">
+                                                                    <div class="lbl-row-caption">Date</div>
+                                                                    <div class="lbl-value">{{printData.token.inDate}}
+                                                                    </div>
+                                                                </td>
+                                                                <td class="w-25">
+                                                                    <canvas style="display:none;" id="barcode"></canvas>
+                                                                    <img class="img-bar-code" ng-src="{{imageBarCode}}">
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Time</div>
+                                                                    <div class="lbl-value">{{printData.token.inTime}}
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Remarks</div>
+                                                                    <div class="lbl-value">{{printData.token.remarks}}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Gross Weight</div>
+                                                                    <div class="lbl-value">
+                                                                        {{printData.token.grossWeight}} KG</div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Tare Weight</div>
+                                                                    <div class="lbl-value">
+                                                                        {{printData.token.tareWeight}} KG</div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Net Weight</div>
+                                                                    <div class="lbl-value">{{printData.token.netWeight}} KG
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Moisture</div>
+                                                                    <div class="lbl-value">{{printData.token.moist}} %
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Dust</div>
+                                                                    <div class="lbl-value">{{printData.token.dust}} %
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="lbl-row-caption">Deduction</div>
+                                                                    <div class="lbl-value">
+                                                                        {{printData.token.deductionPercentage}}
+                                                                        %</div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+
+
+                                                    <div class="section-wrapper">
+                                                        <table class="table-border table-details">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <th>S/N</th>
+                                                                    <th>Item</th>
+                                                                    <th class="text-center">UOM</th>
+                                                                    <th class="text-center">Net Weight</th>
+                                                                    <th class="text-end">Rate</th>
+                                                                    <th class="text-end">Net Amount</th>
+                                                                </tr>
+
+                                                                <tr>
+                                                                    <td>1.</td>
+                                                                    <td>{{printData.token.item}}</td>
+                                                                    <td class="text-center">{{printData.token.unit}}
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        {{printData.token.netWeight}}</td>
+                                                                    <td class="text-end">{{printData.token.rate}}</td>
+                                                                    <td class="text-end">{{ printData.token.netAmount }}
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="5" class="text-end">
+                                                                        <div class="lbl-row-caption">Total:</div>
+                                                                    </td>
+                                                                    <td class="text-end">
+                                                                        <div class="lbl-row-value lbl-medium">{{
+                                                                            printData.token.netAmount }}
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="5" class="text-end">
+                                                                        <div class="lbl-row-caption">Deduction:</div>
+                                                                        <div class="lbl-row-caption">Chipping Charges:
+                                                                        </div>
+                                                                        <div class="lbl-row-caption">Freight:</div>
+                                                                        <div class="lbl-row-caption">Load & Unload:
+                                                                        </div>
+                                                                        <div class="lbl-row-caption">Weighing Charges:
+                                                                        </div>
+                                                                        <div class="lbl-row-caption">Hold Amount:</div>
+                                                                        
+                                                                    </td>
+                                                                    <td class="text-end">
+                                                                        <div class="lbl-row-value">
+                                                                            (-){{printData.token.deductionAmount}}</div>
+                                                                        <div class="lbl-row-value">
+                                                                            (-){{printData.token.chipper}}</div>
+                                                                        <div class="lbl-row-value">
+                                                                            (-){{printData.token.freightFee}}</div>
+                                                                        <div class="lbl-row-value">
+                                                                            (-){{printData.token.loadingFee}}</div>
+                                                                        <div class="lbl-row-value">
+                                                                            (-){{printData.token.weighingCharge}}</div>
+                                                                        <div class="lbl-row-value">
+                                                                            (-){{printData.token.holdBillValue}}</div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="4">
+                                                                        <div class="d-flex">
+                                                                            <span
+                                                                                class="lbl-bold lbl-word-caption">Amount
+                                                                                In Words: </span>
+                                                                            <span>{{printData.token.grandTotalInWord}}</span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td colspan="1" class="text-end">Grand Total:</td>
+                                                                    <td class="text-end lbl-bold">
+                                                                        {{printData.token.grandTotal}}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+
+                                                    <br>
+                                                    <br>
+                                                    <br>
+
+                                                    <div class="section-wrapper">
+                                                        <table class="table-sign-off">
+                                                            <tr>
+                                                                <td class="text-center">
+                                                                    <span class="sign-line"></span>
+                                                                    <span>Prepaid By</span>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <span class="sign-line"></span>
+                                                                    <span>Approved By</span>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <span class="sign-line"></span>
+                                                                    <span>Checked By</span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                    <tfoot>
+                                        <tr>
+                                            <td>
+                                                <div class="page-footer">
+                                                    <table class="footer-table">
+                                                        <tr>
+                                                            <td class="w-33">
+                                                                <div>
+                                                                    <span class="lbl-value">Phones: </span>
+                                                                    <span
+                                                                        class="lbl-caption">{{printData.company.mobile}}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-33 text-center">
+                                                                <div>
+                                                                    <span class="lbl-value">Website: </span>
+                                                                    <span
+                                                                        class="lbl-caption">{{printData.company.website}}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-33 text-end">
+                                                                <div>
+                                                                    <span class="lbl-value">E-mail: </span>
+                                                                    <span
+                                                                        class="lbl-caption">{{printData.company.email}}</span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                            </div>
+                            <div class="mt-3 text-center d-print-none">
+
+                                <button type="button" class="btn btn-secondary btn-modal-action" data-bs-dismiss="modal"
+                                    ng-click="close()">Close</button>
+                                <button type="submit" onclick="printDataModel('modalContentToPrintTare')"
+                                    class="btn btn-success btn-modal-print">Print</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="picture_preview_modal" tabindex="-1" aria-labelledby="pictureModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="pictureModalLabel">Picture Preview</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <img ng-src="{{unloadingPicture}}" class="img-fluid" alt="Picture Preview" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+        </div>
+    </section>
+    <script src="private/controller/PlantServiceController.js"></script>
+
+
+    <script>
+        $("#datepicker1").flatpickr({
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            disableMobile: true,
+            onClose: function (selectedDates, dateStr, instance) {
+                // When a date is selected in datepicker2, set the minimum date in datepicker3
+                if (selectedDates.length > 0) {
+                    var minDate = selectedDates[0];
+                    $("#datepicker2").flatpickr({
+                        dateFormat: "Y-m-d",
+                        allowInput: true,
+                        disableMobile: true,
+                        minDate: minDate,
+                    });
+                }
+            }
+        });
+        $("#datepicker2").flatpickr({
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            disableMobile: "true",
+        });
+
+        function printDataModel(data) {
+            var modalContent = document.getElementById(data).innerHTML;
+
+            // Convert canvas to image
+            var canvas = document.getElementById('barcode');
+            if (!canvas) {
+                console.error('Canvas element not found');
+                return;
+            }
+            var barcodeImage = new Image();
+            barcodeImage.src = canvas.toDataURL('image/png');
+
+            barcodeImage.onload = function () {
+                console.log('Barcode image loaded successfully');
+                // Replace the canvas with the image in the print content
+                modalContent = modalContent.replace('<canvas id="barcode"></canvas>', '<img src="' + barcodeImage.src + '" style="width: 120px; height: 50px;" />');
+
+                var printWindow = window.open('', '', 'height=600,width=800');
+                printWindow.document.write('<html><head><title>Print</title>');
+                printWindow.document.write('<style>');
+                printWindow.document.write(`
+                body {-webkit-print-color-adjust: exact; font-family: Arial; }
+                * {
+                    padding: 0;
+                    margin: 0;
+                    box-sizing: border-box;
+                }
+                /* print page */
+                #staticBackdropLabel {
+                    display: none !important;
+                }
+                @media print {
+                    @page {
+                    size: A4;
+                    }
+                    .report-page {
+                    height: auto;
+                    width: auto;
+                    }
+                    .d-print-none {
+                    display: none;
+                    }
+                    .page-footer {
+                    position: fixed;
+                    }
+                }
+                html, body {
+                    font-family: "Inter", sans-serif;
+                }  
+                table {
+                    width: 100%;
+                }
+                /* page setup */
+                .w-10 { width: 10%; }
+                .w-15 { width: 15%; }
+                .w-20 { width: 20%; }
+                .w-25 { width: 25%; }
+                .w-30 { width: 30%; }
+                .w-33 { width: 33.3333%; }
+                .w-40 { width: 40%; }
+                .w-50 { width: 50%; }
+                .w-60 { width: 60%; }
+                .w-75 { width: 75%; }
+                .w-80 { width: 80%; }
+                .w-100 { width: 100%; }
+                .text-start { text-align: start; }
+                .text-center { text-align: center; }
+                .text-end { text-align: right; }
+                .lbl-bold { font-weight: 700; }
+                .lbl-medium { font-weight: 500; }
+                .lbl-light { font-weight: 300; }
+                .lbl-bold-hr {font-weight: bold;display: inline-block;margin-right: 10px;}
+                .dotted-hr {border-top: 1px dotted #000;display: inline-block;width: calc(100% - 50px);vertical-align: middle;}
+                .p-0 { padding: 0 !important; }
+                .lbl-gap-md { margin-bottom: 30px; }
+                .lbl-gap-sm { margin-bottom: 15px; }
+                .d-flex { display: flex; }
+                .page-header { margin-bottom: 10px; border-bottom: 1px solid #b3b3b3; }
+                .page-footer { padding: 10px; margin-top: 20px; left: 0; right: 0; bottom: 0; border-top: 1px solid #b3b3b3; }
+                .table-page-header { table-layout: fixed; }
+                .table-page-header td { vertical-align: top; }
+                .img-brand { width: 120px; }
+                .sign-line {display: block;margin-inline: auto;border-top: 1px dashed #454545;width: 150px;height: 8px;}
+                .brand-header { font-size: 24px; font-weight: 500; line-height: 1; margin-bottom: 10px; color: #3f3f3f; }
+                .brand-info { font-size: 13px; font-weight: 400; line-height: 1.5; margin-bottom: 5px; }
+                .lbl-info-caption { color: #3f3f3f; }
+                .lbl-word-caption { width: 115px; flex-shrink: 0; }
+                .lbl-word-caption-lg { width: 140px; flex-shrink: 0; }
+                .lbl-header { font-size: 16px; margin-bottom: 6px; font-weight: 700; }
+                .section-wrapper:not(:last-child) { margin-bottom: 30px; }
+                .value-wrapper:not(:last-child) { margin-bottom: 10px; }
+                .value-container { font-size: 14px; }
+                .value-container:not(:last-child), .value-container:not(:only-child) { margin-bottom: 4px; }
+                .lbl-caption, .lbl-row-caption { color: #000; }
+                .lbl-value, .lbl-row-value { color: #3f3f3f; }
+                .lbl-sm { font-size: 12px; }
+                .lbl-row-value:not(:last-child), .lbl-row-caption:not(:last-child),
+                .lbl-row-value:not(:only-child), .lbl-row-caption:not(:only-child) { margin-bottom: 5px; }
+                .page-content-header { font-weight: 700; font-size: 18px; text-align: center; color: #3f3f3f; margin-bottom: 15px; }
+                .table-border, .table-border th, .table-border td { border: 0.8px solid #535353; border-collapse: collapse; }
+                .table-border td, .table-border th { padding: 6px; }
+                .table-info th, .table-info td, .table-details th, .table-details td { font-size: 12px; }
+                .table-info th, .table-details th { font-size: 12px; vertical-align: top; }
+                .table-info td, .table-details td { vertical-align: middle; }
+                .table-sign-off td { vertical-align: bottom; font-size: 12px; }
+                .footer-table { font-size: 12px; font-weight: 400; }
+                thead { display: table-header-group; }
+                tfoot { display: table-footer-group; height: 45px; }
+                `);
+                printWindow.document.write('</style></head><body>');
+                printWindow.document.write(modalContent);
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+                printWindow.focus();
+
+                var images = printWindow.document.querySelectorAll('img');
+                var loadedCount = 0;
+
+                function checkIfAllLoaded() {
+                    loadedCount++;
+                    if (loadedCount === images.length) {
+                        printWindow.print();
+                        printWindow.close();
+                    }
+                }
+
+                images.forEach(function (image) {
+                    if (image.complete) {
+                        checkIfAllLoaded();
+                    } else {
+                        image.onload = checkIfAllLoaded;
+                        image.onerror = function () {
+                            console.error('Image failed to load.');
+                            checkIfAllLoaded();
+                        };
+                    }
+                });
+
+                // If there are no images, print immediately
+                if (images.length === 0) {
+                    printWindow.print();
+                    printWindow.close();
+                }
+            };
+
+            barcodeImage.onerror = function () {
+                console.error('Barcode image failed to load.');
+                printWindow.print();
+                printWindow.close();
+            };
+        }
+
+
+    </script>
+
+</body>
+
+</html>

@@ -1,16 +1,14 @@
 package com.app.account.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
-public interface DashboardService {
+@Service
+public class DashboardService {
 
-    ResponseEntity<?> getDashboardForSuperAdmin();
-
-    ResponseEntity<?> getDashboardForAdmin();
-    
-    ResponseEntity<?> getDashboardForPlant();
-
-
-
+        public ResponseEntity<?> getDashboardData() {
+                return ResponseEntity.status(HttpStatus.OK).body("NO DATA");
+        }
 
 }
