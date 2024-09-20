@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html
+    th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+<head>
+    <title>Logistics</title>
+</head>
+
+<body>
+
+    <section>
+
+        <div ng-app="AdminManagment" ng-controller="AssetLogisticsController">
+            <div class="breadcrumb-container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/home}">
+                                <span class="icon-common icon-breadcrumb icon-dashboard"></span><span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span class="icon-common icon-breadcrumb icon-logistics"></span><span>Logistics</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="body-area" ng-show="views.list">
+                <div class="body-area-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="body-area-tittle">Logistics</div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="user-table-header d-flex justify-content-end mb-3">
+                                <span class="me-2">
+                                    <a title="Receive Selected" ng-click="allAssetReceive()"
+                                        class="btn btn-action-header btn-action-receive">
+                                        <span class="icon-common icon-btn icon-receive"></span>
+                                    </a>
+                                </span>
+                                <span>
+                                    <a title="Dismiss Selected" ng-click="allAssetDismiss()"
+                                        class="btn btn-action-header btn-action-dismiss">
+                                        <span class="icon-common icon-btn icon-dismiss"></span>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="body-area-content">
+                    <div class="user-table-container">
+                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                            <thead>
+                                <tr class="table-head-primary">
+                                    <th>
+                                        <label>
+                                            <input class="user" type="checkbox" ng-model="assets.select"
+                                                ng-click="selectAction()" name="status" checked="">
+                                        </label>
+                                    </th>
+                                    <th>SL No.</th>
+                                    <th>Type</th>
+                                    <th>Asset Tag ID</th>
+                                    <th>Serial No.</th>
+                                    <th>Model</th>
+                                    <th>Supplier</th>
+                                    <th>Manufacturer</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="asset in assets">
+                                    <td>
+                                        <label>
+                                            <input class="user" type="checkbox" ng-model="asset.select" name="status"
+                                                checked="">
+                                        </label>
+                                    </td>
+                                    <td>{{$index + 1}}</td>
+                                    <td>{{asset.type}}</td>
+                                    <td>{{asset.asset_tag_id}}</td>
+                                    <td>{{asset.serial_no}}</td>
+                                    <td>{{asset.model}}</td>
+                                    <td>{{asset.supplier}}</td>
+                                    <td>{{asset.manufacturer}}</td>
+                                    <td class="d-flex">
+                                        <!-- <span class="me-2"><a ng-click="assetReceive(asset.id)"
+                                        class="btn btn-success">Receive</a></span>
+                                <span><a ng-click="assetDismiss(asset.id)" class="btn btn-danger">Dismiss</a></span> -->
+
+                                        <span class="me-2">
+                                            <a title="Receive" ng-click="assetReceive(asset.id)"
+                                                class="btn btn-action btn-action-receive">
+                                                <span class="icon-common icon-btn icon-receive"></span>
+                                            </a>
+                                        </span>
+                                        <span>
+                                            <a title="Dismiss" ng-click="assetDismiss(asset.id)"
+                                                class="btn btn-action btn-action-dismiss">
+                                                <span class="icon-common icon-btn icon-dismiss"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====================Modal View======================= -->
+
+        </div>
+
+
+
+
+    </section>
+
+
+    <script src="private/admin/admin.js"></script>
+</body>
+
+</html>

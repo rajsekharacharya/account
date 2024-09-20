@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html
+    th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+
+
+<head>
+    <title>Asset Type</title>
+</head>
+
+<body>
+    <section>
+        <div ng-app="AdminManagment" ng-controller="AssetTypeController">
+            <div class="breadcrumb-container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/home}">
+                                <span class="icon-common icon-breadcrumb icon-dashboard"></span><span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span class="icon-common icon-breadcrumb icon-asset-type"></span><span>Asset Type</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="body-area" ng-show="views.list">
+                <div class="body-area-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="body-area-tittle">Asset type</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="body-area-action">
+                                <a ng-click="AddAssetType()" class="float-end btn btn-icon btn-add me-2"
+                                    title="Add Asset Category"><span class="icon-common icon-add"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="body-area-content">
+                    <div class="user-table-container">
+                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                            <thead>
+                                <tr class="table-head-primary">
+                                    <th>SL No.</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="asset in assets">
+                                    <td>{{$index + 1}}</td>
+                                    <td><span class="user-role"><a href=""
+                                                ng-click="fetchAllDetails(asset.id, asset.assetTypeDetail)">{{asset.type}}</a></span>
+                                    </td>
+                                    <td>
+                                        <form method="POST">
+                                            <input type="hidden" name="_token"
+                                                value="FsM848SirJ6QKs0CFziA4j7n5KkBtIkiG32c4lng">
+                                            <label class="switch">
+                                                <input class="user" type="checkbox" data-id="2"
+                                                    ng-click="changeStatus(asset.id)" ng-model="asset.status"
+                                                    name="status" checked="">
+                                                <span class="knob"></span>
+                                            </label>
+                                        </form>
+                                    </td>
+                                    <td class="d-flex">
+                                        <span class="me-2"><a title="Edit" ng-click="editSubAsset(asset.id)"
+                                                class="btn btn-action btn-action-edit"><span
+                                                    class="lbl-btn-action"></span><span
+                                                    class="icon-common icon-btn icon-edit"></span></a></span>
+                                        <span ng-if="asset.assetTypeDetail.length < 16"><a title="Add Type Details"
+                                                ng-click="addAssetTypeDetail(asset.id,asset.assetTypeDetail.length)"
+                                                class="btn btn-action btn-action-add"><span
+                                                    class="lbl-btn-action"></span><span
+                                                    class="icon-common icon-btn icon-add-circle"></span></a></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====================Modal View======================= -->
+            <div class="modal fade" id="add_edit_assetType_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span ng-if="form.id==null || form.id==undefined">Add Asset Type</span>
+                                <span ng-if="form.id!=null && form.id!=undefined">Edit Asset Type</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form"
+                                ng-submit="addEditSaveAssetType()">
+                                <div class="row">
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Name: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.type" class="form-control"
+                                                placeholder="Enter Name" ng-change="form.type = (form.type | uppercase)"
+                                                required />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-modal-action"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="add_AssetType_detail_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span>Add Asset Type Details</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form"
+                                ng-submit="addSaveAssetTypeDetails()" autocomplete="off">
+                                <div class="row" ng-repeat="row in rows">
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Property Name: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="row.caption" class="form-control"
+                                                placeholder="Enter Name"
+                                                ng-change="row.caption = (row.caption | uppercase)" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Type: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="assetCatId" ng-model="row.type" class="form-control" required>
+                                                <option disabled></option>
+                                                <option value="Dropdown">Dropdown</option>
+                                                <option value="Text">Text</option>
+                                                <option value="Numeric">Numeric</option>
+                                                <option value="URL">URL</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Unit:
+                                            </label>
+                                            <input name="name" type="text" ng-model="row.unit" class="form-control"
+                                                placeholder="Enter Name"
+                                                ng-change="row.unit = (row.unit | uppercase)" />
+                                        </div>
+                                    </div>
+                                    <div ng-if="row.type == 'Numeric'" class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Min Value:
+                                            </label>
+                                            <input name="name" type="number" ng-model="row.minValue"
+                                                class="form-control" placeholder="Min Value" />
+                                        </div>
+                                    </div>
+                                    <div ng-if="row.type == 'Numeric'" class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Max Value:
+                                            </label>
+                                            <input name="name" type="number" ng-model="row.maxValue"
+                                                class="form-control" placeholder="Max Value" />
+                                        </div>
+                                    </div>
+                                    <div ng-if="row.type == 'Text'" class="col-lg-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Max Length:
+                                            </label>
+                                            <input name="name" type="number" ng-model="row.maxLength"
+                                                class="form-control" placeholder="Min Value" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-1 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Required: <span class="text-danger">*</span>
+                                            </label>
+                                            <label class="switch">
+                                                <input class="user" type="checkbox" data-id="2" ng-model="row.required"
+                                                    name="status" checked="">
+                                                <span class="knob"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-1 col-sm-2 align-self-end">
+                                        <div class="form-group">
+                                                <a title="Delete"  ng-click="removeRow($index)" class="btn btn-action btn-action-delete">
+                                                    <span class="icon-common icon-btn  icon-delete"></span>
+                                                </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" id="add-row-button"
+                                        ng-click="addRow()">Add
+                                        Row</button>
+                                    <button type="button" class="btn btn-secondary btn-modal-action"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="edit_AssetType_detail_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span>Edit Details</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form"
+                                ng-submit="SaveEditAssetTypeDetails()">
+                                <div class="row">
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Property Name: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="subform.caption"
+                                                class="form-control" placeholder="Enter Name"
+                                                ng-change="subform.caption = (subform.caption | uppercase)" required />
+                                        </div>
+                                    </div>
+                                    <div sec:authorize="!hasAuthority('ADMIN')" class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Type: <span class="text-danger">*</span>
+                                            </label>
+                                            <select disabled name="assetCatId" ng-model="subform.type"
+                                                class="form-control" required>
+                                                <option disabled></option>
+                                                <option value="Dropdown">Dropdown</option>
+                                                <option value="Text">Text</option>
+                                                <option value="Numeric">Numeric</option>
+                                                <option value="URL">URL</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div sec:authorize="hasAuthority('ADMIN')" class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Type: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="assetCatId" ng-model="subform.type" class="form-control"
+                                                required>
+                                                <option disabled></option>
+                                                <option value="Dropdown">Dropdown</option>
+                                                <option value="Text">Text</option>
+                                                <option value="Numeric">Numeric</option>
+                                                <option value="URL">URL</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Unit:
+                                            </label>
+                                            <input name="name" type="text" ng-model="subform.unit" class="form-control"
+                                                placeholder="Enter Name"
+                                                ng-change="subform.unit = (subform.unit | uppercase)" />
+                                        </div>
+                                    </div>
+                                    <div ng-if="subform.type == 'Numeric'" class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Min Value:
+                                            </label>
+                                            <input name="name" type="number" ng-model="subform.minValue"
+                                                class="form-control" placeholder="Min Value" />
+                                        </div>
+                                    </div>
+                                    <div ng-if="subform.type == 'Numeric'" class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Max Value:
+                                            </label>
+                                            <input name="name" type="number" ng-model="subform.maxValue"
+                                                class="form-control" placeholder="Max Value" />
+                                        </div>
+                                    </div>
+                                    <div ng-if="subform.type == 'Text'" class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Max Length:
+                                            </label>
+                                            <input name="name" type="number" ng-model="subform.maxLength"
+                                                class="form-control" placeholder="Min Value" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Required: <span class="text-danger">*</span>
+                                            </label>
+                                            <label class="switch">
+                                                <input class="user" type="checkbox" data-id="2"
+                                                    ng-model="subform.required" name="status" checked="">
+                                                <span class="knob"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-modal-action"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="show_AssetType_detail_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel"><span
+                                    class="icon-common icon-option icon-header"></span>
+                                <span>Type Details</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+
+                                <table class="user-table-view" id="">
+                                    <tr class="table-head-primary">
+                                        <th>SL No.</th>
+                                        <th>Caption</th>
+                                        <th>Type</th>
+                                        <th>Min Value</th>
+                                        <th>Max Value</th>
+                                        <th>Max Length</th>
+                                        <th>Required</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    <tr ng-repeat="Details in assetTypeDetails | orderBy:'id'">
+                                        <td>{{$index + 1}}</td>
+                                        <td ng-if="Details.type != 'Dropdown'"><span
+                                                class="user-role">{{Details.caption}}</span>
+                                        </td>
+                                        <td ng-if="Details.type == 'Dropdown'"><span class="user-role"><a href=""
+                                                    ng-click="fetchAllDropDownDetails(Details.id, Details.options)">{{Details.caption}}</a></span>
+                                        </td>
+                                        <td><span class="user-role">{{Details.type}}</span></td>
+                                        <td><span class="user-role">{{Details.minValue}}</span></td>
+                                        <td><span class="user-role">{{Details.maxValue}}</span></td>
+                                        <td><span class="user-role">{{Details.maxLength}}</span></td>
+                                        <td>
+                                            <label class="switch">
+                                                <input class="user" disabled type="checkbox" data-id="2"
+                                                    ng-model="Details.required" name="status" checked="">
+                                                <span class="knob"></span>
+                                            </label>
+                                        </td>
+                                        <td class="d-flex gap-2">
+                                            <a title="Edit" ng-click="editAssetTypeDetails(Details.id)"
+                                                class="btn btn-action btn-action-edit">
+                                                <span class="lbl-btn-action"></span>
+                                                <span class="icon-common icon-btn icon-edit"></span>
+                                            </a>
+
+                                            <!-- <a ng-if="Details.type == 'Dropdown'" class="dropdown-item"
+                                        ng-click="AddDropDown(Details.id)"><span></span></a> -->
+
+                                            <a title="ADD Dropdown" ng-if="Details.type == 'Dropdown'"
+                                                class="btn btn-action btn-action-add"
+                                                ng-click="AddDropDown(Details.id)">
+                                                <span class="lbl-btn-action"></span><span
+                                                    class="icon-common icon-btn icon-add-circle"></span>
+                                            </a>
+                                        </td>
+
+                                    </tr>
+
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary btn-modal-action"
+                                    data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="add_AssetType_detail_dropdown_modal" tabindex="-1"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span>Add Dropdown</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form"
+                                ng-submit="addSaveAssetTypeDetailDropDown()">
+                                <div class="row" ng-repeat="row in subDetailform">
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Name: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="row.caption" class="form-control"
+                                                placeholder="Enter Name"
+                                                ng-change="row.caption = (row.caption | uppercase)" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-sm-2 align-self-end">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-danger"
+                                                ng-click="removeDetailRow($index)">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" id="add-row-button"
+                                        ng-click="addDetailRow()">Add
+                                        Row</button>
+                                    <button type="button" class="btn btn-secondary btn-modal-action"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="show_AssetType_dropdown_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel"><span
+                                    class="icon-common icon-option icon-header"></span>
+                                <span>Dropdown Details</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+
+                                <table class="user-table-view" id="">
+                                    <tr class="table-head-primary">
+                                        <th>SL No.</th>
+                                        <!-- <th>Caption</th> -->
+                                        <th>Value</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    <tr ng-repeat="Details in dropDownDetails | orderBy:'id'">
+                                        <td>{{$index + 1}}</td>
+                                        <!-- <td><span class="user-role">{{Details.caption}}</span></td> -->
+                                        <td> <input class="form-control" type="text" ng-model="Details.value"> </td>
+                                        <!-- <td><span class="user-role">{{Details.value}}</span></td> -->
+                                        <td>
+                                            <label class="switch">
+                                                <input disabled class="user" type="checkbox" data-id="2"
+                                                    ng-model="Details.status" name="status" checked="">
+                                                <span class="knob"></span>
+                                            </label>
+                                        </td>
+                                        <td><button type="button" class="btn btn-secondary btn-modal-action"
+                                                ng-click="UpdateDropDownDetails(Details)">Update</button></td>
+                                    </tr>
+
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary btn-modal-action"
+                                    data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </section>
+
+
+    <script src="private/admin/purchase.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#add_AssetType_detail_modal").modal({
+                show: false,
+                backdrop: 'static'
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html
+    th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+<head>
+    <title>Report</title>
+</head>
+
+<body>
+
+    <section>
+
+        <div ng-app="AdminManagment" ng-controller="ReportController">
+            <div class="breadcrumb-container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/home}">
+                                <span class="icon-common icon-breadcrumb icon-dashboard"></span><span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span class="icon-common icon-breadcrumb icon-report"></span><span>Report</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div>
+                <div class="body-area" style="margin-top:15px;">
+                    <div class="body-area-content">
+                        <hr style="height: 1px;">
+                        <div class="user-table-container">
+                            <div class="header-action-container">
+                                <ul class="nav nav-tabs tabsItem" role="tablist" style="justify-content: center;">
+                                    <li class="nav-item" role="presentation"><a showtab="" class="nav-link"
+                                            href="#type-wish" ng-click="TypeWishData()" aria-controls="type-wish"
+                                            role="tab" data-toggle="tab">Type Wise</a></li>
+
+                                    <li class="nav-item" role="presentation"><a showtab="" class="nav-link"
+                                            href="#category-wise" ng-click="CategoryWishData()"
+                                            aria-controls="category-wise" role="tab" data-toggle="tab">Category Wise</a>
+                                    </li>
+
+                                    <li class="nav-item" role="presentation"><a showtab="" class="nav-link"
+                                            href="#location-wise" ng-click="LocationWishData()"
+                                            aria-controls="location-wise" role="tab" data-toggle="tab">Location Wise</a>
+                                    </li>
+
+                                    <li class="nav-item" role="presentation"><a showtab="" class="nav-link"
+                                            href="#employee-wise" ng-click="fetchEmployeies()"
+                                            aria-controls="employee-wise" role="tab" data-toggle="tab">Employee Wise</a>
+                                    </li>
+
+                                    <li class="nav-item" role="presentation"><a showtab="" class="nav-link"
+                                            href="#depreciation" ng-click="yearCodeControl()"
+                                            aria-controls="depreciation" role="tab" data-toggle="tab">Depreciation</a>
+                                    </li>
+
+                                    <li class="nav-item" role="presentation"><a showtab="" class="nav-link"
+                                            href="#project" ng-click="fetchProject()" aria-controls="depreciation"
+                                            role="tab" data-toggle="tab">Project</a></li>
+
+                                    <li class="nav-item" role="presentation"><a showtab="" class="nav-link"
+                                            href="#sale-report" ng-click="SaleData()" aria-controls="sale-report"
+                                            role="tab" data-toggle="tab">Sale</a></li>
+
+                                    <li class="nav-item" role="presentation"><a showtab="" class="nav-link"
+                                            href="#Warranty" ng-click="Warranty()" aria-controls="sale-report"
+                                            role="tab" data-toggle="tab">Warranty</a></li>
+
+                                    <li class="nav-item" role="presentation"><a showtab="" class="nav-link" href="#Amc"
+                                            ng-click="Amc()" aria-controls="sale-report" role="tab"
+                                            data-toggle="tab">Amc</a>
+                                    </li>
+
+                                    <li class="nav-item" role="presentation"><a showtab="" class="nav-link"
+                                            href="#Insurance" ng-click="Insurance()" aria-controls="sale-report"
+                                            role="tab" data-toggle="tab">Insurance</a></li>
+                                    <li class="nav-item" role="presentation"><a showtab="" class="nav-link"
+                                            href="#detail-report" ng-click="getDetailReport()"
+                                            aria-controls="detail-report" role="tab" data-toggle="tab">Detail Report</a>
+                                    </li>
+                                    <li class="nav-item" role="presentation"><a showtab="" class="nav-link"
+                                            href="#call-log-report" ng-click="getCallLogReport()"
+                                            aria-controls="detail-report" role="tab" data-toggle="tab">Call Log Report</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <hr style="height: 1px;">
+
+                            <div class="tab-content tabcontent-border">
+
+                                <div role="tabpanel" class="tab-pane tb-pane-padding" id="detail-report">
+                                    <div class="table-responsive">
+                                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                                            <thead>
+                                                <tr class="table-head-primary">
+                                                    <th>SL No.</th>
+                                                    <th>Assign Employee</th>
+                                                    <th>Assign Employee Code</th>
+                                                    <th>Type</th>
+                                                    <th>Asset Tag ID</th>
+                                                    <th>Manufacturer</th>
+                                                    <th>Model</th>
+                                                    <th>Serial Number</th>
+                                                    <th>Description</th>
+                                                    <th>PO Number</th>
+                                                    <th>PO Date</th>
+                                                    <th>Invoice Number</th>
+                                                    <th>Invoice Date</th>
+                                                    <th>Cost</th>
+                                                    <th>Supplier</th>
+                                                    <th>Warranty Status</th>
+                                                    <th>Warranty Start date</th>
+                                                    <th>Warranty End date</th>
+                                                    <th>Amc Status</th>
+                                                    <th>AMC Start date</th>
+                                                    <th>AMC End date</th>
+                                                    <th>Insurance Status</th>
+                                                    <th>Insurance Start date</th>
+                                                    <th>Insurance End date</th>
+                                                    <th>Status</th>
+                                                    <th>Location</th>
+                                                    <th>Sub Location</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="data in detailReport">
+                                                    <td>{{$index + 1}}</td>
+                                                    <td><span class="user-role">{{data.employee}}</span></td>
+                                                    <td><span class="user-role">{{data.employee_code}}</span></td>
+                                                    <td><span class="user-role">{{data.type}}</span></td>
+                                                    <td><span class="user-role">{{data.asset_tag_id}}</span></td>
+                                                    <td><span class="user-role">{{data.manufacturer}}</span></td>
+                                                    <td><span class="user-role">{{data.model}}</span></td>
+                                                    <td><span class="user-role">{{data.serial_no}}</span></td>
+                                                    <td><span class="user-role">{{data.description}}</span></td>
+                                                    <td><span class="user-role">{{data.po_number}}</span></td>
+                                                    <td><span class="user-role">{{data.po_date}}</span></td>
+                                                    <td><span class="user-role">{{data.invoice_number}}</span></td>
+                                                    <td><span class="user-role">{{data.purchased_date}}</span></td>
+                                                    <td><span class="user-role">{{data.cost}}</span></td>
+                                                    <td><span class="user-role">{{data.supplier}}</span></td>
+                                                    <td>
+                                                        <span style="color: #02ff17" class="user-role"
+                                                            ng-if="data.warranty_status==true">YES</span>
+                                                        <span style="color: #ee0808" class="user-role"
+                                                            ng-if="data.warranty_status==false">NO</span>
+                                                    </td>
+                                                    <td><span class="user-role">{{data.warranty_start_date}}</span></td>
+                                                    <td><span class="user-role">{{data.warranty_end_date}}</span></td>
+
+                                                    <td>
+                                                        <span style="color: #02ff17" class="user-role"
+                                                            ng-if="data.amc_status==true">YES</span>
+                                                        <span style="color: #ee0808" class="user-role"
+                                                            ng-if="data.amc_status==false">NO</span>
+                                                    </td>
+
+                                                    <td><span class="user-role">{{data.amc_start_date}}</span></td>
+                                                    <td><span class="user-role">{{data.amc_end_date}}</span></td>
+
+                                                    <td>
+                                                        <span style="color: #02ff17" class="user-role"
+                                                            ng-if="data.insurance_status==true">YES</span>
+                                                        <span style="color: #ee0808" class="user-role"
+                                                            ng-if="data.insurance_status==false">NO</span>
+                                                    </td>
+
+
+                                                    <td><span class="user-role">{{data.insurance_start_date}}</span>
+                                                    </td>
+                                                    <td><span class="user-role">{{data.insurance_end_date}}</span></td>
+
+                                                    <td><span class="user-role">{{data.status}}</span></td>
+                                                    <td><span class="user-role">{{data.location}}</span></td>
+                                                    <td><span class="user-role">{{data.sub_location}}</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane tb-pane-padding" id="type-wish">
+                                    <div class="table-responsive">
+                                        <table class="user-table-view">
+                                            <tr class="table-head-primary">
+                                                <th>SL No.</th>
+                                                <th>Type</th>
+                                                <th>Total Asset</th>
+                                                <th>Assign Asset</th>
+                                                <th>Deployed Asset</th>
+                                            </tr>
+                                            <tr ng-repeat="data in assetTypeData | filter: searchText">
+                                                <td>{{$index + 1}}</td>
+                                                <td><span class="user-role"><a href=""
+                                                            ng-click="TypeWishDetailsData(data.type)">{{data.type}}</a></span>
+                                                </td>
+                                                <td><span class="user-role">{{data.asset}}</span></td>
+                                                <td><span class="user-role">{{data.assign}}</span></td>
+                                                <td><span class="user-role">{{data.deployd}}</span></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane tb-pane-padding" id="category-wise">
+                                    <div class="table-responsive">
+                                        <table class="user-table-view">
+                                            <tr class="table-head-primary">
+                                                <th>SL No.</th>
+                                                <th>Type</th>
+                                                <th>Total Asset</th>
+                                                <th>Assign Asset</th>
+                                                <th>Deployed Asset</th>
+                                            </tr>
+                                            <tr ng-repeat="data in assetCatData | filter: searchText">
+                                                <td>{{$index + 1}}</td>
+                                                <td><span class="user-role"><a href=""
+                                                            ng-click="CategoryWishDetailsData(data.catId)">{{data.name}}</a></span>
+                                                </td>
+                                                <td><span class="user-role">{{data.asset}}</span></td>
+                                                <td><span class="user-role">{{data.assign}}</span></td>
+                                                <td><span class="user-role">{{data.deployd}}</span></td>
+                                            </tr>
+
+                                        </table>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane tb-pane-padding" id="location-wise">
+                                    <div class="table-responsive">
+                                        <table class="user-table-view">
+                                            <tr class="table-head-primary">
+                                                <th>SL No.</th>
+                                                <th>Type</th>
+                                                <th>Total Asset</th>
+                                                <th>Assign Asset</th>
+                                                <th>Deployed Asset</th>
+                                            </tr>
+                                            <tr ng-repeat="data in assetLocationData | filter: searchText">
+                                                <td>{{$index + 1}}</td>
+                                                <td><span class="user-role"><a href=""
+                                                            ng-click="LocationwishDetailsData(data.location)">{{data.location}}</a></span>
+                                                </td>
+                                                <td><span class="user-role">{{data.asset}}</span></td>
+                                                <td><span class="user-role">{{data.assign}}</span></td>
+                                                <td><span class="user-role">{{data.deployd}}</span></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane tb-pane-padding" id="employee-wise">
+                                    <div class="col-lg-2 col-sm-2">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="note">
+                                                Employee: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="employeeId" ng-model="empcode" class="form-control select2"
+                                                ng-options="employee.employeeId as (employee.name + ' - ' + employee.employeeId) for employee in employeies"
+                                                ng-change="EmployeeWishData(empcode)" required>
+                                                <option value="" disabled selected>Select an Employee</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                    <br>
+                                    <div class="table-responsive">
+                                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                                            <thead>
+                                                <tr class="table-head-primary">
+                                                    <th>SL No.</th>
+                                                    <th>Type</th>
+                                                    <th>Location</th>
+                                                    <th>Asset Tag ID</th>
+                                                    <th>Serial Number</th>
+                                                    <th>Model</th>
+                                                    <th>Manufacturer</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="data in assetEmpData">
+                                                    <td>{{$index + 1}}</td>
+                                                    <td><span class="user-role">{{data.type}}</span></td>
+                                                    <td><span class="user-role">{{data.location}}</span></td>
+                                                    <td><span class="user-role">{{data.asset_tag_id}}</span></td>
+                                                    <td><span class="user-role">{{data.serial_no}}</span></td>
+                                                    <td><span class="user-role">{{data.model}}</span></td>
+                                                    <td><span class="user-role">{{data.name}}</span></td>
+                                                    <td><span class="user-role">{{data.description}}</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane tb-pane-padding" id="depreciation">
+
+                                    <div class="col-lg-2 col-sm-2">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="note">
+                                                Year: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="employeeId" ng-model="yearCd" class="form-control select2"
+                                                ng-options="code.year_code as code.year_code for code in yearCode"
+                                                ng-change="reportOnDepreciation(yearCd)" required>
+                                                <option value="" disabled selected>Select an Year</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                                            <thead>
+                                                <tr class="table-head-primary">
+                                                    <th>Sl.</th>
+                                                    <th>Year Code</th>
+                                                    <th>Category</th>
+                                                    <th>Sub-category</th>
+                                                    <th>Total Depreciation</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="data in depreciationData | orderBy:'id'">
+                                                    <td>{{$index + 1}}</td>
+                                                    <td><span class="user-role">{{data.year_code}}</span></td>
+                                                    <td><span class="user-role">{{data.cat}}</span></td>
+                                                    <td><span class="user-role">{{data.subcat}}</span></td>
+                                                    <td><span class="user-role">{{data.amount}}</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane tb-pane-padding" id="project">
+                                    <div class="table-responsive">
+                                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                                            <thead>
+                                                <tr class="table-head-primary">
+                                                    <th>SL No.</th>
+                                                    <th>Project</th>
+                                                    <th>Project Location</th>
+                                                    <th>Type</th>
+                                                    <th>Asset Tag ID</th>
+                                                    <th>Serial No.</th>
+                                                    <th>Model</th>
+                                                    <th>Supplier</th>
+                                                    <th>Manufacturer</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Note</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="asset in projects | orderBy:'id'">
+                                                    <td>{{$index + 1}}</td>
+                                                    <td>{{asset.project}}</td>
+                                                    <td>{{asset.project_location}}</td>
+                                                    <td>{{asset.type}}</td>
+                                                    <td>{{asset.asset_tag_id}}</td>
+                                                    <td>{{asset.serial_no}}</td>
+                                                    <td>{{asset.model}}</td>
+                                                    <td>{{asset.supplier}}</td>
+                                                    <td>{{asset.manufacturer}}</td>
+                                                    <td>{{asset.start_date}}</td>
+                                                    <td>{{asset.end_date}}</td>
+                                                    <td>{{asset.note}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane tb-pane-padding" id="sale-report">
+                                    <div class="table-responsive">
+                                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                                            <thead>
+                                                <tr class="table-head-primary">
+                                                    <th>Sl.</th>
+                                                    <th>Type</th>
+                                                    <th>Quantity</th>
+                                                    <th>Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="data in assetSaleData | orderBy:'id'">
+                                                    <td>{{$index + 1}}</td>
+                                                    <td><span class="user-role"><a href=""
+                                                                ng-click="saleDetailData(data.type)">{{data.type}}</a></span>
+                                                    </td>
+                                                    <td><span class="user-role">{{data.total}}</span></td>
+                                                    <td><span class="user-role">{{data.amount}}</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane tb-pane-padding" id="Warranty">
+                                    <div class="table-responsive">
+                                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                                            <thead>
+                                                <tr class="table-head-primary">
+                                                    <th>Sl.</th>
+                                                    <th>Type</th>
+                                                    <th>Asset Tag ID</th>
+                                                    <th>Serial No</th>
+                                                    <th>Model</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Remaining Day</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="data in warrants | orderBy:'id'">
+                                                    <td>{{$index + 1}}</td>
+                                                    <td><span class="user-role">{{data.type}}</span></td>
+                                                    <td><span class="user-role">{{data.asset_tag_id}}</span></td>
+                                                    <td><span class="user-role">{{data.serial_no}}</span></td>
+                                                    <td><span class="user-role">{{data.model}}</span></td>
+                                                    <td><span class="user-role">{{data.warranty_start_date}}</span></td>
+                                                    <td><span class="user-role">{{data.warranty_end_date}}</span></td>
+                                                    <td><span class="user-role">{{data.remainingDays}}</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane tb-pane-padding" id="Amc">
+                                    <div class="table-responsive">
+                                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                                            <thead>
+                                                <tr class="table-head-primary">
+                                                    <th>Sl.</th>
+                                                    <th>Type</th>
+                                                    <th>Asset Tag ID</th>
+                                                    <th>Serial No</th>
+                                                    <th>Model</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Remaining Day</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="data in amcs | orderBy:'id'">
+                                                    <td>{{$index + 1}}</td>
+                                                    <td><span class="user-role">{{data.type}}</span></td>
+                                                    <td><span class="user-role">{{data.asset_tag_id}}</span></td>
+                                                    <td><span class="user-role">{{data.serial_no}}</span></td>
+                                                    <td><span class="user-role">{{data.model}}</span></td>
+                                                    <td><span class="user-role">{{data.start_date}}</span></td>
+                                                    <td><span class="user-role">{{data.end_date}}</span></td>
+                                                    <td><span class="user-role">{{data.remainingDays}}</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane tb-pane-padding" id="Insurance">
+                                    <div class="table-responsive">
+                                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                                            <thead>
+                                                <tr class="table-head-primary">
+                                                    <th>Sl.</th>
+                                                    <th>Type</th>
+                                                    <th>Asset Tag ID</th>
+                                                    <th>Serial No</th>
+                                                    <th>Model</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Remaining Day</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="data in insurances | orderBy:'id'">
+                                                    <td>{{$index + 1}}</td>
+                                                    <td><span class="user-role">{{data.type}}</span></td>
+                                                    <td><span class="user-role">{{data.asset_tag_id}}</span></td>
+                                                    <td><span class="user-role">{{data.serial_no}}</span></td>
+                                                    <td><span class="user-role">{{data.model}}</span></td>
+                                                    <td><span class="user-role">{{data.start_date}}</span></td>
+                                                    <td><span class="user-role">{{data.end_date}}</span></td>
+                                                    <td><span class="user-role">{{data.remainingDays}}</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane tb-pane-padding" id="call-log-report">
+                                    <div class="table-responsive">
+                                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                                            <thead>
+                                                <tr class="table-head-primary">
+                                                    <th>Sl.</th>
+                                                    <th>Time Stamp</th>
+                                                    <th>Type</th>
+                                                    <th>Asset Tag ID</th>
+                                                    <th>Serial No</th>
+                                                    <th>Model</th>
+                                                    <th>Problem</th>
+                                                    <th>status</th>
+                                                    <th>Resolve By</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="data in logs | orderBy:'id'">
+                                                    <td>{{$index + 1}}</td>
+                                                    <td><span class="user-role">{{data.time_stamp | date:'yyyy-MM-dd HH:mm:ss'}}</span></td>
+                                                    <td><span class="user-role">{{data.type}}</span></td>
+                                                    <td><span class="user-role">{{data.asset_tag_id}}</span></td>
+                                                    <td><span class="user-role">{{data.serial_no}}</span></td>
+                                                    <td><span class="user-role">{{data.model}}</span></td>
+                                                    <td><span class="user-role">{{data.note}}</span></td>
+                                                    <td><span class="user-role">{{data.status}}</span></td>
+                                                    <td><span class="user-role">{{data.resolved_by_name}}</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal fade" id="asset_report_type" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span>Detail View</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="body-area-content">
+                            <div class="user-table-container overflow-x-auto">
+                                <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                                    <thead>
+                                        <tr class="table-head-primary">
+                                            <th>SL No.</th>
+                                            <th>Asset Asset Tag ID</th>
+                                            <th>Serial No.</th>
+                                            <th ng-repeat="data in entity[0].assetTypeDetail | orderBy:'id'">
+                                                {{data.caption}}
+                                            </th>
+                                            <th>Model</th>
+                                            <th>Status</th>
+                                            <th>Assign Person</th>
+                                            <th>Deployed Location</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="asset in assetTypeDetailsData">
+                                            <td>{{$index + 1}}</td>
+                                            <td>{{asset.asset_tag_id}}</td>
+                                            <td>{{asset.serial_no}}</td>
+                                            <td ng-repeat="data in entity[0].assetTypeDetail | orderBy:'id'">
+                                                {{asset[data.model]}}
+                                            </td>
+                                            <td>{{asset.model}}</td>
+                                            <td>
+                                                <span style="color: #0074d9" class="user-role"
+                                                    ng-if="asset.status=='Active'">Active</span>
+                                                <span style="color: #b508d8" class="user-role"
+                                                    ng-if="asset.status=='Reserve'">Reserve</span>
+                                                <span style="color: #ff851b" class="user-role"
+                                                    ng-if="asset.status=='Assigned'">Assigned</span>
+                                                <span style="color: #ff4136" class="user-role"
+                                                    ng-if="asset.status=='In Repair'">In Repair</span>
+                                                <span style="color: #39cccc" class="user-role"
+                                                    ng-if="asset.status=='Deployed'">Deployed</span>
+                                                <span style="color: #ffdc00" class="user-role"
+                                                    ng-if="asset.status=='Sale'">Sale</span>
+                                                <span style="color: #85144b" class="user-role"
+                                                    ng-if="asset.status=='Scrap'">Scrap</span>
+                                                <span style="color: #f012be" class="user-role"
+                                                    ng-if="asset.status=='Stolen'">Stolen</span>
+                                            </td>
+                                            <td>{{asset.employee}}</td>
+                                            <td>{{asset.location}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="asset_report_cat" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span>Detail View</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="body-area-content">
+                            <div class="user-table-container">
+                                <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                                    <thead>
+                                        <tr class="table-head-primary">
+                                            <th>SL No.</th>
+                                            <th>Asset Asset Tag ID</th>
+                                            <th>Serial No.</th>
+                                            <th>Model</th>
+                                            <th>Status</th>
+                                            <th>Assign Person</th>
+                                            <th>Deployed Location</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="asset in assetCatDetailsData">
+                                            <td>{{$index + 1}}</td>
+                                            <td>{{asset.asset_tag_id}}</td>
+                                            <td>{{asset.serial_no}}</td>
+                                            <td>{{asset.model}}</td>
+                                            <td>
+                                                <span style="color: #0074d9" class="user-role"
+                                                    ng-if="asset.status=='Active'">Active</span>
+                                                <span style="color: #b508d8" class="user-role"
+                                                    ng-if="asset.status=='Reserve'">Reserve</span>
+                                                <span style="color: #ff851b" class="user-role"
+                                                    ng-if="asset.status=='Assigned'">Assigned</span>
+                                                <span style="color: #ff4136" class="user-role"
+                                                    ng-if="asset.status=='In Repair'">In Repair</span>
+                                                <span style="color: #39cccc" class="user-role"
+                                                    ng-if="asset.status=='Deployed'">Deployed</span>
+                                                <span style="color: #ffdc00" class="user-role"
+                                                    ng-if="asset.status=='Sale'">Sale</span>
+                                                <span style="color: #85144b" class="user-role"
+                                                    ng-if="asset.status=='Scrap'">Scrap</span>
+                                                <span style="color: #f012be" class="user-role"
+                                                    ng-if="asset.status=='Stolen'">Stolen</span>
+                                            </td>
+                                            <td>{{asset.employee}}</td>
+                                            <td>{{asset.location}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="asset_report_loc" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span>Detail View</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="body-area-content">
+                            <div class="user-table-container">
+                                <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                                    <thead>
+                                        <tr class="table-head-primary">
+                                            <th>SL No.</th>
+                                            <th>Asset Tag ID</th>
+                                            <th>Serial No.</th>
+                                            <th>Model</th>
+                                            <th>Status</th>
+                                            <th>Assign Person</th>
+                                            <th>Deployed Location</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="asset in assetLocationDetailsData">
+                                            <td>{{$index + 1}}</td>
+                                            <td>{{asset.asset_tag_id}}</td>
+                                            <td>{{asset.serial_no}}</td>
+                                            <td>{{asset.model}}</td>
+                                            <td>
+                                                <span style="color: #0074d9" class="user-role"
+                                                    ng-if="asset.status=='Active'">Active</span>
+                                                <span style="color: #b508d8" class="user-role"
+                                                    ng-if="asset.status=='Reserve'">Reserve</span>
+                                                <span style="color: #ff851b" class="user-role"
+                                                    ng-if="asset.status=='Assigned'">Assigned</span>
+                                                <span style="color: #ff4136" class="user-role"
+                                                    ng-if="asset.status=='In Repair'">In Repair</span>
+                                                <span style="color: #39cccc" class="user-role"
+                                                    ng-if="asset.status=='Deployed'">Deployed</span>
+                                                <span style="color: #ffdc00" class="user-role"
+                                                    ng-if="asset.status=='Sale'">Sale</span>
+                                                <span style="color: #85144b" class="user-role"
+                                                    ng-if="asset.status=='Scrap'">Scrap</span>
+                                                <span style="color: #f012be" class="user-role"
+                                                    ng-if="asset.status=='Stolen'">Stolen</span>
+                                            </td>
+                                            <td>{{asset.employee}}</td>
+                                            <td>{{asset.location}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="asset_sale_detail" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span>Detail View</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="body-area-content">
+                            <div class="user-table-container">
+                                <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                                    <thead>
+                                        <tr class="table-head-primary">
+                                            <th>SL No.</th>
+                                            <th>Asset Type</th>
+                                            <th>Asset Tag ID</th>
+                                            <th>Serial No.</th>
+                                            <th>Model</th>
+                                            <th>Employee Id</th>
+                                            <th>Sole Persion</th>
+                                            <th>Sale Date</th>
+                                            <th>Sale Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="asset in assetSaleDataDetails">
+                                            <td>{{$index + 1}}</td>
+                                            <td>{{asset.type}}</td>
+                                            <td>{{asset.asset_tag_id}}</td>
+                                            <td>{{asset.serial_no}}</td>
+                                            <td>{{asset.model}}</td>
+                                            <td>{{asset.employee_id}}</td>
+                                            <td>{{asset.name}}</td>
+                                            <td>{{asset.sale_date}}</td>
+                                            <td>{{asset.sale_value}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </section>
+
+    <script src="private/admin/admin.js"></script>
+
+</body>
+
+</html>

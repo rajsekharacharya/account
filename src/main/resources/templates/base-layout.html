@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html th:fragment="layout (title,style,content,script)" lang="en" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:replace="${title}">Asset Management</title>
+
+    <!-- New UI plugins -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/flatpickr.min.css" rel="stylesheet">
+    <link href="assets/css/pikaday.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+    <link href="assets/css/site.css" rel="stylesheet">
+    <link href="assets/css/datatables.min.css" rel="stylesheet">
+    <link href="assets/css/bootstrap-select.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="assets/css/select2.min.css" />
+
+    <!-- linking fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+        rel="stylesheet">
+    <link rel="shortcut icon" href="assets/icons/fav-icon/favicon.ico" />
+    <th:block th:if="${style}">
+        <th:block th:replace="${style}" />
+    </th:block>
+</head>
+
+<body>
+    <!-- <div class="main-wrapper hover-menu-open" id="mainWrapper">         -->
+    <div class="main-wrapper menu-close" id="mainWrapper">
+        <div class="header">
+            <div class="logo-container">
+                <div class="nav-toggle-container" id="navToggler">
+                    <span class="toggler-icon-top"></span> <span class="toggler-icon-middle"></span> <span
+                        class="toggler-icon-bottom"></span>
+                </div>
+                <img src="assets/images/logo.png" alt="" srcset="" class="nav-logo">
+            </div>
+            <img src="assets/images/logo.png" alt="" srcset="" class="header-logo">
+            <div class="greetings-container">
+                <div class="d-none d-xl-flex">
+                    <span class="lbl-greetings" id="greetingSpan">, </span>
+                    <span class="greetings-role capitalize">&nbsp;<span
+                            th:text="${#authentication.getPrincipal().getUser().getName}"></span></span>
+                </div>
+                <div id="lblShowDate" class="d-none d-xl-flex"></div>
+            </div>
+            <div class="toolbar-container">
+                <div class="toolbar-item">
+                    <div class="datepicker-container">
+                        <div class="dropdown">
+                            <a class="toolbar-link" href="#" role="button" id="dropdowncal" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <span class="icon-common icon-topbar icon-calendar"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="toolbar-item">
+                    <div class="notification-container">
+                        <div class="dropdown">
+                            <a class="toolbar-link" href="#" role="button" id="dropdownMenuLink"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="icon-common icon-topbar icon-notification">
+                            </a>
+                            <ul class="dropdown-menu notification-details-container" aria-labelledby="dropdownMenuLink">
+                                <div class="notification-dropdown-title">
+                                    <div class="notification-view-icon-container">
+                                        <span class="icon-common icon-notification-details"></span>
+                                    </div>
+                                    <div id="notifications" class="lbl-notification-details">No New Notification</div>
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="toolbar-item">
+                    <div class="profile-container">
+                        <div class="dropdown">
+                            <a class="toolbar-link" href="#" role="button" id="dropdownMenuLink"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <div>
+                                    <span class="icon-profile-container">
+                                        <img alt="Logo"
+                                            th:if="${#authentication.getPrincipal().getUser().getImageLink() != null and #authentication.getPrincipal().getUser().getImageLink().length() > 10}"
+                                            th:src="@{${#authentication.getPrincipal().getUser().getImageLink()}}">
+                                        <img alt="Default Logo"
+                                            th:unless="${#authentication.getPrincipal().getUser().getImageLink() != null and #authentication.getPrincipal().getUser().getImageLink().length() > 10}"
+                                            src="assets/icons/user.svg">
+                                    </span>
+
+                                </div>
+                                <div class="profile-name-container">
+                                    <span class="profile-name"
+                                        th:text="${#authentication.getPrincipal().getUser().getName}"></span>
+                                    <span class="icon-common icon-toolbar icon-chevron"></span>
+                                </div>
+                            </a>
+                            <ul class="dropdown-menu profile-details-container" aria-labelledby="dropdownMenuLink"
+                                style="transform: translate(-12px, 60px) !important;">
+                                <li class="media dropdown-item"><a th:href="@{/profile}" class="profile-container">
+                                        <span class="icon-common icon-header-dropdown-items icon-profile"></span>
+                                        <span class="lbl-header-menu">My Profile</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <div class="dv-separator mt-1 mb-1"></div>
+                                </li>
+                                <li class="media dropdown-item"><a th:href="@{/logout}" class="logout-container"> <span
+                                            class="icon-common icon-header-dropdown-items icon-logout"></span>
+                                        <span class="lbl-header-menu">Logout</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="body">
+            <div class="left-bar" id="navContainer">
+                <div class="side-menu" id="navMenu">
+                    <div class="side-menu-header d-none"></div>
+                    <div class="side-menu-body">
+                        <ul class="nav-menu-container" sec:authorize="hasAuthority('VARELI')">
+                            <li class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/home-company' ? 'link-active':''}">
+                                <a class="nav-link active" th:href="@{/home-company}">
+                                    <span class="icon-common icon-sidemenu icon-dashboard"></span>
+                                    <span class="link-name">Dashboard </span>
+                                </a>
+                            </li>
+                            <li class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/super-company' ? 'link-active':''}">
+                                <a th:href="@{/super-company}" class="nav-link">
+                                    <span class="icon-common icon-sidemenu icon-company"></span>
+                                    <span class="link-name">Company</span>
+                                </a>
+                            </li>
+                            <li class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/superadmin' ? 'link-active':''}">
+                                <a th:href="@{/superadmin}" class="nav-link">
+                                    <span class="icon-common icon-sidemenu icon-sadmin"></span>
+                                    <span class="link-name">Super Admin</span>
+                                </a>
+                            </li>
+                            <li class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/subscription' ? 'link-active':''}">
+                                <a th:href="@{/subscription}" class="nav-link">
+                                    <span class="icon-common icon-sidemenu icon-subscription"></span>
+                                    <span class="link-name">Subscription</span>
+                                </a>
+                            </li>
+                            <li class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/saasuser' ? 'link-active':''}">
+                                <a th:href="@{/saasuser}" class="nav-link">
+                                    <span class="icon-common icon-sidemenu icon-user"></span>
+                                    <span class="link-name">User</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav-menu-container" sec:authorize="hasAuthority('SUPERADMIN')">
+                            <li class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/home-super-admin' ? 'link-active':''}">
+                                <a class="nav-link active" th:href="@{/home-super-admin}">
+                                    <span class="icon-common icon-sidemenu icon-dashboard"></span>
+                                    <span class="link-name">Dashboard </span>
+                                </a>
+                            </li>
+                            <li class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/master-subscription' ? 'link-active':''}">
+                                <a th:href="@{/master-subscription}" class="nav-link">
+                                    <span class="icon-common icon-sidemenu icon-subscription"></span>
+                                    <span class="link-name">Subscription</span>
+                                </a>
+                            </li>
+                            <li class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/master-company' ? 'link-active':''}">
+                                <a th:href="@{/master-company}" class="nav-link">
+                                    <span class="icon-common icon-sidemenu icon-company"></span>
+                                    <span class="link-name">Company</span>
+                                </a>
+                            </li>
+                            <li class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/admin-management' ? 'link-active':''}">
+                                <a th:href="@{/admin-management}" class="nav-link">
+                                    <span class="icon-common icon-sidemenu icon-sadmin"></span>
+                                    <span class="link-name">Admin Management</span>
+                                </a>
+                            </li>
+                            <li class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/company-settings' ? 'link-active':''}">
+                                <a th:href="@{/company-settings}" class="nav-link">
+                                    <span class="icon-common icon-sidemenu icon-settings"></span>
+                                    <span class="link-name">Company Settings</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav-menu-container"
+                            sec:authorize="hasAnyAuthority('ADMIN','MANAGER','PURCHASE','SERVICE','FINANCE','BACKOFFICE','LOGISTICS','SERVICEENGINEER')">
+                            <li class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/home' ? 'link-active':''}">
+                                <a class="nav-link active" th:href="@{/home}">
+                                    <span class="icon-common icon-sidemenu icon-dashboard"></span>
+                                    <span class="link-name">Dashboard </span>
+                                </a>
+                            </li>
+                            <li sec:authorize="hasAnyAuthority('ADMIN','MANAGER')" class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/master-assets' ? 'link-active':''}">
+                                <a th:href="@{/master-assets}" class="nav-link">
+                                    <span class="icon-common icon-sidemenu icon-assets"></span>
+                                    <span class="link-name">Mater Assets</span>
+                                </a>
+                            </li>
+                            <li sec:authorize="hasAnyAuthority('ADMIN','SERVICE')" class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/asset-management' ? 'link-active':''}">
+                                <a th:href="@{/asset-management}" class="nav-link">
+                                    <span class="icon-common icon-sidemenu icon-asset-management"></span>
+                                    <span class="link-name">Asset Management</span>
+                                </a>
+                            </li>
+                            <li sec:authorize="hasAnyAuthority('ADMIN','PURCHASE')" class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/asset-type' or #httpServletRequest.getRequestURI() == '/asset-management/asset-purchase' ? 'sub-menu-active' : ''}">
+                                <a class="nav-link" onclick="toggleSubMenu(this)">
+                                    <span class="icon-common icon-sidemenu icon-purchase"></span>
+                                    <span class="link-name">Asset Details</span> <span
+                                        class="icon-common icon-sidemenu icon-chevron"></span>
+                                </a>
+                                <ul class="sub-menu-container">
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/asset-type' ? 'link-active':''}">
+                                        <a th:href="@{/asset-type}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-asset-type"></span>
+                                            <span class="submenu-link-label">Asset Type</span>
+                                        </a>
+                                    </li>
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/asset-purchase' ? 'link-active':''}">
+                                        <a th:href="@{/asset-purchase}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-assets"></span>
+                                            <span class="submenu-link-label">Asset</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!-- <li sec:authorize="hasAnyAuthority('ADMIN','LOGISTICS')" class="nav-item"
+                  th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/logistics' ? 'link-active':''}">
+                  <a th:href="@{/logistics}" class="nav-link">
+                     <span class="icon-common icon-sidemenu icon-logistics"></span>
+                     <span class="link-name">Logistics</span>
+                  </a>
+               </li> -->
+                            <li sec:authorize="hasAnyAuthority('ADMIN','FINANCE')" class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/asset-finance' or #httpServletRequest.getRequestURI() == '/asset-management/asset-category'  ? 'sub-menu-active' : ''}">
+                                <a class="nav-link" onclick="toggleSubMenu(this)">
+                                    <span class="icon-common icon-sidemenu icon-finance"></span>
+                                    <span class="link-name">Finance</span> <span
+                                        class="icon-common icon-sidemenu icon-chevron"></span>
+                                </a>
+                                <ul class="sub-menu-container">
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/asset-category' ? 'link-active':''}">
+                                        <a th:href="@{/asset-category}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-asset-category"></span>
+                                            <span class="submenu-link-label">Asset Category</span>
+                                        </a>
+                                    </li>
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/asset-finance' ? 'link-active':''}">
+                                        <a th:href="@{/asset-finance}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-assets"></span>
+                                            <span class="submenu-link-label">Assets(Finance)</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li sec:authorize="hasAnyAuthority('ADMIN','SERVICE')" class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/calllog' or #httpServletRequest.getRequestURI() == '/asset-management/project-management' ? 'sub-menu-active' : ''}">
+                                <a class="nav-link" onclick="toggleSubMenu(this)">
+                                    <span class="icon-common icon-sidemenu icon-service"></span>
+                                    <span class="link-name">Service</span> <span
+                                        class="icon-common icon-sidemenu icon-chevron"></span>
+                                </a>
+                                <ul class="sub-menu-container">
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/project-management' ? 'link-active':''}">
+                                        <a th:href="@{/project-management}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-project-management"></span>
+                                            <span class="submenu-link-label">Project Management</span>
+                                        </a>
+                                    </li>
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/calllog' ? 'link-active':''}">
+                                        <a th:href="@{/calllog}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-call-log"></span>
+                                            <span class="submenu-link-label">Call Log</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li sec:authorize="hasAuthority('SERVICEENGINEER')" class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/serviceBook' ? 'link-active':''}">
+                                <a th:href="@{/serviceBook}" class="nav-link">
+                                    <span class="icon-common icon-submenu icon-call-log"></span>
+                                    <span class="link-name">Service Book</span>
+                                </a>
+                            </li>
+
+                            <li sec:authorize="hasAnyAuthority('ADMIN','MANAGER')" class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/asset-amc' or #httpServletRequest.getRequestURI() == '/asset-management/asset-insurance' ? 'sub-menu-active' : ''}">
+                                <a class="nav-link" onclick="toggleSubMenu(this)">
+                                    <span class="icon-common icon-sidemenu icon-asset-protection"></span>
+                                    <span class="link-name">Asset Protection</span> <span
+                                        class="icon-common icon-sidemenu icon-chevron"></span>
+                                </a>
+                                <ul class="sub-menu-container">
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/asset-amc' ? 'link-active':''}">
+                                        <a th:href="@{/asset-amc}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-amc"></span>
+                                            <span class="submenu-link-label">Due AMC</span>
+                                        </a>
+                                    </li>
+
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/asset-insurance' ? 'link-active':''}">
+                                        <a th:href="@{/asset-insurance}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-insurance"></span>
+                                            <span class="submenu-link-label">Due Insurance</span>
+                                        </a>
+                                    </li>
+                                </ul>
+
+                            </li>
+                            <li sec:authorize="hasAnyAuthority('ADMIN','MANAGER','SERVICE','LOGISTICS')"
+                                class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/print' ? 'link-active':''}">
+                                <a th:href="@{/print}" class="nav-link">
+                                    <span class="icon-common icon-sidemenu icon-print"></span>
+                                    <span class="link-name">Print</span>
+                                </a>
+                            </li>
+                            <li sec:authorize="hasAnyAuthority('ADMIN','MANAGER')" class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/report' ? 'link-active':''}">
+                                <a th:href="@{/report}" class="nav-link">
+                                    <span class="icon-common icon-sidemenu icon-report"></span>
+                                    <span class="link-name">Report</span>
+                                </a>
+                            </li>
+                            <li sec:authorize="hasAnyAuthority('ADMIN','MANAGER')" class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/user-registration' ? 'link-active':''}">
+                                <a th:href="@{/user-registration}" class="nav-link">
+                                    <span class="icon-common icon-sidemenu icon-userreg"></span>
+                                    <span class="link-name">User Registration</span>
+                                </a>
+                            </li>
+                            <li sec:authorize="hasAnyAuthority('ADMIN','MANAGER','BACKOFFICE')" class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/location' or #httpServletRequest.getRequestURI() == '/asset-management/project-master' or #httpServletRequest.getRequestURI() == '/asset-management/department' or #httpServletRequest.getRequestURI() == '/asset-management/manufacturer' or #httpServletRequest.getRequestURI() == '/asset-management/supplier' or #httpServletRequest.getRequestURI() == '/asset-management/employees' ? 'sub-menu-active' : ''}">
+                                <a class="nav-link" onclick="toggleSubMenu(this)">
+                                    <span class="icon-common icon-sidemenu icon-master-setup"></span>
+                                    <span class="link-name">Master Setup</span> <span
+                                        class="icon-common icon-sidemenu icon-chevron"></span>
+                                </a>
+                                <ul class="sub-menu-container">
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/location' ? 'link-active':''}">
+                                        <a th:href="@{/location}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-location"></span>
+                                            <span class="submenu-link-label">Location</span>
+                                        </a>
+                                    </li>
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/department' ? 'link-active':''}">
+                                        <a th:href="@{/department}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-department"></span>
+                                            <span class="submenu-link-label">Department</span>
+                                        </a>
+                                    </li>
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/employees' ? 'link-active':''}">
+                                        <a th:href="@{/employees}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-employees"></span>
+                                            <span class="submenu-link-label">Employees</span>
+                                        </a>
+                                    </li>
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/manufacturer' ? 'link-active':''}">
+                                        <a th:href="@{/manufacturer}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-maker"></span>
+                                            <span class="submenu-link-label">Manufacturer</span>
+                                        </a>
+                                    </li>
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/project-master' ? 'link-active':''}">
+                                        <a th:href="@{/project-master}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-project-master"></span>
+                                            <span class="submenu-link-label">Project Master</span>
+                                        </a>
+                                    </li>
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/supplier' ? 'link-active':''}">
+                                        <a th:href="@{/supplier}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-supplier"></span>
+                                            <span class="submenu-link-label">Supplier/Service</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li sec:authorize="hasAuthority('ADMIN')" class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/settings' ? 'link-active':''}">
+                                <a th:href="@{/settings}" class="nav-link">
+                                    <span class="icon-common icon-sidemenu icon-settings"></span>
+                                    <span class="link-name">Settings</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav-menu-container">
+                            <li class="nav-item"
+                                th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/user-guide' or #httpServletRequest.getRequestURI() == '/asset-management/release-notes' ? 'sub-menu-active' : ''}">
+                                <a class="nav-link" onclick="toggleSubMenu(this)">
+                                    <span class="icon-common icon-sidemenu icon-help"></span>
+                                    <span class="link-name">Help</span> <span
+                                        class="icon-common icon-sidemenu icon-chevron"></span>
+                                </a>
+                                <ul class="sub-menu-container">
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/user-guide' ? 'link-active':''}">
+                                        <a th:href="@{/user-guide}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-user-guide"></span>
+                                            <span class="submenu-link-label">User Guide</span>
+                                        </a>
+                                    </li>
+                                    <li class="sub-menu-item"
+                                        th:classappend="${#httpServletRequest.getRequestURI() == '/asset-management/release-notes' ? 'link-active':''}">
+                                        <a th:href="@{/release-notes}" class="sub-menu-link">
+                                            <span class="icon-common icon-submenu icon-release-note"></span>
+                                            <span class="submenu-link-label">Release Notes</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-bar">
+                <div class="body-wrapper" id="bodyWrapper">
+                    <!-- views will be rendered here -->
+                    <div id='parentDBArea' ng-view class="view-area">
+
+                        <div class="preloader no-print" id="overlay">
+                            <svg class="circular" viewBox="25 25 50 50">
+                                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2"
+                                    stroke-miterlimit="10" />
+                            </svg>
+                        </div>
+
+
+                        <!-- =============================================================== -->
+                        <!-- %%%%%%%%%%%%%%%% View section Starts from Here %%%%%%%%%%%%%%%% -->
+                        <!-- =============================================================== -->
+                        <div th:replace="${content}">
+                        </div>
+
+                        <!-- =============================================================== -->
+                        <!-- %%%%%%%%%%%%%%%% View section END Here %%%%%%%%%%%%%%%% -->
+                        <!-- =============================================================== -->
+
+
+                    </div>
+                    <div class="footer">
+                        <div class="lbl-footer">Copyright © VARELI TECSOFT Pvt. Ltd</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="assets/js/jquery.min.js" type="text/javascript"></script>
+    <script src="assets/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script src="assets/js/angular.min.js" type="text/javascript"></script>
+    <script src="assets/js/assetmanage.js" type="text/javascript"></script>
+    <script src="assets/js/sweetalert2@11.js" type="text/javascript"></script>
+    <script src="assets/js/flatpickr.min.js" type="text/javascript"></script>
+    <script src="assets/js/id.js" type="text/javascript"></script>
+    <script src="assets/js/pikaday.js" type="text/javascript"></script>
+    <script src="assets/js/qrcode.min.js" type="text/javascript"></script>
+    <script src="assets/js/JsBarcode.all.min.js" type="text/javascript"></script>
+    <script src="assets/js/chart.js" type="text/javascript"></script>
+    <script src="assets/js/site.js" type="text/javascript"></script>
+
+    <script src="assets/js/angularModule.js"></script>
+    <script src="assets/js/angular-datatables.min.js"></script>
+    <script src="assets/js/angular-datatables.buttons.min.js"></script>
+
+    <script src="assets/js/bootstrap-select.min.js"></script>
+
+    <script src="assets/js/pdfmake.min.js"></script>
+    <script src="assets/js/vfs_fonts.js"></script>
+    <script src="assets/js/datatables.min.js"></script>
+    <script src="assets/js/select2.min.js"></script>
+    <th:block th:replace="${script}" />
+
+
+</body>
+
+</html>

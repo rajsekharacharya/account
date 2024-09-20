@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html
+    th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+
+<head>
+    <title>Purchase</title>
+</head>
+
+<body>
+
+    <section>
+
+
+        <div ng-app="AdminManagment" ng-controller="AssetController">
+            <div class="breadcrumb-container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/home}">
+                                <span class="icon-common icon-breadcrumb icon-dashboard"></span><span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span class="icon-common icon-breadcrumb icon-assets"></span><span>Assets</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="body-area" ng-show="views.list">
+                <div class="body-area-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="body-area-tittle">Assets</div>
+                        </div>
+                        <div class="col-md-8 d-flex justify-content-end">
+                            <span class="me-2"><button title="Upload" class="btn btn-action-header btn-action-upload"
+                                    ng-click="uploadModal()"><span class="lbl-btn-action"></span>
+                                    <span
+                                        class="icon-common icon-btn-header icon-upload"></span></button></button></span>
+
+                            <span><a ng-click="AddAsset()" class="float-end btn btn-icon btn-add me-2"
+                                    title="Add Asset"><span class="icon-common icon-add"></span></a></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="body-area-content">
+                    <div class="user-table-container">
+                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                            <thead>
+                                <tr class="table-head-primary">
+                                    <th>SL No.</th>
+                                    <th>Type</th>
+                                    <th>Asset Tag ID</th>
+                                    <th>Serial No.</th>
+                                    <th>Model</th>
+                                    <th>Supplier</th>
+                                    <th>Manufacturer</th>
+                                    <th>Status</th>
+                                    <th sec:authorize="hasAuthority('ADMIN')">Change Serial</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="asset in assets">
+                                    <td>{{$index + 1}}</td>
+                                    <td>{{asset.type}}</td>
+                                    <td>{{asset.asset_tag_id}}</td>
+                                    <td>{{asset.serial_no}}</td>
+                                    <td>{{asset.model}}</td>
+                                    <td>{{asset.supplier}}</td>
+                                    <td>{{asset.manufacturer}}</td>
+                                    <td>
+                                        <span style="color: #0074d9" class="user-role"
+                                            ng-if="asset.status=='Active'">Active</span>
+                                        <span style="color: #d90000" class="user-role"
+                                            ng-if="asset.status=='IN-TRANSIT'">IN-TRANSIT</span>
+                                        <span style="color: #c00ee4" class="user-role"
+                                            ng-if="asset.status=='Reserve'">Reserve</span>
+                                        <span style="color: #ff851b" class="user-role"
+                                            ng-if="asset.status=='Assigned'">Assigned</span>
+                                        <span style="color: #ff4136" class="user-role"
+                                            ng-if="asset.status=='Maintenance'">Maintenance</span>
+                                        <span style="color: #39cccc" class="user-role"
+                                            ng-if="asset.status=='Deployed'">Deployed</span>
+                                        <span style="color: #ffdc00" class="user-role"
+                                            ng-if="asset.status=='Sale'">Sale</span>
+                                        <span style="color: #85144b" class="user-role"
+                                            ng-if="asset.status=='Scrap'">Scrap</span>
+                                        <span style="color: #f012be" class="user-role"
+                                            ng-if="asset.status=='Stolen'">Stolen</span>
+                                        <span style="color: #f115af" class="user-role"
+                                            ng-if="asset.status=='Project'">Project</span>
+                                    </td>
+                                    <td sec:authorize="hasAuthority('ADMIN')">
+                                        <a title="Edit" ng-click="changeSerial(asset.id)"
+                                            class="btn btn-action btn-action-edit me-2"><span
+                                                class="lbl-btn-action"></span><span
+                                                class="icon-common icon-btn icon-SN_change"></span></a>
+                                    </td>
+                                    <td>
+                                        <a title="Edit" ng-click="editAsset(asset.id)"
+                                            class="btn btn-action btn-action-edit me-2"><span
+                                                class="lbl-btn-action"></span><span
+                                                class="icon-common icon-btn icon-edit"></span></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====================Modal View======================= -->
+
+            <div class="modal fade" id="add_edit_Asset" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span ng-if="form.id == null ||form.id == undefined">Add Asset</span>
+                                <span ng-if="form.id != null ||form.id != undefined">Edit Asset</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form" ng-submit="addSaveAsset()"
+                                autocomplete="off">
+                                <div class="row">
+                                    <div class="col-lg-6 col-sm-6">
+                                        <h5 class="d-flex align-items-center">
+                                            <span class="me-2">Asset Tag ID</span>
+                                            <span class="d-inline-flex">
+                                                <label class="switch">
+                                                    <input class="user" type="checkbox" data-id="2"
+                                                        ng-disabled="form.id != null ||form.id != undefined"
+                                                        ng-model="form.assetTagIdStatus" name="status" checked="">
+                                                    <span class="knob"></span>
+                                                </label>
+                                            </span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <h5 class="d-flex align-items-center">
+                                            <span class="me-2">Multi Product Same Serial</span>
+                                            <span class="d-inline-flex">
+                                                <label class="switch">
+                                                    <input class="user" type="checkbox" data-id="2"
+                                                        ng-disabled="form.id != null ||form.id != undefined"
+                                                        ng-model="form.multiProductStatus" name="status" checked="">
+                                                    <span class="knob"></span>
+                                                </label>
+                                            </span>
+                                        </h5>
+                                    </div>
+                                    <hr />
+                                    <div ng-if="form.assetTagIdStatus==true || (form.id != null ||form.id != undefined)"
+                                        class="col-lg-12 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Tag Id.: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="Tag Id" type="text" ng-model="form.assetTagId"
+                                                ng-disabled="form.assetTagIdStatus==false && (form.id != null ||form.id != undefined)"
+                                                class="form-control" placeholder="Asset tag Id." ng-trim="true"
+                                                ng-required="form.assetTagIdStatus==true" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-sm-6">
+                                        <h5>Asset Details</h5>
+                                    </div>
+                                    <hr />
+                                    <div class="row">
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    Type: <span class="text-danger">*</span>
+                                                </label>
+                                                <select name="assetCatId" ng-model="form.type" class="form-control"
+                                                    ng-change="typeFinder(form.type)"
+                                                    ng-options="assetType.type as assetType.type for assetType in assetTypes"
+                                                    required>
+                                                    <option></option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div ng-repeat="data in entity[0].assetTypeDetail | orderBy:'id'"
+                                            class="col-lg-4 col-sm-6">
+
+                                            <div ng-if="data.type=='Dropdown'">
+                                                <div class="form-group">
+                                                    <label class="text-dark lbl-medium" for="planName">
+                                                        {{data.caption}}
+                                                        <span
+                                                            ng-if="data.unit != null && data.unit != ''">({{data.unit}})</span>:
+                                                        <span ng-if="data.required==true" class="text-danger">*</span>
+                                                    </label>
+                                                    <select name="{{data.caption}}" ng-model="form[data.model]"
+                                                        class="form-control"
+                                                        ng-options="datas.caption as datas.value for datas in data.options | orderBy: 'id'"
+                                                        ng-required="data.required==true">
+                                                        <option></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div ng-if="data.type=='Numeric'">
+                                                <div class="form-group">
+                                                    <label class="text-dark lbl-medium" for="name">
+                                                        {{data.caption}}
+                                                        <span
+                                                            ng-if="data.unit != null && data.unit != ''">({{data.unit}})</span>:
+                                                        <span ng-if="data.required==true" class="text-danger">*</span>
+                                                    </label>
+                                                    <input name={{data.caption}} type="number"
+                                                        ng-model="form[data.model]" min={{data.minValue}}
+                                                        max={{data.maxValue}} class="form-control"
+                                                        placeholder={{data.caption}}
+                                                        ng-required="data.required==true" />
+                                                </div>
+                                            </div>
+
+                                            <div ng-if="data.type=='Text'">
+                                                <div class="form-group">
+                                                    <label class="text-dark lbl-medium" for="name">
+                                                        {{data.caption}}
+                                                        <span
+                                                            ng-if="data.unit != null && data.unit != ''">({{data.unit}})</span>:
+                                                        <span ng-if="data.required==true" class="text-danger">*</span>
+                                                    </label>
+                                                    <input name={{data.caption}} type="text" ng-model="form[data.model]"
+                                                        maxlength={{data.maxLength}} class="form-control"
+                                                        placeholder={{data.caption}}
+                                                        ng-required="data.required==true" />
+                                                </div>
+                                            </div>
+                                            <div ng-if="data.type=='URL'">
+                                                <div class="form-group">
+                                                    <label class="text-dark lbl-medium" for="name">
+                                                        {{data.caption}}
+                                                        <span ng-if="data.required==true" class="text-danger">*</span>
+                                                    </label>
+                                                    <input name={{data.caption}} type="text" ng-model="form[data.model]"
+                                                        maxlength={{data.maxLength}} class="form-control"
+                                                        placeholder={{data.caption}}
+                                                        ng-required="data.required==true" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    Model:
+                                                </label>
+                                                <input name="Model" type="text" ng-model="form.model"
+                                                    class="form-control" placeholder="Enter Model." />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    Manufacture: <span class="text-danger">*</span>
+                                                </label>
+                                                <select name="brand" ng-model="form.manufacturer" class="form-control"
+                                                    ng-options="manufacture.id as manufacture.name for manufacture in manufactures"
+                                                    required>
+                                                    <option></option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div ng-if="form.multiProductStatus == true" class="col-lg-4 col-sm-6">
+                                            <div ng-if="form.id == null ||form.id == undefined" class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    License:
+                                                </label>
+                                                <input name="Model" type="number" ng-model="form.license"
+                                                    class="form-control" placeholder="No of Subscription" />
+                                            </div>
+                                            <div ng-if="form.id != null ||form.id != undefined" class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    License:
+                                                </label>
+                                                <span class="form-control">L{{form.license}}</span>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-12 col-sm-6">
+                                            <div ng-if="form.id == null ||form.id == undefined" class="form-group">
+                                                <label
+                                                    ng-if="((form.assetTagIdStatus==false || form.assetTagIdStatus==undefined) && (form.multiProductStatus == false || form.multiProductStatus==undefined))"
+                                                    class="text-dark lbl-medium" style="font-weight: 400"
+                                                    for="planName">
+                                                    Serial No.:(For Multiple Serial Use ',')
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <label
+                                                    ng-if="(form.assetTagIdStatus==true || form.multiProductStatus == true)"
+                                                    class="text-dark lbl-medium" style="font-weight: 400"
+                                                    for="planName">
+                                                    Serial No.:(Single Entry)
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <input name="serialNo" type="text" ng-model="form.serialNos"
+                                                    class="form-control" placeholder="Enter Serial No." ng-list
+                                                    required />
+                                            </div>
+
+                                            <div ng-if="form.id != null ||form.id != undefined" class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    Serial No.: <span class="text-danger">*</span>
+                                                </label>
+                                                <input name="serialNo" disabled type="text" ng-model="form.serialNo"
+                                                    class="form-control" placeholder="Enter Serial No."
+                                                    ng-trim="false" />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-12 col-sm-6">
+                                            <h5>Purchase Details</h5>
+                                        </div>
+                                        <hr />
+
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    Supplier: <span class="text-danger">*</span>
+                                                </label>
+                                                <select name="supplier" ng-model="form.supplier" class="form-control"
+                                                    ng-options="supplier.id as supplier.name for supplier in suppliers"
+                                                    required>
+                                                    <option disabled></option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    Value: <span class="text-danger">*</span>
+                                                </label>
+                                                <input name="cost" type="number" step="0.01" min="0.00"
+                                                    ng-model="form.cost" class="form-control" placeholder="Enter Cost"
+                                                    required />
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    PO Number:
+                                                </label>
+                                                <input name="invoiceNumber" type="text" ng-model="form.poNumber"
+                                                    class="form-control" placeholder="Purchase Number" />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    PO Date:
+                                                </label>
+                                                <input name="purchasedDate" type="text" ng-model="form.poDate"
+                                                    id="datepicker4" class="form-control"
+                                                    placeholder="Enter Purchase Date" pattern="\d{4}-\d{2}-\d{2}"
+                                                    title="Please enter a date in the format YYYY-mm-dd" />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    Invoice Number:
+                                                </label>
+                                                <input name="invoiceNumber" type="text" ng-model="form.invoiceNumber"
+                                                    class="form-control" placeholder="Purchase Number" />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-4 col-sm-6">
+                                            <div class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    Invoice Date:
+                                                </label>
+                                                <input name="purchasedDate" type="text" ng-model="form.purchasedDate"
+                                                    id="datepicker1" class="form-control"
+                                                    placeholder="Enter Purchase Date" pattern="\d{4}-\d{2}-\d{2}"
+                                                    title="Please enter a date in the format YYYY-mm-dd" />
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-lg-12 col-sm-6">
+                                            <h5 class="d-flex align-items-center">
+                                                <span class="me-2">Warranty</span>
+                                                <span class="d-inline-flex">
+                                                    <label class="switch">
+                                                        <input class="user" type="checkbox" data-id="2"
+                                                            ng-model="form.warrantyStatus" name="status" checked="">
+                                                        <span class="knob"></span>
+                                                    </label>
+                                                </span>
+                                            </h5>
+                                        </div>
+                                        <hr />
+                                        <div class="col-lg-4 col-sm-6" ng-show="form.warrantyStatus == true">
+                                            <div class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    Start Date: <span class="text-danger">*</span>
+                                                </label>
+                                                <input name="dateAcquired" type="text" ng-model="form.warrantyStartDate"
+                                                    id="datepicker2" class="form-control" placeholder="YYYY-MM-DD"
+                                                    pattern="\d{4}-\d{2}-\d{2}"
+                                                    title="Please enter a date in the format YYYY-mm-dd"
+                                                    ng-required="form.warrantyStatus == true" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-sm-6" ng-show="form.warrantyStatus == true">
+                                            <div class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    Month: <span class="text-danger">*</span>
+                                                </label>
+                                                <input name="dateAcquired" type="number" min="1"
+                                                    ng-model="form.warrantyMonth"
+                                                    ng-change="getWarrantyEndDate(form.warrantyMonth)"
+                                                    class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-sm-6" ng-show="form.warrantyStatus == true">
+                                            <div class="form-group">
+                                                <label class="text-dark lbl-medium" for="planName">
+                                                    End Date: <span class="text-danger">*</span>
+                                                </label>
+                                                <input name="dateAcquired" type="text" ng-model="form.warrantyEndDate"
+                                                    id="datepicker3" class="form-control" placeholder="YYYY-MM-DD"
+                                                    pattern="\d{4}-\d{2}-\d{2}"
+                                                    title="Please enter a date in the format YYYY-mm-dd"
+                                                    ng-required="form.warrantyStatus == true" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-modal-action"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal fade" id="upload_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span>Upload Asset</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form" ng-submit="SaveInsuranceAmc()"
+                                autocomplete="off">
+                                <div class="row">
+                                    <div class="col-9 mb-4">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Type: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="assetCatId" ng-model="form.type" class="form-control"
+                                                ng-change="resetUpload()"
+                                                ng-options="assetType.type as assetType.type for assetType in assetTypes"
+                                                required>
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div ng-class="{ 'disabled': form.type == null || form.type == undefined }">
+                                        <div class="col-12 mb-5">
+                                            <button class="btn btn-action-modal btn-action-categories"
+                                                ng-click="fetchAssetTypeDropDown(form.type)">Categories</button>
+                                        </div>
+                                        <div class="col-12 mb-5">
+                                            <div class="lbl-btn-info">Download the template for the excel file:</div>
+                                            <button class="btn btn-action-modal btn-action-download"
+                                                ng-click="downloadExcel(form.type)">
+                                                <span class="lbl-btn-action">Template</span><span
+                                                    class="icon-common icon-btn-lg icon-download"></span>
+                                            </button>
+                                        </div>
+
+                                        <div class="col-12 mb-5">
+                                            <div class="row">
+                                                <div class="col-9">
+                                                    <input class="form-control" type="file" id="fileInput"
+                                                        file-model="excelFile" accept=".xlsx"
+                                                        ng-disabled="form.type == null || form.type == undefined">
+                                                </div>
+                                                <div class="col-3">
+                                                    <button class="btn btn-action btn-action-upload-min"
+                                                        ng-click="uploadExcel(excelFile,form.type)"
+                                                        ng-disabled="form.type == null || form.type == undefined || !excelFile">
+                                                        <span class="icon-common icon-btn-lg icon-upload"></span>
+                                                    </button>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-modal-action"
+                                        data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal fade" id="Dropdown-details" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span>DropDown Value</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="body-area-content">
+                            <div class="user-table-container">
+                                <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                                    <thead>
+                                        <tr class="table-head-primary">
+                                            <th>SL No.</th>
+                                            <th>Property</th>
+                                            <th>Values</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="asset in typeDropDown">
+                                            <td>{{$index + 1}}</td>
+                                            <td>{{asset.caption}}</td>
+                                            <td>{{asset.value}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-modal-action"
+                                        data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal fade" id="Asset_Disposition" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span>Asset Scrape</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form" ng-submit="assetDispositionSave()"
+                                autocomplete="off">
+                                <div class="row">
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="note">
+                                                Date:
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="endDate" type="text" ng-model="form.date" class="form-control"
+                                                id="datepicker3" placeholder="Enter End Date" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Note: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="description" type="text" ng-model="form.note"
+                                                class="form-control" placeholder="Enter Description" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Location: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="brand" ng-model="form.locationId" class="form-control"
+                                                ng-options="location.id as location.name for location in locations"
+                                                ng-change="fetchLocationDetail(form.locationId)" required>
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="note">
+                                                Sub Location:
+                                            </label>
+                                            <select name="subLocationId" ng-model="form.subLocation"
+                                                class="form-control select2"
+                                                ng-options="location.name as location.name for location in subLocations">
+                                                <option disabled></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-modal-action"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </section>
+
+
+    <script src="private/admin/purchase.js"></script>
+
+    <script>
+        // Initialize datepickers individually
+        for (let i = 1; i <= 4; i++) {
+            const datepickerId = `datepicker${i}`;
+            flatpickr(`#${datepickerId}`, {
+                dateFormat: "Y-m-d",
+                allowInput: true,
+                disableMobile: true,
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html
+  th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+
+<head>
+  <title>Asset Management</title>
+</head>
+
+<body>
+
+  <section>
+
+
+    <div ng-app="AdminManagment" ng-controller="AssetManagementController">
+      <div class="breadcrumb-container">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a th:href="@{/home}">
+                <span class="icon-common icon-breadcrumb icon-dashboard"></span><span>Dashboard</span>
+              </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              <span class="icon-common icon-breadcrumb icon-asset-management"></span><span>Asset Management</span>
+            </li>
+          </ol>
+        </nav>
+      </div>
+
+      <div class="body-area" ng-show="views.list">
+        <div class="body-area-header">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <div class="body-area-tittle">Asset Management</div>
+            </div>
+          </div>
+        </div>
+        <div class="body-area-content">
+          <div class="user-table-container overflow-x-auto">
+            <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+              <thead>
+                <tr class="table-head-primary">
+                  <th>SL No.</th>
+                  <th>Type</th>
+                  <th>Location</th>
+                  <th>Asset Tag ID</th>
+                  <th>Serial No.</th>
+                  <th>Model</th>
+                  <th>Supplier</th>
+                  <th>Manufacturer</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="asset in assets">
+                  <td>{{$index + 1}}</td>
+                  <td>{{asset.type}}</td>
+                  <td>{{asset.location}}<span ng-hide="asset.sub_location==null">({{asset.sub_location}})</span></td>
+                  <td>{{asset.asset_tag_id}}</td>
+                  <td>{{asset.serial_no}}</td>
+                  <td>{{asset.model}}</td>
+                  <td>{{asset.supplier}}</td>
+                  <td>{{asset.manufacturer}}</td>
+                  <td>
+                    <span style="color: #0074d9" class="user-role" ng-if="asset.status=='Active'">Active</span>
+                    <span style="color: #b508d8" class="user-role"
+                      ng-if="asset.status=='Reserve'">Reserve({{asset.reserve_dept}})</span>
+                    <span style="color: #ff851b" class="user-role"
+                      ng-if="asset.status=='Assigned'">Assigned({{asset.employee}})</span>
+                    <span style="color: #ff4136" class="user-role"
+                      ng-if="asset.status=='Maintenance'">Maintenance</span>
+                    <span style="color: #39cccc" class="user-role"
+                      ng-if="asset.status=='Deployed'">Deployed({{asset.location}})</span>
+                    <span style="color: #ffdc00" class="user-role" ng-if="asset.status=='Sale'">Sale</span>
+                    <span style="color: #85144b" class="user-role" ng-if="asset.status=='Scrap'">Scrap</span>
+                    <span style="color: #f012be" class="user-role" ng-if="asset.status=='Stolen'">Stolen</span>
+                    <span style="color: #f115af" class="user-role" ng-if="asset.status=='Project'">Project</span>
+                    <span style="color: #08f513" class="user-role" ng-if="asset.status=='Rent'">Rent</span>
+                  </td>
+
+                  <td>
+                    <div class="dropdown">
+                      <a class="btn btn-icon btn-option" href="#" role="button" id="userActionOption"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="icon-common icon-option icon-btn-circle"></span>
+                      </a>
+
+                      <ul class="dropdown-menu" aria-labelledby="userActionOption">
+                        <li ng-if="asset.status=='Active'">
+                          <a class="dropdown-item" ng-click="editAssetStatus(asset.id,'Reserve',asset.is_doc_upload)">
+                            <span class="icon-common icon-action-dropdown icon-apply-reserve"></span><span>Apply For
+                              Reserve</span>
+                          </a>
+                        </li>
+                        <li ng-if="asset.status=='Reserve'">
+                          <a class="dropdown-item" ng-click="releaseReserveAsset(asset.id)"><span
+                              class="icon-common icon-dropdown icon-apply-reverse"></span><span>Release</span></a>
+                        </li>
+                        <li ng-if="asset.status=='Active' || asset.status=='Reserve'">
+                          <a class="dropdown-item"
+                            ng-click="editAssetStatus(asset.id,'Assigned',asset.is_doc_upload)"><span
+                              class="icon-common icon-action-dropdown icon-assign"></span><span>Assign</span></a>
+                        </li>
+                        <li ng-if="asset.status=='Assigned'">
+                          <a class="dropdown-item"
+                            ng-click="editAssetStatus(asset.id,'Handover',asset.is_doc_upload)"><span
+                              class="icon-common icon-action-dropdown icon-handover"></span><span>Handover</span></a>
+                        </li>
+                        <!-- <li ng-if="asset.status!='Maintenance'">
+                      <a class="dropdown-item"
+                        ng-click="editAssetStatus(asset.id,'Maintenance',asset.is_doc_upload)"><span
+                          class="icon-common icon-action-dropdown icon-maintenance"></span><span>Maintenance</span></a>
+                    </li>
+                    <li ng-if="asset.status=='Maintenance'">
+                      <a class="dropdown-item"
+                        ng-click="editAssetStatus(asset.id,'Repair Out',asset.is_doc_upload)"><span
+                          class="icon-common icon-action-dropdown  icon-maintenance-end"></span><span>Maintenance End</span></a>
+                    </li> -->
+                        <li ng-if="asset.status=='Active'">
+                          <a class="dropdown-item"
+                            ng-click="editAssetStatus(asset.id,'Deployed',asset.is_doc_upload)"><span
+                              class="icon-common icon-action-dropdown icon-deployment  "></span><span>Ready To
+                              Deployment</span></a>
+                        </li>
+                        <li ng-if="asset.status=='Deployed'">
+                          <a class="dropdown-item"
+                            ng-click="editAssetStatus(asset.id,'Decommissioning',asset.is_doc_upload)"><span
+                              class="icon-common icon-action-dropdown icon-decommissioning"></span><span>Decommissioning</span></a>
+                        </li>
+                        <li ng-if="asset.status=='Active'">
+                          <a class="dropdown-item" ng-click="outOfService(asset.id,'Sale')"><span
+                              class="icon-common icon-action-dropdown icon-sale"></span><span>Sale</span></a>
+                        </li>
+                        <li>
+                          <a class="dropdown-item" ng-click="outOfService(asset.id,'Commodify')"><span
+                              class="icon-common icon-action-dropdown icon-commodify"></span><span>Commodify</span></a>
+                        </li>
+                        <li>
+                          <a class="dropdown-item" ng-click="locationChange(asset.id)"><span
+                              class="icon-common icon-action-dropdown icon-location-change"></span><span>Location
+                              Change</span></a>
+                        </li>
+                        <li ng-if="asset.status=='Active'">
+                          <a class="dropdown-item" ng-click="outOfService(asset.id,'Rent')">
+                            <span class="icon-common icon-action-dropdown icon-rent"></span><span>Rent</span>
+                          </a>
+                        </li>
+                        <li ng-if="asset.status=='Rent'">
+                          <a class="dropdown-item" ng-click="returnAsset(asset.id)">
+                            <span class="icon-common icon-action-dropdown icon-rent"></span><span>Return</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================Modal View======================= -->
+      <div class="modal fade" id="edit_asset_status_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                <span ng-if="form.type ==='Reserve'">Asset Reservation
+                </span>
+                <span ng-if="form.type ==='Assigned'">Asset Assign </span>
+                <span ng-if="form.type ==='Handover'">Asset Handover </span>
+                <span ng-if="form.type ==='Deployed'">Asset Deployment
+                </span>
+                <span ng-if="form.type ==='Decommissioning'">Asset Decommissioning
+                </span>
+                <span ng-if="form.type ==='Maintenance'">Asset Maintenance </span>
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <span class="icon-common icon-modal-header-action  icon-x"></span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form class="form-horizontal" name="addAdmin" role="form" ng-submit="SaveChnageStatus()"
+                autocomplete="off">
+                <div class="row">
+                  <div ng-if="form.type =='Assigned' || form.type =='Handover'" class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Employee: <span class="text-danger">*</span>
+                      </label>
+                      <select name="employeeId" ng-model="form.employeeId" class="form-control select2"
+                        ng-options="employee.id as (employee.name + ' - ' + employee.employeeId) for employee in employeies"
+                        ng-change="fetchEmpDetail(form.employeeId)" ng-required="form.type =='Assigned'">
+                        <option disabled></option>
+                      </select>
+                    </div>
+                  </div>
+                  <div ng-if="form.type =='Reserve'" class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Department: <span class="text-danger">*</span>
+                      </label>
+                      <select name="reserveDept" ng-model="form.reserveDept" class="form-control select2"
+                        ng-options="department.name as department.name for department in departments"></select>
+                    </div>
+                  </div>
+
+                  <div ng-if="form.type =='Deployed' || form.type =='Assigned' || form.type =='Handover'"
+                    class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Location: <span class="text-danger">*</span>
+                      </label>
+                      <select name="locationId" ng-model="form.locationId" class="form-control select2"
+                        ng-options="location.id as location.name for location in locations"
+                        ng-change="fetchLocationDetail(form.locationId)"
+                        ng-required="form.type =='Deployed' || form.type =='Assigned' || form.type =='Handover'">
+                        <option disabled></option>
+                      </select>
+                    </div>
+                  </div>
+                  <div ng-if="form.type =='Deployed' || form.type =='Assigned' || form.type =='Handover'"
+                    class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Sub Location:
+                      </label>
+                      <select name="subLocationId" ng-model="form.subLocationId" class="form-control select2"
+                        ng-options="location.id as location.name for location in subLocations"
+                        ng-change="fetchSubLocationDetail(form.subLocationId)">
+                        <option disabled></option>
+                      </select>
+                    </div>
+                  </div>
+                  <div ng-if="form.type =='Maintenance'" class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Service:
+                      </label>
+                      <select name="supplierId" ng-model="form.supplierId" class="form-control select2"
+                        ng-options="supplier.id as supplier.name for supplier in suppliers">
+                        <option disabled></option>
+                      </select>
+                    </div>
+                  </div>
+                  <div ng-if="form.type =='Maintenance'" class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Type:
+                      </label>
+                      <select name="supplierId" ng-model="form.maintenanceType" class="form-control select2"
+                        ng-required="form.type =='Maintenance'">
+                        <option disabled></option>
+                        <option value="Repair">Repair</option>
+                        <option value="Upgradation">Upgradation</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div ng-show="form.type =='Assigned' ||  form.type =='Deployed'" class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Start Date: <span class="text-danger">*</span>
+                      </label>
+                      <input name="startDate" type="text" ng-model="form.startDate" class="form-control"
+                        id="datepicker1" placeholder="Enter Start Date"
+                        ng-required="form.type =='Assigned' || form.type =='Deployed'" pattern="\d{4}-\d{2}-\d{2}"
+                        title="Please enter a date in the format YYYY-mm-dd" />
+                    </div>
+                  </div>
+                  <div
+                    ng-show="form.type =='Assigned' || form.type =='Handover' || form.type =='Deployed'|| form.type =='Decommissioning'||form.type =='Repair Out'"
+                    class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        End Date:
+                        <span ng-if="form.type =='Handover' ||form.type =='Decommissioning'||form.type =='Repair Out'"
+                          class="text-danger">*</span>
+                      </label>
+                      <input name="endDate" type="text" ng-model="form.endDate" class="form-control" id="datepicker2"
+                        placeholder="Enter End Date"
+                        ng-required="form.type =='Handover' || form.type =='Decommissioning'||form.type =='Repair Out'"
+                        pattern="\d{4}-\d{2}-\d{2}" title="Please enter a date in the format YYYY-mm-dd" />
+                    </div>
+                  </div>
+                  <div class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note"> Note: </label>
+                      <input name="note" type="text" ng-model="form.note" class="form-control" placeholder="Enter Note"
+                        ng-change="form.note = (form.note | uppercase)" />
+                    </div>
+                  </div>
+
+
+
+
+                  <div ng-show="(form.type =='Assigned' || form.type =='Handover') && form.docAccess==true"
+                    class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-3">
+                    <div class="col-md-4 fv-row">
+                      <label class="fs-6 fw-semibold form-label mt-3"><span class="required"><b>Document
+                            Upload</b></span>
+                      </label>
+
+                      <div class="row">
+                        <div class="col-md-10">
+                          <input type="file" class="form-control form-control-solid " file-model="file" />
+                        </div>
+                        <!-- <div class="col-md-10">
+                      <input type="file" class="form-control form-control-solid " file-model="file"
+                        ng-required="(form.type =='Assigned' || form.type =='Handover') && form.docAccess==true" />
+                    </div> -->
+                        <div class="col-md-2">
+                          <a class="btn btn-action btn-action-upload-min" ng-click="uploadFile(file,form.type)"
+                            title="Upload"> <span class="icon-common icon-btn-lg icon-upload"></span></a>
+                        </div>
+                      </div>
+
+                      <span style="color: rgb(2, 216, 38);"
+                        ng-if="form.link!=undefined && form.link != ''">Uploaded</span>
+                      <span style="color: red;" ng-if="form.link==undefined || form.link == ''">Not
+                        Uploaded</span>
+                    </div>
+                  </div>
+
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary btn-modal-action"
+                    data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="Asset_Disposition" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                <span ng-if="form.type == 'Sale'">Asset Sale</span>
+                <span ng-if="form.type != 'Sale'">Asset Commodify</span>
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <span class="icon-common icon-modal-header-action  icon-x"></span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form class="form-horizontal" name="addAdmin" role="form" ng-submit="assetDispositionSave()"
+                autocomplete="off">
+                <div class="row">
+                  <div ng-hide="form.type =='Sale'" class="col-lg-4 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="planName">
+                        Type: <span class="text-danger">*</span>
+                      </label>
+                      <select ng-disabled="form.type=='Sale'" name="assetCatId" ng-model="form.type"
+                        class="form-control" required>
+                        <option disabled></option>
+                        <option disabled hidden value="Sale">Sale</option>
+                        <option value="Scrap">Scrap</option>
+                        <option value="Stolen">Stolen</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Date:
+                        <span class="text-danger">*</span>
+                      </label>
+                      <input name="endDate" type="text" ng-model="form.date" class="form-control" id="datepicker3"
+                        placeholder="Enter End Date" required />
+                    </div>
+                  </div>
+                  <div ng-if="form.type =='Sale'" class="col-lg-4 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="planName">
+                        Buyer Type: <span class="text-danger">*</span>
+                      </label>
+                      <select name="buyerType" ng-model="form.buyerType" class="form-control"
+                        ng-required="form.type =='Sale'">
+                        <option disabled></option>
+                        <option value="Company">Company</option>
+                        <option value="Employee">Employee</option>
+                        <option value="Other">OTHER</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div ng-if="form.type =='Sale' && (form.buyerType == 'Company' || form.buyerType == 'Other')" class="col-lg-4 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="name">
+                        Buyer: <span class="text-danger">*</span>
+                      </label>
+                      <input name="description" type="text" ng-model="form.buyer" class="form-control"
+                        placeholder="Enter Description"
+                        ng-required="form.type =='Sale' && form.buyerType == 'Company'" />
+                    </div>
+                  </div>
+                  <div ng-if="form.type =='Sale' && form.buyerType == 'Employee'" class="col-lg-4 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Employee: <span class="text-danger">*</span>
+                      </label>
+                      <select name="employeeId" ng-model="form.employeeId" class="form-control select2"
+                        ng-options="employee.id as (employee.name + ' - ' + employee.employeeId) for employee in employeies"
+                        ng-required="form.type =='Sale' && form.buyerType == 'Employee'">
+                        <option disabled></option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="name">
+                        Note: <span class="text-danger">*</span>
+                      </label>
+                      <input name="description" type="text" ng-model="form.note" class="form-control"
+                        placeholder="Enter Description" required />
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="planName">
+                        Location: <span class="text-danger">*</span>
+                      </label>
+                      <select name="brand" ng-model="form.locationId" class="form-control"
+                        ng-options="location.id as location.name for location in locations"
+                        ng-change="fetchLocationDetail(form.locationId)" required>
+                        <option></option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Sub Location:
+                      </label>
+                      <select name="subLocationId" ng-model="form.subLocation" class="form-control select2"
+                        ng-options="location.name as location.name for location in subLocations">
+                        <option disabled></option>
+                      </select>
+                    </div>
+                  </div>
+                  <div ng-if="form.type =='Sale'" class="col-lg-4 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="planName">
+                        Sold Value: <span class="text-danger">*</span>
+                      </label>
+                      <input name="description" type="number" min="0" step="0.01" ng-model="form.soldValue"
+                        class="form-control" placeholder="Enter Description" ng-required="form.type =='Sale'" />
+                    </div>
+                    <span class="text-danger">{{ form.soldValuePresent}}</span>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary btn-modal-action"
+                    data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="Asset_Rent" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                <span>Asset Rent</span>
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <span class="icon-common icon-modal-header-action  icon-x"></span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form class="form-horizontal" name="addAdmin" role="form" ng-submit="assetRenting()" autocomplete="off">
+                <div class="row">
+
+                  <div class="col-lg-4 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Start Date:
+                        <span class="text-danger">*</span>
+                      </label>
+                      <input name="endDate" type="text" ng-model="form.startDate" class="form-control" id="datepicker4"
+                        pattern="\d{4}-\d{2}-\d{2}" title="Please enter a date in the format YYYY-mm-dd"
+                        placeholder="Enter End Date" required />
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        End Date:
+                        <span class="text-danger">*</span>
+                      </label>
+                      <input name="endDate" type="text" ng-model="form.endDate" class="form-control" id="datepicker5"
+                        pattern="\d{4}-\d{2}-\d{2}" title="Please enter a date in the format YYYY-mm-dd"
+                        placeholder="Enter End Date" required />
+                    </div>
+                  </div>
+
+                  <div class="col-lg-4 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="name">
+                        Note: <span class="text-danger">*</span>
+                      </label>
+                      <input name="description" type="text" ng-model="form.note" class="form-control"
+                        placeholder="Enter Description" required />
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary btn-modal-action"
+                    data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+      <div class="modal fade" id="edit_location_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                <span>Location Update</span>
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <span class="icon-common icon-modal-header-action  icon-x"></span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form class="form-horizontal" name="addAdmin" role="form" ng-submit="saveUpdateLocation()"
+                autocomplete="off">
+                <div class="row">
+                  <div class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Location: <span class="text-danger">*</span>
+                      </label>
+                      <select name="locationId" ng-model="form.locationId" class="form-control select2"
+                        ng-options="location.id as location.name for location in locations"
+                        ng-change="fetchLocationDetail(form.locationId)" required>
+                        <option disabled></option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Sub Location:
+                      </label>
+                      <select name="subLocationId" ng-model="form.subLocationId" class="form-control select2"
+                        ng-options="location.id as location.name for location in subLocations"
+                        ng-change="fetchSubLocationDetail(form.subLocationId)">
+                        <option disabled></option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary btn-modal-action"
+                    data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+
+  </section>
+
+
+  <script src="private/admin/service.js"></script>
+
+  <script>
+    $("#datepicker1").flatpickr({
+      dateFormat: "Y-m-d",
+      allowInput: true,
+      disableMobile: "true",
+    });
+    $("#datepicker2").flatpickr({
+      dateFormat: "Y-m-d",
+      allowInput: true,
+      disableMobile: "true",
+    });
+    $("#datepicker3").flatpickr({
+      dateFormat: "Y-m-d",
+      allowInput: true,
+      disableMobile: "true",
+    });
+    $("#datepicker4").flatpickr({
+      dateFormat: "Y-m-d",
+      allowInput: true,
+      disableMobile: true,
+      onClose: function (selectedDates, dateStr, instance) {
+        // When a date is selected in datepicker2, set the minimum date in datepicker3
+        if (selectedDates.length > 0) {
+          var minDate = selectedDates[0];
+          $("#datepicker5").flatpickr({
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            disableMobile: true,
+            minDate: minDate,
+          });
+        }
+      }
+    });
+    $("#datepicker5").flatpickr({
+      dateFormat: "Y-m-d",
+      allowInput: true,
+      disableMobile: "true",
+    });
+  </script>
+</body>
+
+</html>

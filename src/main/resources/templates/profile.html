@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html
+    th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+</html>
+
+<head>
+    <title>Profile</title>
+    <style>
+        body {
+            /* font-family: Arial, sans-serif; */
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-header img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            aspect-ratio: 1 / 1;
+            object-position: center;
+            border: 5px solid #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-header h1 {
+            margin: 10px 0;
+        }
+
+        .profile-details {
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+
+        .profile-details p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <section>
+
+        <div ng-app="ProfileManagement" ng-controller="ProfileController">
+            <div class="container">
+                <div class="profile-header">
+                    <img ng-if="user.imageLink" src={{user.imageLink}} alt="User Image">
+                    <img ng-if="user.imageLink == null" src="assets/icons/user.svg" alt="User Image">
+                    <h1>{{user.name}}</h1>
+                </div>
+                <div class="profile-details">
+                    <div class="row">
+                        <div class="col">
+                            <p><strong>Username:</strong> {{user.username}}</p>
+                            <p><strong>Role:</strong> {{user.role}}</p>
+                        </div>
+                        <div class="col">
+                            <p><strong>Email:</strong> {{user.email}}</p>
+                            <p><strong>Mobile:</strong> {{user.mobile}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <script src="private/profile.js"></script>
+
+</body>
+
+</html>

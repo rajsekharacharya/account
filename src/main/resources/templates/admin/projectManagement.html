@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html
+  th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+<head>
+  <title>Project Management</title>
+</head>
+
+<body>
+
+  <section>
+
+    <div ng-app="AdminManagment" ng-controller="AssetProjectManagementController">
+      <div class="breadcrumb-container">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a th:href="@{/home}">
+                <span class="icon-common icon-breadcrumb icon-dashboard"></span><span>Dashboard</span>
+              </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              <span class="icon-common icon-breadcrumb icon-project-management"></span><span>Project Management</span>
+            </li>
+          </ol>
+        </nav>
+      </div>
+
+      <div class="body-area" ng-show="views.list">
+        <div class="body-area-header">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <div class="body-area-tittle">Project Management</div>
+            </div>
+            <div class="col-md-6">
+              <div class="user-table-header d-flex justify-content-end mb-3">
+                <span class="me-2">
+                  <a title="Deploy Selected" ng-click="assetDeployMulti()"
+                    class="btn btn-action-header btn-action-receive">
+                    <span class="icon-common icon-btn icon-receive"></span>
+                  </a>
+                </span>
+                <span>
+                  <a title="Return Selected" ng-click="assetsReturn()" class="btn btn-action-header btn-action-dismiss">
+                    <span class="icon-common icon-btn icon-dismiss"></span>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="body-area-content">
+          <div class="user-table-container overflow-x-auto">
+            <!-- <span class="me-2"><a ng-click="assetDeployMulti()" class="btn btn-success">Deploy Selected</a></span>
+        <span><a ng-click="assetsReturn()" class="btn btn-danger">Return Selected</a></span> -->
+            <!-- <br> -->
+            <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+              <thead>
+                <tr class="table-head-primary">
+                  <th>
+                    <div class="custom-checkbox-container">
+                      <label>
+                        <input class="user custom-check checkbox-success" type="checkbox" ng-model="assets.select"
+                          ng-click="selectActionForAssign()" name="status-success" checked="">
+                      </label>
+                      <label>
+                        <input class="user custom-check checkbox-warning" type="checkbox" ng-model="assets.select"
+                          ng-click="selectActionForReturn()" name="status-warning" checked="">
+                      </label>
+                    </div>
+
+                  </th>
+                  <th>Project</th>
+                  <th>Project Location</th>
+                  <th>SL No.</th>
+                  <th>Type</th>
+                  <th>Asset Tag ID</th>
+                  <th>Serial No.</th>
+                  <th>Model</th>
+                  <th>Supplier</th>
+                  <th>Manufacturer</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="asset in assets">
+                  <td>
+                    <label>
+                      <input class="user" type="checkbox" ng-model="asset.select" name="status" checked="">
+                    </label>
+                  </td>
+                  <td>{{asset.project}}</td>
+                  <td>{{asset.project_location}}</td>
+                  <td>{{$index + 1}}</td>
+                  <td>{{asset.type}}</td>
+                  <td>{{asset.asset_tag_id}}</td>
+                  <td>{{asset.serial_no}}</td>
+                  <td>{{asset.model}}</td>
+                  <td>{{asset.supplier}}</td>
+                  <td>{{asset.manufacturer}}</td>
+                  <td>
+                    <span style="color: #0074d9" class="user-role" ng-if="asset.status=='Active'">Active</span>
+                    <span style="color: #f115af" class="user-role" ng-if="asset.status=='Project'">Project</span>
+                  </td>
+
+                  <td class="d-flex">
+                    <span ng-if="asset.status=='Active'" class="me-2">
+                      <a title="Deploy" ng-click="assetDeploy(asset.id)" class="btn btn-action btn-action-deploy">
+                        <span class="icon-common icon-btn icon-deploy"></span>
+                      </a>
+                    </span>
+                    <span ng-if="asset.status=='Project'"><a ng-click="assetReturn(asset.id)"
+                        class="btn btn-danger">Return</a></span>
+
+
+
+                  </td>
+
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================Modal View======================= -->
+      <div class="modal fade" id="edit_asset_status_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                <span>Deploy Project Management</span>
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <span class="icon-common icon-modal-header-action  icon-x"></span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form class="form-horizontal" name="addAdmin" role="form" ng-submit="SaveChangeStatus()"
+                autocomplete="off">
+                <div class="row">
+                  <div class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Start Date: <span class="text-danger">*</span>
+                      </label>
+                      <input name="startDate" type="text" ng-model="form.startDate" class="form-control"
+                        id="datepicker1" pattern="\d{4}-\d{2}-\d{2}"
+                        title="Please enter a date in the format YYYY-mm-dd" placeholder="Enter Start Date" required />
+                    </div>
+                  </div>
+                  <div class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        End Date: <span class="text-danger">*</span>
+                      </label>
+                      <input name="endDate" type="text" ng-model="form.endDate" class="form-control" id="datepicker2"
+                        pattern="\d{4}-\d{2}-\d{2}" title="Please enter a date in the format YYYY-mm-dd"
+                        placeholder="Enter End Date" required />
+                    </div>
+                  </div>
+                  <div class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note">
+                        Project: <span class="text-danger">*</span>
+                      </label>
+                      <select name="employeeId" ng-model="form.projectId" class="form-control select2"
+                        ng-options="project.id as project.name + '-'+project.location  for project in projects"
+                        required>
+                        <option disabled></option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-lg-6 col-sm-6">
+                    <div class="form-group">
+                      <label class="text-dark lbl-medium" for="note"> Note: </label>
+                      <input name="note" type="text" ng-model="form.note" class="form-control" placeholder="Enter Note"
+                        ng-change="form.note = (form.note | uppercase)" />
+                    </div>
+                  </div>
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary btn-modal-action"
+                    data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <script src="private/admin/service.js"></script>
+
+  <script>
+    $("#datepicker1").flatpickr({
+      dateFormat: "Y-m-d",
+      allowInput: true,
+      disableMobile: "true",
+    });
+    $("#datepicker2").flatpickr({
+      dateFormat: "Y-m-d",
+      allowInput: true,
+      disableMobile: "true",
+    });
+    $("#yearInput").flatpickr({
+      dateFormat: "Y-m-d",
+      allowInput: true,
+      disableMobile: "true",
+    });
+  </script>
+
+</body>
+
+</html>

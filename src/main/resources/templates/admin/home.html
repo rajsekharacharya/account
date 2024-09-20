@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+<head>
+  <title>Home</title>
+</head>
+
+<body>
+  <section>
+    <div sec:authorize="!hasAuthority('SERVICEENGINEER')" ng-app="AdminManagment" ng-controller="DashboardController">
+      <div class="user-table-container">
+        <div class="header-action-container">
+          <ul class="nav nav-tabs tabsItem" role="tablist" style="justify-content: left;">
+            <li class="nav-item" role="presentation"><a showtab="" class="nav-link active" href="#general-dashboard"
+                ng-click="TypeWishData()" aria-controls="general-dashboard" role="tab"
+                data-toggle="tab">Dashboard</a>
+            </li>
+            <li class="nav-item" role="presentation"><a showtab="" class="nav-link" href="#google-dashboard"
+                ng-click="getGoogleDashboard()" aria-controls="google-dashboard" role="tab" data-toggle="tab">Google
+                Dashboard</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a showtab="" class="nav-link" href="#assetType-dashboard" ng-click="getAssetTypeDashboard()"
+                aria-controls="assetType-dashboard" role="tab" data-toggle="tab">Asset Type analysis </a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a showtab="" class="nav-link" href="#assetData-dashboard" ng-click="getAssetDataDashboard()"
+                aria-controls="assetType-dashboard" role="tab" data-toggle="tab">Asset analysis </a>
+            </li>
+          </ul>
+        </div>
+        <hr style="height: 1px;">
+
+        <div class="tab-content tabcontent-border">
+          <div role="tabpanel" class="tab-pane active tb-pane-padding" id="general-dashboard">
+            <div class="row">
+              <div class="col-xxl-8">
+                <div class="row">
+                  <div class="col-lg-4 col-md-6 col-sm-12 col-6">
+                    <div class="report-container status-container">
+                      <div class="status-wrapper">
+                        <div class="row w-100">
+                          <div class="col-sm-4 col-5 status-icon-container">
+                            <div class="status-icon-wrapper wrapper-bg-warning">
+                              <span class="icon-common icon-report-status icon-total-asset"></span>
+                            </div>
+                          </div>
+                          <div class="col-sm-8 col-7 pe-0 status-details-container">
+                            <div class="status-details-wrapper">
+                              <div class="status-header lbl-ellipsis">Total Asset</div>
+                              <div class="status-count">{{data.BlockData[0].totalAsset}}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-md-6 col-sm-12 col-6">
+                    <div class="report-container status-container">
+                      <div class="status-wrapper">
+                        <div class="row w-100">
+                          <div class="col-sm-4 col-5 status-icon-container">
+                            <div class="status-icon-wrapper wrapper-bg-success">
+                              <span class="icon-common icon-report-status icon-ready-asset"></span>
+                            </div>
+                          </div>
+                          <div class="col-sm-8 col-7 pe-0 status-details-container">
+                            <div class="status-details-wrapper">
+                              <div class="status-header lbl-ellipsis">Active Assets
+                              </div>
+                              <div class="status-count">{{data.BlockData[0].TotalActive}}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-md-6 col-sm-12 col-6">
+                    <div class="report-container status-container">
+                      <div class="status-wrapper">
+                        <div class="row w-100">
+                          <div class="col-sm-4 col-5 status-icon-container">
+                            <div class="status-icon-wrapper wrapper-bg-info">
+                              <span class="icon-common icon-report-status icon-assigned-asset"></span>
+                            </div>
+                          </div>
+                          <div class="col-sm-8 col-7 pe-0 status-details-container">
+                            <div class="status-details-wrapper">
+                              <div class="status-header lbl-ellipsis">Assigned Assets
+                              </div>
+                              <div class="status-count">{{data.BlockData[0].TotalAssign}}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-md-6 col-sm-12 col-6">
+                    <div class="report-container status-container">
+                      <div class="status-wrapper">
+                        <div class="row w-100">
+                          <div class="col-sm-4 col-5 status-icon-container">
+                            <div class="status-icon-wrapper wrapper-bg-accent">
+                              <span class="icon-common icon-report-status icon-deployed-asset"></span>
+                            </div>
+                          </div>
+                          <div class="col-sm-8 col-7 pe-0 status-details-container">
+                            <div class="status-details-wrapper">
+                              <div class="status-header lbl-ellipsis">Deployed Assets
+                              </div>
+                              <div class="status-count">{{data.BlockData[0].TotalDeployment}}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-md-6 col-sm-12 col-6">
+                    <div class="report-container status-container">
+                      <div class="status-wrapper">
+                        <div class="row w-100">
+                          <div class="col-sm-4 col-5 status-icon-container">
+                            <div class="status-icon-wrapper wrapper-bg-primary-light">
+                              <span class="icon-common icon-report-status icon-sold-asset"></span>
+                            </div>
+                          </div>
+                          <div class="col-sm-8 col-7 pe-0 status-details-container">
+                            <div class="status-details-wrapper">
+                              <div class="status-header lbl-ellipsis">Sold Assets</div>
+                              <div class="status-count">{{data.BlockData[0].TotalSold}}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-md-6 col-sm-12 col-6">
+                    <div class="report-container status-container">
+                      <div class="status-wrapper">
+                        <div class="row w-100">
+                          <div class="col-sm-4 col-5 status-icon-container">
+                            <div class="status-icon-wrapper wrapper-bg-caution">
+                              <span class="icon-common icon-report-status icon-scrap-asset"></span>
+                            </div>
+                          </div>
+                          <div class="col-sm-8 col-7 pe-0 status-details-container">
+                            <div class="status-details-wrapper">
+                              <div class="status-header lbl-ellipsis">Scrap Assets</div>
+                              <div class="status-count">{{data.BlockData[0].TotalScrap}}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="report-container report-container-primary">
+                      <div class="report-details-header">
+                        Asset Status
+                      </div>
+                      <div class="chart-wrapper">
+                        <canvas id="myBarChart"></canvas>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xxl-4 d-flex">
+                <div class="row flex-grow">
+                  <div class="col-xxl-12 col-md-6 col-sm-12 col-12 d-flex">
+                    <div class="report-container report-container-lg flex-grow">
+                      <div class="report-details-header">
+                        Department Wise Assets
+                      </div>
+                      <div class="chart-wrapper">
+                        <canvas id="myDoughnutChart"></canvas>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xxl-12 col-md-6 col-sm-12 col-12 d-flex">
+                    <div class="report-container report-container-lg flex-grow">
+                      <div class="report-details-header">
+                        Type Wise Assets
+                      </div>
+                      <div class="chart-wrapper">
+                        <canvas id="myPieChart"></canvas>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div role="tabpanel" class="tab-pane tb-pane-padding" id="google-dashboard">
+            <div>
+              <iframe id="myIframe" width="100%" height="800" frameborder="0" style="border:0"
+                allowfullscreen></iframe>
+            </div>
+          </div>
+          <div role="tabpanel" class="tab-pane tb-pane-padding" id="assetType-dashboard">
+            <div>
+              <iframe id="myIframe1" width="100%" height="800" frameborder="0" style="border:0"
+                allowfullscreen></iframe>
+            </div>
+          </div>
+          <div role="tabpanel" class="tab-pane tb-pane-padding" id="assetData-dashboard">
+            <div>
+              <iframe id="myIframe2" width="100%" height="800" frameborder="0" style="border:0"
+                allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div sec:authorize="hasAuthority('SERVICEENGINEER')" ng-app="AdminManagment" ng-controller="DashboardControllerService">
+      <div class="user-table-container">
+        <div class="header-action-container">
+          <ul class="nav nav-tabs tabsItem" role="tablist" style="justify-content: left;">
+            <li sec:authorize="hasAuthority('SERVICEENGINEER')" class="nav-item" role="presentation">
+              <a showtab="" class="nav-link active" href="#service-dashboard" ng-click="getServiceData()"
+                aria-controls="service-dashboard" role="tab" data-toggle="tab">Service Dashboard </a>
+            </li>
+          </ul>
+        </div>
+        <hr style="height: 1px;">
+        <div class="tab-content tabcontent-border">
+          <div sec:authorize="hasAuthority('SERVICEENGINEER')" role="tabpanel"
+            class="tab-pane active tb-pane-padding" id="service-dashboard">
+            <div class="col-xxl-12">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="report-container status-container">
+                    <div class="status-wrapper">
+                      <div class="row w-100">
+                        <div class="col-sm-4 col-5 status-icon-container">
+                          <div class="status-icon-wrapper wrapper-bg-warning">
+                            <span class="icon-common icon-report-status icon-total-asset"></span>
+                          </div>
+                        </div>
+                        <div class="col-sm-8 col-7 pe-0 status-details-container">
+                          <div class="status-details-wrapper">
+                            <div class="status-header lbl-ellipsis">Active Call</div>
+                            <div class="status-count">{{data.assignCall}}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="report-container status-container">
+                    <div class="status-wrapper">
+                      <div class="row w-100">
+                        <div class="col-sm-4 col-5 status-icon-container">
+                          <div class="status-icon-wrapper wrapper-bg-success">
+                            <span class="icon-common icon-report-status icon-ready-asset"></span>
+                          </div>
+                        </div>
+                        <div class="col-sm-8 col-7 pe-0 status-details-container">
+                          <div class="status-details-wrapper">
+                            <div class="status-header lbl-ellipsis">Resolved Call
+                            </div>
+                            <div class="status-count">{{data.resolveCall}}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="report-container status-container">
+                    <div class="status-wrapper">
+                      <div class="row w-100">
+                        <div class="col-sm-4 col-5 status-icon-container">
+                          <div class="status-icon-wrapper wrapper-bg-info">
+                            <span class="icon-common icon-report-status icon-assigned-asset"></span>
+                          </div>
+                        </div>
+                        <div class="col-sm-8 col-7 pe-0 status-details-container">
+                          <div class="status-details-wrapper">
+                            <div class="status-header lbl-ellipsis">Pending Call
+                            </div>
+                            <div class="status-count">{{data.pendingCall}}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="report-container status-container">
+                    <div class="status-wrapper">
+                      <div class="row w-100">
+                        <div class="col-sm-4 col-5 status-icon-container">
+                          <div class="status-icon-wrapper wrapper-bg-accent">
+                            <span class="icon-common icon-report-status icon-deployed-asset"></span>
+                          </div>
+                        </div>
+                        <div class="col-sm-8 col-7 pe-0 status-details-container">
+                          <div class="status-details-wrapper">
+                            <div class="status-header lbl-ellipsis">Dismiss Call
+                            </div>
+                            <div class="status-count">{{data.dismissCall}}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="report-container report-container-primary">
+                    <div class="report-details-header">
+                      Call Details
+                    </div>
+                    <div class="chart-wrapper">
+                      <canvas id="myBarChart"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </section>
+  <script src="private/admin/admin.js"></script>
+</body>
+
+</html>
