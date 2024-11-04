@@ -34,6 +34,5 @@ public class Particulars extends Auditable<String> {
 
     private String type;
 
-    private Double cost;
+    private boolean active = true;
 }
-

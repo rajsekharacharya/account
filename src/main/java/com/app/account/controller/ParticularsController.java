@@ -3,6 +3,7 @@ package com.app.account.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,28 +32,28 @@ public class ParticularsController {
 
     // Get particulars by ID
     @GetMapping(value = "/byId")
-    public ResponseEntity<Particulars> getParticularsById(@RequestParam Integer id) {
+    public ResponseEntity<?> getParticularsById(@RequestParam Integer id) {
         return particularsService.getParticularsById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     // Create a new particulars
-    @PostMapping
-    public Particulars createParticulars(@RequestBody Particulars particulars) {
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createParticulars(@RequestBody Particulars particulars) {
         return particularsService.createParticulars(particulars);
     }
 
     // Update an existing particulars
-    @PutMapping()
-    public ResponseEntity<Particulars> updateParticulars(@RequestBody Particulars particularsDetails) throws Exception {
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateParticulars(@RequestBody Particulars particularsDetails) throws Exception {
         return ResponseEntity.ok(particularsService.updateParticulars(particularsDetails));
     }
 
     // Delete particulars
     @DeleteMapping()
-    public ResponseEntity<Void> deleteParticulars(@RequestParam Integer id) {
-        particularsService.deleteParticulars(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteParticulars(@RequestParam Integer id) {
+        return particularsService.deleteParticulars(id);
+         
     }
 }

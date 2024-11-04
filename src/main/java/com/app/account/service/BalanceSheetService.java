@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.app.account.model.BalanceSheet;
@@ -26,23 +28,32 @@ public class BalanceSheetService {
     }
 
     // Create a new balance sheet
-    public BalanceSheet createBalanceSheet(BalanceSheet balanceSheet) {
-        return balanceSheetRepository.save(balanceSheet);
+    public ResponseEntity<?> createBalanceSheet(BalanceSheet balanceSheet) {
+        Optional<BalanceSheet> byDate = balanceSheetRepository.findByDate(balanceSheet.getDate());
+        if (byDate.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Already Available");
+        } else {
+            balanceSheetRepository.save(balanceSheet);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Saved");
+        }
+
     }
 
     // Update an existing balance sheet
-    public BalanceSheet updateBalanceSheet(BalanceSheet sheet) throws Exception {
+    public ResponseEntity<?> updateBalanceSheet(BalanceSheet sheet) throws Exception {
         return balanceSheetRepository.findById(sheet.getId())
                 .map(balanceSheet -> {
                     balanceSheet.setOpening(sheet.getOpening());
                     balanceSheet.setClosing(sheet.getClosing());
-                    return balanceSheetRepository.save(balanceSheet);
+                    balanceSheetRepository.save(balanceSheet);
+                    return ResponseEntity.status(HttpStatus.OK).body("Updated");
                 })
                 .orElseThrow(() -> new Exception("BalanceSheet not found with id " + sheet.getId()));
     }
 
     // Delete a balance sheet
-    public void deleteBalanceSheet(Integer id) {
+    public ResponseEntity<?> deleteBalanceSheet(Integer id) {
         balanceSheetRepository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Deleted");
     }
 }

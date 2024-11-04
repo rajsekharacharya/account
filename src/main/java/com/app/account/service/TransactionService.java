@@ -1,12 +1,19 @@
 package com.app.account.service;
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.app.account.model.BalanceSheet;
 import com.app.account.model.Transaction;
+import com.app.account.repository.BalanceSheetRepository;
 import com.app.account.repository.TransactionRepository;
 
 @Service
@@ -14,6 +21,8 @@ public class TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private BalanceSheetRepository balanceSheetRepository;
 
     // Get all transactions
     public List<Transaction> getAllTransactions() {
@@ -26,27 +35,89 @@ public class TransactionService {
     }
 
     // Create a new transaction
-    public Transaction createTransaction(Transaction transaction) {
-        return transactionRepository.save(transaction);
+    public ResponseEntity<?> createTransaction(List<Transaction> transaction) {
+        Optional<BalanceSheet> byDate = balanceSheetRepository.findByDate(LocalDate.now().toString());
+
+        if (!byDate.isPresent()) {
+            Optional<BalanceSheet> latestBalanceSheet = balanceSheetRepository.findLatestBalanceSheet();
+            if (latestBalanceSheet.isPresent()) {
+                if (latestBalanceSheet.get().getClosing() == null) {
+                    return new ResponseEntity<>(
+                            "Please Close " + latestBalanceSheet.get().getDate() + " closing balance",
+                            HttpStatus.BAD_REQUEST);
+                }
+                BalanceSheet balanceSheet = new BalanceSheet();
+                balanceSheet.setDate(LocalDate.now().toString());
+                balanceSheet.setOpening(latestBalanceSheet.get().getClosing());
+                balanceSheetRepository.save(balanceSheet);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please Update Balance Data");
+            }
+        }
+
+        transaction.forEach(x -> {
+            x.setDate(LocalDate.now().toString());
+            x.setActive(true);
+            transactionRepository.save(x);
+        });
+        return ResponseEntity.status(HttpStatus.OK).body("Saved");
+    }
+
+    public ResponseEntity<?> postEntry(Transaction transactionDetails) throws Exception {
+        Optional<BalanceSheet> byDate = balanceSheetRepository.findByDate(transactionDetails.getDate());
+        if (byDate.isPresent() && byDate.get().getClosing() == null) {
+            return transactionRepository.findById(transactionDetails.getId())
+                    .map(transaction -> {
+                        transaction.setDate(transactionDetails.getDate());
+                        transaction.setParticularId(transactionDetails.getParticularId());
+                        transaction.setParticularName(transactionDetails.getParticularName());
+                        transaction.setQty(transactionDetails.getQty());
+                        transaction.setInAmount(transactionDetails.getInAmount());
+                        transaction.setOutAmount(transactionDetails.getOutAmount());
+                        transaction.setActive(transactionDetails.isActive());
+                        transactionRepository.save(transaction);
+                        return ResponseEntity.status(HttpStatus.OK).body("Updated");
+                    })
+                    .orElseThrow(() -> new Exception("Transaction not found with id " + transactionDetails.getId()));
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.OK).body("Done");
+        }
+
     }
 
     // Update an existing transaction
-    public Transaction updateTransaction(Transaction transactionDetails) throws Exception {
+    public ResponseEntity<?> updateTransaction(Transaction transactionDetails) throws Exception {
         return transactionRepository.findById(transactionDetails.getId())
                 .map(transaction -> {
                     transaction.setDate(transactionDetails.getDate());
                     transaction.setParticularId(transactionDetails.getParticularId());
                     transaction.setParticularName(transactionDetails.getParticularName());
-                    transaction.setTransactionType(transactionDetails.getTransactionType());
-                    transaction.setAmount(transactionDetails.getAmount());
+                    transaction.setQty(transactionDetails.getQty());
+                    transaction.setInAmount(transactionDetails.getInAmount());
+                    transaction.setOutAmount(transactionDetails.getOutAmount());
                     transaction.setActive(transactionDetails.isActive());
-                    return transactionRepository.save(transaction);
+                    transactionRepository.save(transaction);
+                    return ResponseEntity.status(HttpStatus.OK).body("Updated");
                 })
                 .orElseThrow(() -> new Exception("Transaction not found with id " + transactionDetails.getId()));
     }
 
     // Delete a transaction
-    public void deleteTransaction(Integer id) {
-        transactionRepository.deleteById(id);
+    public ResponseEntity<?> deleteTransaction(Integer id) {
+        Optional<Transaction> byId = transactionRepository.findById(id);
+        Map<Boolean, String> messages = new HashMap<>();
+        messages.put(true, "Deactivate");
+        messages.put(false, "Activate");
+
+        String message = byId.map(particular -> {
+            particular.setActive(!particular.isActive());
+            transactionRepository.save(particular);
+            return messages.get(particular.isActive());
+        }).orElse("Not Found");
+
+        return ResponseEntity.status(message.equals("Not Found") ? HttpStatus.BAD_REQUEST : HttpStatus.OK)
+                .body(message);
     }
+
 }

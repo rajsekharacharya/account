@@ -36,9 +36,11 @@ public class Transaction extends Auditable<String> {
 
     private String particularName;
 
-    private String transactionType;
+    private double qty;
 
-    private double amount;
+    private double inAmount;
+
+    private double outAmount;
 
     private boolean active;
 

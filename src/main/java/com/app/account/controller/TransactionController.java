@@ -38,21 +38,24 @@ public class TransactionController {
     }
 
     // Create a new transaction
-    @PostMapping
-    public Transaction createTransaction(@RequestBody Transaction transaction) {
+    @PostMapping(consumes = "application/json")
+    public ResponseEntity<?> createTransaction(@RequestBody List<Transaction> transaction) {
         return transactionService.createTransaction(transaction);
+    }
+    @PostMapping(value = "/postEntry",consumes = "application/json")
+    public ResponseEntity<?> postEntry(@RequestBody Transaction transaction)  throws Exception {
+        return transactionService.postEntry(transaction);
     }
 
     // Update an existing transaction
     @PutMapping
-    public ResponseEntity<Transaction> updateTransaction(@RequestBody Transaction transactionDetails) throws Exception {
-        return ResponseEntity.ok(transactionService.updateTransaction(transactionDetails));
+    public ResponseEntity<?> updateTransaction(@RequestBody Transaction transactionDetails) throws Exception {
+        return transactionService.updateTransaction(transactionDetails);
     }
 
     // Delete a transaction
     @DeleteMapping
-    public ResponseEntity<Void> deleteTransaction(@RequestParam Integer id) {
-        transactionService.deleteTransaction(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteTransaction(@RequestParam Integer id) {
+        return transactionService.deleteTransaction(id);
     }
 }

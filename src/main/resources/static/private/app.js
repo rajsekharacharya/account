@@ -1,7 +1,7 @@
 angular.module("Application", ["datatables", "datatables.buttons",]);
 
 // DIRECTIVE - Multi TAB
-angular.module('SRMPSApplication').directive("showtab", function () {
+angular.module('Application').directive("showtab", function () {
   return {
     link: function (scope, element, attrs) {
       element.click(function (e) {

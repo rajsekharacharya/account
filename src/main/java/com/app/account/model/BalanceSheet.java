@@ -32,7 +32,7 @@ public class BalanceSheet extends Auditable<String> {
 
     private String date;
 
-    private String opening;
+    private Double opening;
 
     private Double closing;
 

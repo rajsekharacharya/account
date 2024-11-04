@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html
+    th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+</html>
+
+<head>
+    <title>User Management</title>
+</head>
+
+<body>
+    <section>
+        <div ng-controller="balanceController">
+            <div class="breadcrumb-container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/company-home}">
+                                <span class="icon-common icon-breadcrumb icon-dashboard"></span><span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span class="icon-common icon-breadcrumb icon-unit"></span><span>Balance</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="body-area" ng-show="views.list">
+                <div class="body-area-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="body-area-tittle">Balance</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="body-area-action">
+                                <a ng-click="AddBalance()" class="float-end btn btn-icon btn-add me-2"
+                                    title="Add Unit"><span class="icon-common icon-add"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="body-area-content">
+                    <div class="user-table-container">
+                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                            <thead>
+                                <tr class="table-head-primary">
+                                    <th>SL No.</th>
+                                    <th>Date</th>
+                                    <th>Opening Balance</th>
+                                    <th>Closing Balance</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="balance in balances">
+                                    <td>{{$index + 1}}</td>
+                                    <td><span class="user-role">{{balance.date}}</span></td>
+                                    <td><span class="user-role">{{balance.opening}}</span></td>
+                                    <td><span class="user-role">{{balance.closing}}</span></td>
+                                    <td class="d-flex">
+                                        <span class="me-2"><a title="Edit" ng-click="editBalance(balance.id)"
+                                                class="btn btn-action btn-action-edit"><span
+                                                    class="lbl-btn-action"></span><span
+                                                    class="icon-common icon-btn icon-edit"></span></a></span>
+                                        <span class="me-2"><a title="Edit" ng-click="addTransaction(balance.date)"
+                                                class="btn btn-action btn-action-edit"><span
+                                                    class="lbl-btn-action"></span><span
+                                                    class="icon-common icon-btn icon-edit"></span></a></span>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ====================Modal View======================= -->
+            <div class="modal fade" id="add_edit_dept_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span ng-if="form.id==null || form.id==undefined">Add Balance</span>
+                                <span ng-if="form.id!=null && form.id!=undefined">Edit Balance</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form" ng-submit="addEditSaveBalance()"
+                                autocomplete="off">
+                                <div class="row">
+                                    <div class="col-lg-12 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Date: <span class="text-danger">*</span>
+                                            </label>
+
+                                            <input name="dateAcquired" type="text" ng-model="form.date" id="datepicker1"
+                                                class="form-control" placeholder="Enter Date Acquired"
+                                                pattern="\d{4}-\d{2}-\d{2}"
+                                                title="Please enter a date in the format YYYY-mm-dd" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="cost">
+                                                Opening Balance: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="cost" type="number" step="0.01" min="0.00"
+                                                ng-model="form.opening" class="form-control" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="cost">
+                                                Closing Balance: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="cost" type="number" step="0.01" min="0.00"
+                                                ng-model="form.closing" class="form-control" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-modal-action"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal fade" id="add_dept_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span>Add Transactions({{form.data}})</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form" ng-submit="updateTransaction()"
+                                autocomplete="off">
+                                <div class="row">
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="cost">
+                                                Particular: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="assetSubCatId" ng-model="form.particularId"
+                                                class="form-control"
+                                                ng-options="particular.id as particular.name for particular in particulars"
+                                                ng-change="getParticularDetails(row.particularId,particulars,row)"
+                                                required>
+                                                <option value="" disabled selected>Please select a Particular</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="cost">
+                                                Quantity:
+                                            </label>
+                                            <input name="cost" type="number" step="0.01" min="0.00" ng-model="form.qty"
+                                                class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="cost">
+                                                IN:
+                                            </label>
+                                            <input name="cost" type="number" step="0.01" min="0.00"
+                                                ng-model="form.inAmount" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="cost">
+                                                OUT:
+                                            </label>
+                                            <input name="cost" type="number" step="0.01" min="0.00"
+                                                ng-model="form.outAmount" class="form-control" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-modal-action"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+    <script src="private/controller/MasterController.js"></script>
+
+    <script>
+        flatpickr("#datepicker1", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            disableMobile: true,
+        });
+    </script>
+
+</body>
+
+</html>

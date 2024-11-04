@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html
+    th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+</html>
+
+<head>
+    <title>User Management</title>
+</head>
+
+<body>
+
+    <section>
+        <div ng-controller="UserManagementController">
+            <div class="breadcrumb-container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/company-home}">
+                                <span class="icon-common icon-breadcrumb icon-dashboard"></span><span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span class="icon-common icon-breadcrumb icon-userreg"></span><span>User Registration</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="body-area" ng-show="views.list">
+                <div class="body-area-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="body-area-tittle">User Registration</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="body-area-action">
+                                <a ng-click="AddUser()" class="float-end btn btn-icon btn-add me-2"
+                                    title="Add User"><span class="icon-common icon-add"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="body-area-content">
+                    <div class="user-table-container">
+                        <table class="user-table-view dataTable" datatable="ng" dt-options="dtOptions">
+                            <thead>
+                                <tr class="table-head-primary">
+                                    <th>SL No.</th>
+                                    <th>Name</th>
+                                    <th>User Name</th>
+                                    <th>Mobile</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="user in users">
+                                    <td>{{$index + 1}}</td>
+                                    <td><span class="user-role">{{user.name}}</span></td>
+                                    <td><span class="user-role">{{user.username}}</span></td>
+                                    <td><span class="user-role">{{user.mobile}}</span></td>
+                                    <td><span class="user-role">{{user.email}}</span></td>
+                                    <td><span class="user-role">{{user.role}}</span></td>
+                                    <td>
+                                        <label class="switch">
+                                            <input class="user" type="checkbox" data-id="2"
+                                                ng-click="changeStatus(user.id)" ng-model="user.enable" name="status"
+                                                checked="">
+                                            <span class="knob"></span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <span class="me-2"><a title="Edit" ng-click="editUser(user)"
+                                                class="btn btn-action btn-action-edit"><span
+                                                    class="lbl-btn-action"></span><span
+                                                    class="icon-common icon-btn icon-edit"></span></a></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ====================Modal View======================= -->
+            <div class="modal fade" id="add_edit_user_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">
+                                <span ng-if="form.id==null || form.id==undefined">Add User</span>
+                                <span ng-if="form.id!=null && form.id!=undefined">Edit User</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                ng-click="close()">
+                                <span class="icon-common icon-modal-header-action  icon-x"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="addAdmin" role="form" ng-submit="saveUser()"
+                                autocomplete="off">
+                                <div class="row">
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="name">
+                                                Name: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="name" type="text" ng-model="form.name" class="form-control"
+                                                placeholder="Enter Name" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Username: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="username" type="text" ng-model="form.username"
+                                                class="form-control"
+                                                ng-change="checkUserNameAvailability(form.username)"
+                                                placeholder="Enter Username" required />
+                                            <span style="color: red;display: none;" id="user-name-error">Username
+                                                already exist!
+                                                Please try another one</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Email: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="email" type="email" ng-model="form.email" class="form-control"
+                                                ng-change="checkEmailAvailability(form.email)" placeholder="Enter Email"
+                                                required />
+                                            <span style="color: red;display: none;" id="email-error">Email already
+                                                exist! Please
+                                                try another one</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Phone No: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="mobile" type="text" ng-model="form.mobile" class="form-control"
+                                                placeholder="Enter Phone No" required pattern="^\d{10}$"
+                                                oninvalid="this.setCustomValidity('Please enter valid mobile number')"
+                                                oninput="this.setCustomValidity('')" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group position-relative">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Password: <span class="text-danger">*</span>
+                                            </label>
+                                            <input name="password" type="{{ showPassword ? 'text' : 'password' }}"
+                                                ng-model="form.rawPassword" class="form-control" id="idPassword"
+                                                placeholder="Enter Password"
+                                                ng-required="form.id==null || form.id==undefined" />
+                                            <span class="icon-common icon-toggle-pass-slash icon-form"
+                                                id="togglePassword" ng-click="togglePassword()"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="text-dark lbl-medium" for="planName">
+                                                Role: <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="Role" ng-model="form.role" class="form-control select2"
+                                                required>
+                                                <option value="" disabled selected>Please Select</option>
+                                                <option value="ADMIN">Admin</option>
+                                                <option value="USER">User</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-4 col-sm-6">
+
+                                    </div>
+                                </div>
+                                <div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary btn-modal-action"
+                                            data-bs-dismiss="modal" ng-click="close()">Close</button>
+                                        <button type="submit" class="btn btn-success btn-modal-action">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+    </section>
+
+    <script src="private/controller/UserController.js"></script>
+
+</body>
+
+</html>

@@ -1,9 +1,13 @@
 package com.app.account.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.app.account.model.Particulars;
@@ -26,24 +30,37 @@ public class ParticularsService {
     }
 
     // Create a new particulars
-    public Particulars createParticulars(Particulars particulars) {
-        return particularsRepository.save(particulars);
+    public ResponseEntity<?> createParticulars(Particulars particulars) {
+        particularsRepository.save(particulars);
+        return ResponseEntity.status(HttpStatus.OK).body("Saved");
     }
 
     // Update an existing particulars
-    public Particulars updateParticulars(Particulars particularsDetails) throws Exception {
+    public ResponseEntity<?> updateParticulars(Particulars particularsDetails) throws Exception {
         return particularsRepository.findById(particularsDetails.getId())
                 .map(particulars -> {
                     particulars.setName(particularsDetails.getName());
                     particulars.setType(particularsDetails.getType());
-                    particulars.setCost(particularsDetails.getCost());
-                    return particularsRepository.save(particulars);
+                    particularsRepository.save(particulars);
+                    return ResponseEntity.status(HttpStatus.OK).body("Updated");
                 })
                 .orElseThrow(() -> new Exception("BalanceSheet not found with id " + particularsDetails.getId()));
     }
 
     // Delete particulars
-    public void deleteParticulars(Integer id) {
-        particularsRepository.deleteById(id);
+    public ResponseEntity<?> deleteParticulars(Integer id) {
+        Optional<Particulars> byId = particularsRepository.findById(id);
+        Map<Boolean, String> messages = new HashMap<>();
+        messages.put(true, "Deactivate");
+        messages.put(false, "Activate");
+
+        String message = byId.map(particular -> {
+            particular.setActive(!particular.isActive());
+            particularsRepository.save(particular);
+            return messages.get(particular.isActive());
+        }).orElse("Not Found");
+
+        return ResponseEntity.status(message.equals("Not Found") ? HttpStatus.BAD_REQUEST : HttpStatus.OK)
+                .body(message);
     }
 }

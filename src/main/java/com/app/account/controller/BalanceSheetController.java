@@ -3,6 +3,7 @@ package com.app.account.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,22 +39,21 @@ public class BalanceSheetController {
     }
 
     // Create a new balance sheet
-    @PostMapping
-    public BalanceSheet createBalanceSheet(@RequestBody BalanceSheet balanceSheet) {
+    @PostMapping(value = "/add", consumes = "application/json")
+    public ResponseEntity<?> createBalanceSheet(@RequestBody BalanceSheet balanceSheet) {
         return balanceSheetService.createBalanceSheet(balanceSheet);
     }
 
     // Update an existing balance sheet
-    @PutMapping()
-    public ResponseEntity<BalanceSheet> updateBalanceSheet(@RequestBody BalanceSheet balanceSheetDetails)
+    @PutMapping(value = "/update", consumes = "application/json")
+    public ResponseEntity<?> updateBalanceSheet(@RequestBody BalanceSheet balanceSheetDetails)
             throws Exception {
         return ResponseEntity.ok(balanceSheetService.updateBalanceSheet(balanceSheetDetails));
     }
 
     // Delete a balance sheet
     @DeleteMapping()
-    public ResponseEntity<Void> deleteBalanceSheet(@RequestParam Integer id) {
-        balanceSheetService.deleteBalanceSheet(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteBalanceSheet(@RequestParam Integer id) {
+       return balanceSheetService.deleteBalanceSheet(id);
     }
 }

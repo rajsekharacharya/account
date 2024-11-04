@@ -1,5 +1,6 @@
 angular
-  .module("Application").controller("ItemTypeController", function ($scope, $http, $timeout, DTOptionsBuilder) {
+  .module("Application")
+  .controller("particularController", function ($scope, $http, $timeout, DTOptionsBuilder) {
     $scope.form = {};
     $scope.views = {};
     $scope.views.list = true;
@@ -66,22 +67,17 @@ angular
             },
           ],
         },
-      // {
-      //   extend: "colvis",
-      //   text: '<span class="lbl-dropdown">Columns</span><span class="icon-common icon-btn-dropdown icon-chevron"></span>',
-      // },
       ]);
 
-    autoItemTypeListFetch();
-    function autoItemTypeListFetch() {
+    autoParticularsListFetch();
+    function autoParticularsListFetch() {
       showHideLoad();
       $http({
         method: "GET",
-        url: "api/v1/itemType/getAllItemType",
+        url: "api/particulars",
       }).then(
         function successCallback(response) {
-          //console.log(response);
-          $scope.itemTypes = response.data;
+          $scope.particulars = response.data;
           showHideLoad(true);
         },
         function errorCallback(response) {
@@ -90,20 +86,20 @@ angular
       );
     }
 
-    $scope.AddItemType = function () {
+    $scope.AddParticulars = function () {
       $scope.form = {};
       $("#add_edit_dept_modal").modal("show");
     };
 
-    $scope.addEditSaveItemType = function () {
+    $scope.addEditSaveParticular = function () {
       //console.log($scope.form);
       showHideLoad();
       if ($scope.form.id == "" || $scope.form.id == undefined) {
         var method = "POST";
-        var url = "api/v1/itemType/createItemType";
+        var url = "api/particulars";
       } else {
         var method = "PUT";
-        var url = "api/v1/itemType/updateItemType";
+        var url = "api/particulars";
       }
       $http({
         method: method,
@@ -112,16 +108,15 @@ angular
         headers: {
           "Content-Type": "application/json",
         },
-        transformResponse: angular.identity,
       }).then(_success, _error);
     };
 
     function _success(response) {
       showHideLoad(true);
-      autoItemTypeListFetch();
+      autoParticularsListFetch();
       $("#add_edit_dept_modal").modal("hide");
       Swal.fire({
-        text: response.data,
+        text: response.data.body,
         icon: "success",
         buttonsStyling: !1,
         confirmButtonText: "Ok, got it!",
@@ -134,7 +129,7 @@ angular
     function _error(response) {
       showHideLoad(true);
       Swal.fire({
-        text: response.data,
+        text: response.data.body,
         icon: "error",
         buttonsStyling: !1,
         confirmButtonText: "Ok, got it!",
@@ -143,15 +138,14 @@ angular
         },
       });
     }
-    $scope.editItemTypes = function (id) {
+    $scope.editParticular = function (id) {
       showHideLoad();
       $http({
         method: "GET",
         params: { id: id },
-        url: "api/v1/itemType/getItemTypeById",
+        url: "api/particulars/byId",
       }).then(
         function successCallback(response) {
-          //console.log(response.data);
           $scope.form = response.data;
           $("#add_edit_dept_modal").modal("show");
           showHideLoad(true);
@@ -167,13 +161,14 @@ angular
       $http({
         method: "DELETE",
         params: { id: id },
-        url: "api/v1/itemType/toggleItemTypeStatus",
+        url: "api/particulars",
         headers: {
           "Content-Type": "application/json",
         },
         transformResponse: angular.identity,
       }).then(
         function successCallback(response) {
+          //console.log(response.data);
           showHideLoad(true);
         },
         function errorCallback(response) {
@@ -181,6 +176,7 @@ angular
         }
       );
     };
+
     $scope.changeView = function (view) {
       if (view == "add" || view == "list" || view == "show") {
         $scope.form = {};
@@ -192,8 +188,7 @@ angular
     };
   }
   )
-
-  .controller("UnitController", function ($scope, $http, $timeout, DTOptionsBuilder) {
+  .controller("balanceController", function ($scope, $http, $timeout, DTOptionsBuilder) {
     $scope.form = {};
     $scope.views = {};
     $scope.views.list = true;
@@ -260,23 +255,17 @@ angular
             },
           ],
         },
-      // {
-      //   extend: "colvis",
-      //   text: '<span class="lbl-dropdown">Columns</span><span class="icon-common icon-btn-dropdown icon-chevron"></span>',
-      // },
       ]);
 
-    autoUnitListFetch();
-    function autoUnitListFetch() {
+    autoBalanceListFetch();
+    function autoBalanceListFetch() {
       showHideLoad();
       $http({
         method: "GET",
-        url: "api/v1/UnitMaster/getAllUnitMaster",
+        url: "api/balance-sheets",
       }).then(
         function successCallback(response) {
-          //console.log(response);
-          $scope.units = response.data;
-          // $scope.changeView("list");
+          $scope.balances = response.data;
           showHideLoad(true);
         },
         function errorCallback(response) {
@@ -285,20 +274,20 @@ angular
       );
     }
 
-    $scope.AddUnit = function () {
+    $scope.AddBalance = function () {
       $scope.form = {};
       $("#add_edit_dept_modal").modal("show");
     };
 
-    $scope.addEditSaveUnit = function () {
+    $scope.addEditSaveBalance = function () {
       //console.log($scope.form);
       showHideLoad();
       if ($scope.form.id == "" || $scope.form.id == undefined) {
         var method = "POST";
-        var url = "api/v1/UnitMaster/createUnitMaster";
+        var url = "api/balance-sheets/add";
       } else {
         var method = "PUT";
-        var url = "api/v1/UnitMaster/updateUnitMaster";
+        var url = "api/balance-sheets/update";
       }
       $http({
         method: method,
@@ -312,8 +301,9 @@ angular
     };
 
     function _success(response) {
+      console.log("response");
       showHideLoad(true);
-      autoUnitListFetch();
+      autoBalanceListFetch();
       $("#add_edit_dept_modal").modal("hide");
       Swal.fire({
         text: response.data,
@@ -327,6 +317,7 @@ angular
     }
 
     function _error(response) {
+      console.log(response.data);
       showHideLoad(true);
       Swal.fire({
         text: response.data,
@@ -338,15 +329,14 @@ angular
         },
       });
     }
-    $scope.editUnit = function (id) {
+    $scope.editBalance = function (id) {
       showHideLoad();
       $http({
         method: "GET",
         params: { id: id },
-        url: "api/v1/UnitMaster/getUnitMasterById",
+        url: "api/balance-sheets/byId",
       }).then(
         function successCallback(response) {
-          //console.log(response.data);
           $scope.form = response.data;
           $("#add_edit_dept_modal").modal("show");
           showHideLoad(true);
@@ -362,7 +352,7 @@ angular
       $http({
         method: "DELETE",
         params: { id: id },
-        url: "api/v1/UnitMaster/toggleUnitMasterStatus",
+        url: "api/balance-sheets",
         headers: {
           "Content-Type": "application/json",
         },
@@ -378,6 +368,71 @@ angular
       );
     };
 
+
+    $scope.updateTransaction = function () {
+      showHideLoad();
+        var method = "PUT";
+        var url = "api/transactions/postEntry";
+      $http({
+        method: method,
+        url: url,
+        data: angular.toJson($scope.form),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        transformResponse: angular.identity,
+      }).then(_success, _error);
+    };
+
+    function _success(response) {
+      showHideLoad(true);
+      autoTransactionListFetch();
+      $("#edit_dept_modal").modal("hide");
+      Swal.fire({
+        text: response.data,
+        icon: "success",
+        buttonsStyling: !1,
+        confirmButtonText: "Ok, got it!",
+        customClass: {
+          confirmButton: "btn btn-primary",
+        },
+      });
+    }
+    function _error(response) {
+      showHideLoad(true);
+      Swal.fire({
+        text: response.data,
+        icon: "error",
+        buttonsStyling: !1,
+        confirmButtonText: "Ok, got it!",
+        customClass: {
+          confirmButton: "btn btn-primary",
+        },
+      });
+    }
+    $scope.addTransaction = function (data) {
+      $scope.form={};
+      $scope.form.data=data;
+      $scope.getParticulars();
+      $("#add_dept_modal").modal("show");
+    };
+
+    $scope.getParticulars = function () {
+      showHideLoad();
+      $http({
+        method: "GET",
+        url: "api/particulars",
+      }).then(
+        function successCallback(response) {
+          $scope.particulars = response.data;
+          showHideLoad(true);
+        },
+        function errorCallback(response) {
+          console.log(response.statusText);
+        }
+      );
+    }
+
     $scope.changeView = function (view) {
       if (view == "add" || view == "list" || view == "show") {
         $scope.form = {};
@@ -389,8 +444,7 @@ angular
     };
   }
   )
-
-  .controller("VehicleController", function ($scope, $http, $timeout, DTOptionsBuilder) {
+  .controller("transactionController", function ($scope, $http, $timeout, DTOptionsBuilder) {
     $scope.form = {};
     $scope.views = {};
     $scope.views.list = true;
@@ -457,23 +511,17 @@ angular
             },
           ],
         },
-      // {
-      //   extend: "colvis",
-      //   text: '<span class="lbl-dropdown">Columns</span><span class="icon-common icon-btn-dropdown icon-chevron"></span>',
-      // },
       ]);
 
-    autoVehicleListFetch();
-    function autoVehicleListFetch() {
+    autoTransactionListFetch();
+    function autoTransactionListFetch() {
       showHideLoad();
       $http({
         method: "GET",
-        url: "api/v1/VehicleMaster/getAllVehicleMaster",
+        url: "api/transactions",
       }).then(
         function successCallback(response) {
-          //console.log(response);
-          $scope.vehicles = response.data;
-          $scope.changeView("list");
+          $scope.transactions = response.data;
           showHideLoad(true);
         },
         function errorCallback(response) {
@@ -482,21 +530,107 @@ angular
       );
     }
 
-    $scope.AddVehicle = function () {
-      $scope.form = {};
-      $("#add_edit_dept_modal").modal("show");
+    $scope.getParticulars = function () {
+      showHideLoad();
+      $http({
+        method: "GET",
+        url: "api/particulars",
+      }).then(
+        function successCallback(response) {
+          $scope.particulars = response.data;
+          showHideLoad(true);
+        },
+        function errorCallback(response) {
+          console.log(response.statusText);
+        }
+      );
+    }
+    $scope.getParticularDetails = function (id, data, sentData) {
+      var particular = data.find(function (item) {
+        return item.id === id;
+      });
+      sentData.particularName = particular.name;
+
+    }
+
+    $scope.AddParticular = function () {
+      $scope.rows = [{ id: '', date: '', particularId: null, particularName: '', qty: '', inAmount: 0.00, outAmount: 0.00, active: true }];
+      $scope.getParticulars();
+      $("#add_dept_modal").modal("show");
     };
 
-    $scope.addEditSaveVehicle = function () {
-      //console.log($scope.form);
-      showHideLoad();
-      if ($scope.form.id == "" || $scope.form.id == undefined) {
-        var method = "POST";
-        var url = "api/v1/VehicleMaster/createVehicleMaster";
-      } else {
-        var method = "PUT";
-        var url = "api/v1/VehicleMaster/updateVehicleMaster";
+
+    $scope.addRow = function () {
+      $scope.rows.push({ id: '', date: '', particularId: null, particularName: '', qty: '', inAmount: 0.00, outAmount: 0.00, active: true });
+    };
+
+    $scope.removeRow = function (index) {
+      if ($scope.rows.length < 2) {
+        return Swal.fire({
+          text: "MAX limit reached",
+          icon: "error",
+          buttonsStyling: !1,
+          confirmButtonText: "Ok, got it!",
+          customClass: {
+            confirmButton: "btn btn-primary",
+          },
+        });
       }
+      $scope.rows.splice(index, 1);
+    };
+
+    $scope.addTransaction = function () {
+      showHideLoad();
+        var method = "POST";
+        var url = "api/transactions";
+      $http({
+        method: method,
+        url: url,
+        data: angular.toJson($scope.rows),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        transformResponse: angular.identity,
+      }).then(_success1, _error1);
+    };
+
+    function _success1(response) {
+      showHideLoad(true);
+      autoTransactionListFetch();
+      $("#add_dept_modal").modal("hide");
+      Swal.fire({
+        text: response.data,
+        icon: "success",
+        buttonsStyling: !1,
+        confirmButtonText: "Ok, got it!",
+        customClass: {
+          confirmButton: "btn btn-primary",
+        },
+      });
+    }
+    function _error1(response) {
+      showHideLoad(true);
+      Swal.fire({
+        text: response.data,
+        icon: "error",
+        buttonsStyling: !1,
+        confirmButtonText: "Ok, got it!",
+        customClass: {
+          confirmButton: "btn btn-primary",
+        },
+      });
+    }
+
+
+
+
+
+
+
+    $scope.updateTransaction = function () {
+      showHideLoad();
+        var method = "PUT";
+        var url = "api/transactions";
       $http({
         method: method,
         url: url,
@@ -510,8 +644,8 @@ angular
 
     function _success(response) {
       showHideLoad(true);
-      autoVehicleListFetch();
-      $("#add_edit_dept_modal").modal("hide");
+      autoTransactionListFetch();
+      $("#edit_dept_modal").modal("hide");
       Swal.fire({
         text: response.data,
         icon: "success",
@@ -522,7 +656,6 @@ angular
         },
       });
     }
-
     function _error(response) {
       showHideLoad(true);
       Swal.fire({
@@ -535,37 +668,38 @@ angular
         },
       });
     }
-    $scope.editVehicle = function (id) {
+    $scope.editTransaction = function (id) {
+      $scope.getParticulars();
       showHideLoad();
       $http({
         method: "GET",
         params: { id: id },
-        url: "api/v1/VehicleMaster/getVehicleMasterById",
+        url: "api/transactions/byId",
+      }).then(
+        function successCallback(response) {
+          $scope.form = response.data;
+          $("#edit_dept_modal").modal("show");
+          showHideLoad(true);
+        },
+        function errorCallback(response) {
+          //console.log(response.statusText);
+        }
+      );
+    };
+
+    $scope.changeStatus = function (id) {
+      showHideLoad();
+      $http({
+        method: "DELETE",
+        params: { id: id },
+        url: "api/balance-sheets",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        transformResponse: angular.identity,
       }).then(
         function successCallback(response) {
           //console.log(response.data);
-          $scope.form = response.data;
-          $("#add_edit_dept_modal").modal("show");
-          showHideLoad(true);
-        },
-        function errorCallback(response) {
-          //console.log(response.statusText);
-        }
-      );
-    };
-
-    $scope.changeStatus = function (id) {
-      showHideLoad();
-      $http({
-        method: "DELETE",
-        params: { id: id },
-        url: "api/v1/VehicleMaster/toggleVehicleMasterStatus",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        transformResponse: angular.identity,
-      }).then(
-        function successCallback(response) {
           showHideLoad(true);
         },
         function errorCallback(response) {
@@ -582,632 +716,6 @@ angular
       $scope.views.edit = false;
       $scope.views.list = false;
       $scope.views[view] = true;
-    };
-  }
-  )
-
-  .controller("VendorController", function ($scope, $http, $timeout, DTOptionsBuilder, $q) {
-    $scope.form = {};
-    $scope.views = {};
-    $scope.countries = {};
-    $scope.states = {};
-    $scope.views.list = true;
-
-    $scope.dtOptions = DTOptionsBuilder.newOptions()
-      .withOption("stateSave", true)
-      .withOption("lengthMenu", [
-        [5, 10, 50, 100, 1000, -1],
-        [5, 10, 50, 100, 1000, "All"],
-      ])
-      .withOption("pageLength", 10) // Add default page length
-      .withOption("dom", "lBfrtip") // Add dom option
-      .withButtons([
-        {
-          extend: "collection",
-          text: '<span class="lbl-dropdown">Export</span><span class="icon-common icon-btn-dropdown icon-chevron"></span>',
-          buttons: [
-            {
-              extend: "excel",
-              text: '<span class="icon-common icon-dropdown-action icon-excel"></span><span class="lbl-dropdown-action">Excel</span>', // Icon for Excel
-              className: "btn btn-success",
-              title: "User",
-              exportOptions: {
-                columns: ":not(:last-child)", // Exclude the last column
-                modifier: {
-                  page: "current",
-                },
-                header: false, // Exclude the header row
-              },
-            },
-            {
-              extend: "print",
-              text: '<span class="icon-common icon-dropdown-action icon-print"></span><span class="lbl-dropdown-action">Print</span>',
-              autoPrint: true,
-              exportOptions: {
-                columns: ":not(:last-child)", // Exclude the last column
-                modifier: {
-                  page: "current",
-                },
-              },
-            },
-          ],
-        },
-      // {
-      //   extend: "colvis",
-      //   text: '<span class="lbl-dropdown">Columns</span><span class="icon-common icon-btn-dropdown icon-chevron"></span>',
-      // },
-      ]);
-
-    autoVendorListFetch();
-    function autoVendorListFetch() {
-      showHideLoad();
-      $http({
-        method: "GET",
-        url: "api/v1/vendor/getAllVendors",
-      }).then(
-        function successCallback(response) {
-          console.log(response);
-          $scope.vendors = response.data;
-          $scope.changeView("list");
-          showHideLoad(true);
-        },
-        function errorCallback(response) {
-          console.log(response.statusText);
-        }
-      );
-    }
-
-    $scope.fetchStates = function () {
-      return $q(function (resolve, reject) {
-        $scope.states = {};
-        showHideLoad();
-        $http({
-          method: "GET",
-          url: "api/v1/common/getState",
-        }).then(
-          function successCallback(response) {
-            $scope.states = response.data;
-            showHideLoad(true);
-            resolve();
-          },
-          function errorCallback(response) {
-            console.log(response.statusText);
-            reject(response.statusText);
-          }
-        );
-      });
-    };
-
-    $scope.fetchCountry = function () {
-      return $q(function (resolve, reject) {
-        $scope.countries = {};
-        showHideLoad();
-        $http({
-          method: "GET",
-          url: "api/v1/common/getCountry",
-        }).then(
-          function successCallback(response) {
-            $scope.countries = response.data;
-            showHideLoad(true);
-            resolve();
-          },
-          function errorCallback(response) {
-            console.log(response.statusText);
-            reject(response.statusText);
-          }
-        );
-      });
-    };
-
-    $scope.AddVendors = function () {
-      showHideLoad();
-      $q.all([$scope.fetchStates(), $scope.fetchCountry()]).then(function () {
-        $scope.form = {}; // Initialize form to a new object
-        $("#add_edit_vendor_modal").modal("show");
-        showHideLoad(true);
-      });
-    };
-
-    $scope.editVendor = function (data) {
-      showHideLoad();
-      $q.all([$scope.fetchStates(), $scope.fetchCountry()]).then(function () {
-        $scope.form = angular.copy(data); // Use angular.copy to avoid direct binding
-        $("#add_edit_vendor_modal").modal("show");
-        showHideLoad(true);
-      });
-    };
-
-
-    $scope.close = function () {
-      $scope.form = {};
-      $("#add_edit_vendor_modal").modal("hide");
-    }
-
-    $scope.saveVendor = function () {
-      showHideLoad();
-      if ($scope.form.id == "" || $scope.form.id == undefined) {
-        var method = "POST";
-        var url = "api/v1/vendor/createVendor";
-      } else {
-        var method = "PUT";
-        var url = "api/v1/vendor/updateVendor";
-      }
-      $http({
-        method: method,
-        url: url,
-        data: angular.toJson($scope.form),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        transformResponse: angular.identity,
-      }).then(_success, _error);
-    };
-
-
-    function _success(response) {
-      showHideLoad(true);
-      $("#add_edit_vendor_modal").modal("hide");
-      autoVendorListFetch();
-      Swal.fire({
-        text: response.data,
-        icon: "success",
-        buttonsStyling: !1,
-        confirmButtonText: "Ok, got it!",
-        customClass: {
-          confirmButton: "btn btn-primary",
-        },
-      });
-    }
-
-    function _error(response) {
-      showHideLoad(true);
-      Swal.fire({
-        text: response.data,
-        icon: "error",
-        buttonsStyling: !1,
-        confirmButtonText: "Ok, got it!",
-        customClass: {
-          confirmButton: "btn btn-primary",
-        },
-      });
-    }
-
-    $scope.changeToggleVendor = function (id) {
-      showHideLoad();
-      $http({
-        method: "DELETE",
-        params: { id: id },
-        url: "api/v1/vendor/deleteVendor",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        transformResponse: angular.identity,
-      }).then(
-        function successCallback(response) {
-          showHideLoad(true);
-        },
-        function errorCallback(response) {
-          console.log(response.statusText);
-        }
-      );
-    };
-
-    $scope.changeView = function (view) {
-      if (view == "add" || view == "list" || view == "show") {
-        $scope.form = {};
-      }
-      $scope.views.add = false;
-      $scope.views.edit = false;
-      $scope.views.list = false;
-      $scope.views[view] = true;
-    };
-  }
-  )
-
-  .controller("ItemController", function ($scope, $http, $timeout, DTOptionsBuilder, $q) {
-    $scope.form = {};
-    $scope.views = {};
-    $scope.views.list = true;
-
-    $scope.dtOptions = DTOptionsBuilder.newOptions()
-      .withOption("stateSave", true)
-      .withOption("lengthMenu", [
-        [5, 10, 50, 100, 1000, -1],
-        [5, 10, 50, 100, 1000, "All"],
-      ])
-      .withOption("pageLength", 10) // Add default page length
-      .withOption("dom", "lBfrtip") // Add dom option
-      .withButtons([
-        {
-          extend: "collection",
-          text: '<span class="lbl-dropdown">Export</span><span class="icon-common icon-btn-dropdown icon-chevron"></span>',
-          buttons: [
-            {
-              extend: "excel",
-              text: '<span class="icon-common icon-dropdown-action icon-excel"></span><span class="lbl-dropdown-action">Excel</span>', // Icon for Excel
-              className: "btn btn-success",
-              title: "User",
-              exportOptions: {
-                columns: ":not(:last-child)", // Exclude the last column
-                modifier: {
-                  page: "current",
-                },
-                header: false, // Exclude the header row
-              },
-            },
-            {
-              extend: "print",
-              text: '<span class="icon-common icon-dropdown-action icon-print"></span><span class="lbl-dropdown-action">Print</span>',
-              autoPrint: true,
-              exportOptions: {
-                columns: ":not(:last-child)", // Exclude the last column
-                modifier: {
-                  page: "current",
-                },
-              },
-            },
-          ],
-        },
-      // {
-      //   extend: "colvis",
-      //   text: '<span class="lbl-dropdown">Columns</span><span class="icon-common icon-btn-dropdown icon-chevron"></span>',
-      // },
-      ]);
-
-    autoItemFetch();
-    function autoItemFetch() {
-      showHideLoad();
-      $http({
-        method: "GET",
-        url: "api/v1/item/getAllItem",
-      }).then(
-        function successCallback(response) {
-          $scope.items = response.data;
-          showHideLoad(true);
-        },
-        function errorCallback(response) {
-          console.log(response.statusText);
-        }
-      );
-    }
-
-
-    $scope.getPriceHistory = function (id,name) {
-      showHideLoad();
-      $http({
-        method: "GET",
-        params: { id: id },
-        url: "api/v1/item/getItemPriceHistoryById",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        transformResponse: angular.identity,
-      }).then(
-        function successCallback(response) {
-          console.log(response);
-          $scope.priceHistoryList = JSON.parse(response.data);
-          $scope.priceHistoryName = name;
-          $("#price_history").modal("show");
-          showHideLoad(true);
-        },
-        function errorCallback(response) {
-          showHideLoad(true);
-          Swal.fire({
-            text: response.data,
-            icon: "error",
-            buttonsStyling: !1,
-            confirmButtonText: "Ok, got it!",
-            customClass: {
-              confirmButton: "btn btn-primary",
-            },
-          });
-        }
-      );
-    };
-
-    $scope.AddItem = function () {
-      showHideLoad();
-      $q.all([$scope.getItemType(), $scope.getUnits()]).then(function () {
-        $scope.form = {}; // Initialize form to a new object
-        $("#add_edit_user_modal").modal("show");
-        showHideLoad(true);
-      });
-    };
-
-    $scope.getItemType = function () {
-      return $q(function (resolve, reject) {
-        $scope.itemTypes = {};
-        showHideLoad();
-        $http({
-          method: "GET",
-          url: "api/v1/itemType/getItemTypes",
-        }).then(
-          function successCallback(response) {
-            $scope.itemTypes = response.data;
-            showHideLoad(true);
-            resolve();
-          },
-          function errorCallback(response) {
-            console.log(response.statusText);
-            reject(response.statusText);
-          }
-        );
-      });
-    };
-
-    $scope.getUnits = function () {
-      return $q(function (resolve, reject) {
-        $scope.units = {};
-        showHideLoad();
-        $http({
-          url: "api/v1/UnitMaster/getUnitMasters",
-        }).then(
-          function successCallback(response) {
-            $scope.units = response.data;
-            showHideLoad(true);
-            resolve();
-          },
-          function errorCallback(response) {
-            console.log(response.statusText);
-            reject(response.statusText);
-          }
-        );
-      });
-    };
-
-    $scope.editItem = function (item) {
-      showHideLoad();
-      $q.all([$scope.getItemType(), $scope.getUnits()]).then(function () {
-        $scope.form = angular.copy(item); // Use angular.copy to avoid direct binding
-        $scope.form.oldRate = item.rate;
-        $("#add_edit_user_modal").modal("show");
-        showHideLoad(true);
-      });
-    };
-
-    $scope.close = function () {
-      $scope.form = {};
-      $("#add_edit_user_modal").modal("hide");
-    };
-
-    $scope.saveItem = function () {
-      showHideLoad();
-      if ($scope.form.id == "" || $scope.form.id == undefined) {
-        var method = "POST";
-        var url = "api/v1/item/createItem";
-      } else {
-        var method = "PUT";
-        var url = "api/v1/item/updateItem";
-      }
-      $http({
-        method: method,
-        url: url,
-        data: angular.toJson($scope.form),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        transformResponse: angular.identity,
-      }).then(_success, _error);
-    };
-
-    function _success(response) {
-      showHideLoad(true);
-      $("#add_edit_user_modal").modal("hide");
-      autoItemFetch();
-      Swal.fire({
-        text: response.data,
-        icon: "success",
-        buttonsStyling: !1,
-        confirmButtonText: "Ok, got it!",
-        customClass: {
-          confirmButton: "btn btn-primary",
-        },
-      });
-    }
-
-    function _error(response) {
-      showHideLoad(true);
-      Swal.fire({
-        text: response.data,
-        icon: "error",
-        buttonsStyling: !1,
-        confirmButtonText: "Ok, got it!",
-        customClass: {
-          confirmButton: "btn btn-primary",
-        },
-      });
-    }
-
-    $scope.changeStatus = function (id) {
-      showHideLoad();
-      $http({
-        method: "PUT",
-        params: { id: id },
-        url: "api/v1/item/toggleItemStatus",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        transformResponse: angular.identity,
-      }).then(
-        function successCallback(response) {
-          showHideLoad(true);
-        },
-        function errorCallback(response) {
-          //console.log(response.statusText);
-        }
-      );
-    };
-
-  })
-
-  .controller("WeighingChargesController", function ($scope, $http, $timeout, DTOptionsBuilder) {
-    $scope.form = {};
-    $scope.views = {};
-    $scope.views.list = true;
-
-    $scope.dtOptions = DTOptionsBuilder.newOptions()
-      .withOption("stateSave", true)
-      .withOption("lengthMenu", [
-        [5, 10, 50, 100, 1000, -1],
-        [5, 10, 50, 100, 1000, "All"],
-      ])
-      .withOption("pageLength", 10) // Add default page length
-      .withOption("dom", "lBfrtip") // Add dom option
-      .withButtons([
-        {
-          extend: "collection",
-          text: '<span class="lbl-dropdown">Export</span><span class="icon-common icon-btn-dropdown icon-chevron"></span>',
-          buttons: [
-            {
-              extend: "excel",
-              text: '<span class="icon-common icon-dropdown-action icon-excel"></span><span class="lbl-dropdown-action">Excel</span>', // Icon for Excel
-              className: "btn btn-success",
-              title: "User",
-              exportOptions: {
-                columns: ":not(:last-child)", // Exclude the last column
-                modifier: {
-                  page: "current",
-                },
-                header: false, // Exclude the header row
-              },
-            },
-            {
-              extend: "print",
-              text: '<span class="icon-common icon-dropdown-action icon-print"></span><span class="lbl-dropdown-action">Print</span>',
-              autoPrint: true,
-              exportOptions: {
-                columns: ":not(:last-child)", // Exclude the last column
-                modifier: {
-                  page: "current",
-                },
-              },
-            },
-          ],
-        },
-      // {
-      //   extend: "colvis",
-      //   text: '<span class="lbl-dropdown">Columns</span><span class="icon-common icon-btn-dropdown icon-chevron"></span>',
-      // },
-      ]);
-
-    autoFetchWeighingCharges();
-    function autoFetchWeighingCharges() {
-      showHideLoad();
-      $http({
-        method: "GET",
-        url: "api/v1/weighingCharges/getAllWeighingCharges",
-      }).then(
-        function successCallback(response) {
-          $scope.charges = response.data;
-          showHideLoad(true);
-        },
-        function errorCallback(response) {
-          console.log(response.statusText);
-        }
-      );
-    }
-
-    $scope.AddData = function () {
-      $scope.form = {};
-      $scope.getVehicleMaster();
-      $("#add_edit_dept_modal").modal("show");
-    };
-
-    $scope.getVehicleMaster = function () {
-      $scope.vehicles = {};
-      showHideLoad();
-      $http({
-        method: "GET",
-        url: "api/v1/VehicleMaster/getAllVehicleMaster",
-      }).then(
-        function successCallback(response) {
-          //console.log(response);
-          $scope.vehicles = response.data;
-          showHideLoad(true);
-        },
-        function errorCallback(response) {
-          console.log(response.statusText);
-        }
-      );
-    }
-
-    $scope.editData = function (data) {
-      showHideLoad();
-      $scope.form = {};
-      $scope.getVehicleMaster();
-      $scope.form = data;
-      $("#add_edit_dept_modal").modal("show");
-      showHideLoad(true);
-    };
-
-    $scope.saveData = function () {
-      showHideLoad();
-      if ($scope.form.id == "" || $scope.form.id == undefined) {
-        var method = "POST";
-        var url = "api/v1/weighingCharges/createWeighingCharges";
-      } else {
-        var method = "PUT";
-        var url = "api/v1/weighingCharges/updateWeighingCharges";
-      }
-      $http({
-        method: method,
-        url: url,
-        data: angular.toJson($scope.form),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        transformResponse: angular.identity,
-      }).then(_success, _error);
-    };
-
-    function _success(response) {
-      showHideLoad(true);
-      $("#add_edit_dept_modal").modal("hide");
-      autoFetchWeighingCharges();
-      Swal.fire({
-        text: response.data,
-        icon: "success",
-        buttonsStyling: !1,
-        confirmButtonText: "Ok, got it!",
-        customClass: {
-          confirmButton: "btn btn-primary",
-        },
-      });
-    }
-
-    function _error(response) {
-      showHideLoad(true);
-      Swal.fire({
-        text: response.data,
-        icon: "error",
-        buttonsStyling: !1,
-        confirmButtonText: "Ok, got it!",
-        customClass: {
-          confirmButton: "btn btn-primary",
-        },
-      });
-    }
-
-    $scope.changeStatus = function (id) {
-      showHideLoad();
-      $http({
-        method: "PUT",
-        params: { id: id },
-        url: "api/v1/weighingCharges/toggleWeighingChargesStatus",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        transformResponse: angular.identity,
-      }).then(
-        function successCallback(response) {
-          showHideLoad(true);
-          console.log(response.statusText);
-        },
-        function errorCallback(response) {
-          showHideLoad(true);
-          console.log(response.statusText);
-        }
-      );
     };
   }
   );
