@@ -30,7 +30,7 @@ public class BalanceSheetController {
     }
 
     // Get balance sheet by ID
-    @GetMapping()
+    @GetMapping(value = "/byId")
     public ResponseEntity<BalanceSheet> getBalanceSheetById(@RequestParam Integer id) {
         return balanceSheetService.getBalanceSheetById(id)
                 .map(ResponseEntity::ok)
