@@ -3,7 +3,7 @@
   th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
 
 <head>
-  <title>SRMPS | Home</title>
+  <title>Home</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,17 +11,17 @@
       margin: 0;
       padding: 0;
     }
-  
+
     .dashboard-container {
       padding: 20px;
     }
-  
+
     .row {
       display: flex;
       justify-content: space-around;
       flex-wrap: wrap;
     }
-  
+
     .card {
       background-color: #fff;
       border-radius: 8px;
@@ -33,47 +33,47 @@
       text-align: center;
       transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
-  
+
     .card:hover {
       transform: translateY(-10px);
       box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     }
-  
+
     .card h3 {
       margin: 0;
       color: #fff;
       font-size: 1.2em;
     }
-  
+
     .card p {
       color: #fff;
       font-size: 1.4em;
       margin: 10px 0 0;
     }
-  
+
     .card.icon {
       font-size: 50px;
       margin-bottom: 15px;
     }
-  
+
     @keyframes pulse {
       0% {
         transform: scale(1);
       }
-  
+
       50% {
         transform: scale(1.05);
       }
-  
+
       100% {
         transform: scale(1);
       }
     }
-  
+
     .card {
       animation: pulse 5s infinite;
     }
-  
+
     .graph-container {
       margin: 20px 0;
       background-color: #fff;
@@ -81,35 +81,29 @@
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
       display: flex;
-      justify-content: space-between; /* Adjusted from space-around */
+      justify-content: space-between;
+      /* Adjusted from space-around */
       flex-wrap: wrap;
-      gap: 10px; /* Added gap between graphs */
+      gap: 10px;
+      /* Added gap between graphs */
     }
-  
+
     .graph {
       flex: 1 1 45%;
       max-width: 45%;
-      height: 400px; /* Adjusted height */
-      box-sizing: border-box; /* Ensure padding and borders are included in the element's total width and height */
+      height: 400px;
+      /* Adjusted height */
+      box-sizing: border-box;
+      /* Ensure padding and borders are included in the element's total width and height */
     }
   </style>
-  
+
 </head>
 
 <body>
   <section class="dashboard-container">
     <div ng-controller="Dashboard">
       <div class="row">
-        <div class="card">
-          <div class="icon">&#128202;</div>
-          <h3>Total Token</h3>
-          <p>{{ data.ViewData.totalToken }}</p>
-        </div>
-        <div class="card">
-          <div class="icon">&#128200;</div>
-          <h3>Incomplete Token</h3>
-          <p>{{ data.ViewData.incompleteToken }}</p>
-        </div>
         <div class="card">
           <div class="icon">&#128176;</div>
           <h3>Total Amount</h3>
@@ -121,11 +115,6 @@
           <p>{{ data.ViewData.paidAmount | currency:"₹" }}</p>
         </div>
         <div class="card">
-          <div class="icon">&#128205;</div>
-          <h3>Pending Amount</h3>
-          <p>{{ data.ViewData.remainingAmount | currency:"₹" }}</p>
-        </div>
-        <div class="card">
           <div class="icon">&#128203;</div>
           <h3>Hold Bill Amount</h3>
           <p>{{ data.ViewData.holdBillAmount | currency:"₹" }}</p>
@@ -134,11 +123,6 @@
           <div class="icon">&#128201;</div>
           <h3>Paid Hold Bill</h3>
           <p>{{ data.ViewData.holdBillPaidAmount | currency:"₹" }}</p>
-        </div>
-        <div class="card">
-          <div class="icon">&#128230;</div>
-          <h3>Item Count</h3>
-          <p>{{ data.ViewData.item }}</p>
         </div>
       </div>
       <!-- Graph Section -->

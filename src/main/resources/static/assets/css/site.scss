@@ -43,6 +43,14 @@ body {
     letter-spacing: 1px;
     position: relative;
 }
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    padding: 0;
+  }
+
 body{
     overflow: hidden;
 }
@@ -279,7 +287,7 @@ a:hover {
 }
 
 .lbl-greetings {
-    font-weight: lighter;
+    // font-weight: lighter;
     //color: #767676;
     color: #002644;
 }

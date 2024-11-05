@@ -25,6 +25,11 @@ public class BalanceSheetController {
     private BalanceSheetService balanceSheetService;
 
     // Get all balance sheets
+    @GetMapping(value = "/getDataForDashBoard")
+    public ResponseEntity<?> getDataForDashBoard() {
+        return balanceSheetService.getDataForDashBoard();
+    }
+    // Get all balance sheets
     @GetMapping
     public List<BalanceSheet> getAllBalanceSheets() {
         return balanceSheetService.getAllBalanceSheets();
@@ -36,6 +41,10 @@ public class BalanceSheetController {
         return balanceSheetService.getBalanceSheetById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+    @GetMapping(value = "/getBalanceSheet",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getBalanceSheet(@RequestParam(required = false) String date) {
+        return balanceSheetService.getBalanceSheet(date);
     }
 
     // Create a new balance sheet
@@ -51,9 +60,16 @@ public class BalanceSheetController {
         return ResponseEntity.ok(balanceSheetService.updateBalanceSheet(balanceSheetDetails));
     }
 
+    // Update an existing balance sheet
+    @PutMapping(value = "/close")
+    public ResponseEntity<?> closeBalanceSheet(@RequestParam Integer id)
+            throws Exception {
+        return balanceSheetService.closeBalanceSheet(id);
+    }
+
     // Delete a balance sheet
     @DeleteMapping()
     public ResponseEntity<?> deleteBalanceSheet(@RequestParam Integer id) {
-       return balanceSheetService.deleteBalanceSheet(id);
+        return balanceSheetService.deleteBalanceSheet(id);
     }
 }

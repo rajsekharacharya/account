@@ -39,13 +39,13 @@ public class ParticularsController {
     }
 
     // Create a new particulars
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<?> createParticulars(@RequestBody Particulars particulars) {
         return particularsService.createParticulars(particulars);
     }
 
     // Update an existing particulars
-    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping
     public ResponseEntity<?> updateParticulars(@RequestBody Particulars particularsDetails) throws Exception {
         return ResponseEntity.ok(particularsService.updateParticulars(particularsDetails));
     }

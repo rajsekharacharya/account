@@ -4,7 +4,7 @@ angular.module("Application").controller("ProfileController", function ($scope, 
       showHideLoad();
       $http({
         method: "GET",
-        url: "api/v1/getUsersByLogin",
+        url: "api/user/getCurrentUser",
       }).then(
         function successCallback(response) {
           //console.log(response);

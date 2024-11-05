@@ -134,20 +134,33 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link active" th:href="@{/particular-master}">
-                                    <span class="icon-common icon-sidemenu icon-token"></span>
+                                    <span class="icon-common icon-sidemenu icon-contract-form"></span>
                                     <span class="link-name">Particulars</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link active" th:href="@{/balance}">
-                                    <span class="icon-common icon-sidemenu icon-token"></span>
+                                    <!-- <span>💰</span> -->
+                                    <span class="icon-common icon-sidemenu icon-unit"></span>
                                     <span class="link-name">Balance</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link active" th:href="@{/transaction}">
-                                    <span class="icon-common icon-sidemenu icon-token"></span>
+                                    <span class="icon-common icon-sidemenu icon-bill-generation"></span>
                                     <span class="link-name">Daily Transaction</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" th:href="@{/balance-sheet}">
+                                    <span class="icon-common icon-sidemenu icon-finance"></span>
+                                    <span class="link-name">Daily Balance Sheet</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" th:href="@{/head-balance-sheet}">
+                                    <span class="icon-common icon-sidemenu icon-finance"></span>
+                                    <span class="link-name">Balance Sheet(Head)</span>
                                 </a>
                             </li>
 
@@ -159,51 +172,6 @@
                                 </a>
                             </li>
 
-                            <li class="nav-item ">
-                                <a class="nav-link" onclick="toggleSubMenu(this)">
-                                    <span class="icon-common icon-sidemenu icon-master-setup"></span>
-                                    <span class="link-name">Common Master</span> <span
-                                        class="icon-common icon-sidemenu icon-chevron"></span>
-                                </a>
-                                <ul class="sub-menu-container">
-                                    <li class="sub-menu-item">
-                                        <a th:href="@{/particulars}" class="sub-menu-link">
-                                            <span class="icon-common icon-submenu icon-weighbridge"></span>
-                                            <span class="submenu-link-label">Particulars</span>
-                                        </a>
-                                    </li>
-                                    <li class="sub-menu-item">
-                                        <a th:href="@{/unloading-point}" class="sub-menu-link">
-                                            <span class="icon-common icon-submenu icon-unloading-point"></span>
-                                            <span class="submenu-link-label">Unloading Point</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-
-                        </ul>
-                        <ul class="nav-menu-container">
-                            <li class="nav-item">
-                                <a class="nav-link" onclick="toggleSubMenu(this)">
-                                    <span class="icon-common icon-sidemenu icon-help"></span>
-                                    <span class="link-name">Help</span> <span
-                                        class="icon-common icon-sidemenu icon-chevron"></span>
-                                </a>
-                                <ul class="sub-menu-container">
-                                    <li class="sub-menu-item">
-                                        <a th:href="@{/user-guide}" class="sub-menu-link">
-                                            <span class="icon-common icon-submenu icon-user-guide"></span>
-                                            <span class="submenu-link-label">User Guide</span>
-                                        </a>
-                                    </li>
-                                    <li class="sub-menu-item">
-                                        <a th:href="@{/release-notes}" class="sub-menu-link">
-                                            <span class="icon-common icon-submenu icon-release-note"></span>
-                                            <span class="submenu-link-label">Release Notes</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
                         </ul>
                     </div>
                 </div>

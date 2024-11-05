@@ -33,6 +33,8 @@ public class Particulars extends Auditable<String> {
     private String name;
 
     private String type;
+    
+    private Double openingBalance = 0.00;
 
     private boolean active = true;
 }

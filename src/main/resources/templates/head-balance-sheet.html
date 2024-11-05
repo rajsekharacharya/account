@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+
+<head>
+    <title>Daily Balance Sheet</title>
+    <style>
+        .container {
+            width: 90%;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            font-size: 1.2em;
+        }
+
+        .date-balance {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+
+        .table-container {
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .summary {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .print-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .print-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Styling for the date picker and search button */
+        .date-search-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-picker {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .search-button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .search-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <section>
+        <div ng-controller="balanceSheetController">
+            <div class="breadcrumb-container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/company-home}">
+                                <span class="icon-common icon-breadcrumb icon-dashboard"></span><span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span class="icon-common icon-breadcrumb icon-finance"></span><span>Daily Balance Sheet</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="body-area" ng-show="views.list">
+                <div class="body-area-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="body-area-tittle">Balance</div>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <!-- Date picker and search button -->
+                            <div class="date-search-container">
+                                <input id="datepicker1" class="date-picker" ng-model="selectDate" type="text" placeholder="Select Date">
+                                <button class="search-button" ng-click="searchByDate(selectDate)">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <header>
+                        <div>Balance Sheet</div>
+                    </header>
+            
+                    <div class="date-balance">
+                        <div>Date: <span id="date">{{data.balance.date}}</span></div>
+                        <div>Opening Balance: <span id="openingBalance">{{data.balance.opening}}</span></div>
+                    </div>
+            
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Particular</th>
+                                    <th>Qty</th>
+                                    <th>In Amount</th>
+                                    <th>Out Amount</th>
+                                    <th>Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionTable">
+                                <tr ng-repeat="tnx in data.table">
+                                    <td>{{tnx.particularName}}</td>
+                                    <td>
+                                        <span ng-if="tnx.qty == 0">--</span>
+                                        <span ng-if="tnx.qty !== 0">{{tnx.qty}}</span>
+                                       
+                                    </td>
+                                    <td>
+                                        <span ng-if="tnx.inAmount == 0">--</span>
+                                        <span ng-if="tnx.inAmount !== 0">{{tnx.inAmount}}</span>
+                                       
+                                    </td>
+                                    <td>
+                                        <span ng-if="tnx.outAmount == 0">--</span>
+                                        <span ng-if="tnx.outAmount !== 0">{{tnx.outAmount}}</span>
+                                       
+                                    </td>
+                                    <td>{{tnx.balance}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+            
+                    <div class="summary">
+                        <div>Profit/Loss: <span id="profitLoss">{{ calculateProfitOrLoss(data.balance.opening,data.balance.closing) }}</span></div>
+                        <div>Closing Balance: <span id="closingBalance">{{data.balance.closing}}</span></div>
+                    </div>
+                </div>
+                <button class="print-button" onclick="printTable()">Print</button>
+            </div>
+
+        </div>
+    </section>
+
+    <script src="private/controller/MasterController.js"></script>
+
+    <script>
+        // Function to print the table
+        function printTable() {
+            const printContents = document.querySelector('.container').innerHTML;
+            const originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+            window.location.reload(); // Optional: reload the page to return to original state
+        }
+
+        // Initialize the date picker
+        flatpickr("#datepicker1", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            disableMobile: true,
+        });
+    </script>
+</body>
+
+</html>

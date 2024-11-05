@@ -41,6 +41,7 @@ public class ParticularsService {
                 .map(particulars -> {
                     particulars.setName(particularsDetails.getName());
                     particulars.setType(particularsDetails.getType());
+                    particulars.setOpeningBalance(particularsDetails.getOpeningBalance());
                     particularsRepository.save(particulars);
                     return ResponseEntity.status(HttpStatus.OK).body("Updated");
                 })

@@ -5,7 +5,7 @@
 </html>
 
 <head>
-    <title>User Management</title>
+    <title>Daily Transaction</title>
 </head>
 
 <body>
@@ -20,7 +20,7 @@
                             </a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">
-                            <span class="icon-common icon-breadcrumb icon-unit"></span><span>Balance</span>
+                            <span class="icon-common icon-breadcrumb icon-bill-generation"></span><span>Daily Transaction</span>
                         </li>
                     </ol>
                 </nav>
@@ -165,7 +165,8 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="edit_dept_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="edit_dept_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
                 <div class="modal-dialog modal-md">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -211,7 +212,8 @@
                                                 IN:
                                             </label>
                                             <input name="cost" type="number" step="0.01" min="0.00"
-                                                ng-model="form.inAmount" class="form-control" />
+                                                ng-model="form.inAmount" class="form-control"
+                                                ng-disabled="form.outAmount > 0" />
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-sm-6">
@@ -220,7 +222,8 @@
                                                 OUT:
                                             </label>
                                             <input name="cost" type="number" step="0.01" min="0.00"
-                                                ng-model="form.outAmount" class="form-control" />
+                                                ng-model="form.outAmount" class="form-control"
+                                                ng-disabled="form.inAmount > 0" />
                                         </div>
                                     </div>
 

@@ -6,7 +6,7 @@ angular.module("Application")
             labels: [], // x-axis labels (status)
             datasets: [
                 {
-                    label: "Weight(KG)",
+                    label: "₹",
                     backgroundColor: [],
                     hoverBackgroundColor: [],
                     data: [], // Working data
@@ -17,47 +17,21 @@ angular.module("Application")
             ],
         };
 
-        $scope.DoughnutChartData = {
-            labels: [], // department names
-            datasets: [
-                {
-                    label: "Weight(KG)",
-                    data: [], // TotalWorking data
-                    backgroundColor: [], // Random colors for each department
-                    hoverBackgroundColor: [],
-                    borderWidth: 1,
-                    maxBarThickness: 25,
-                },
-            ],
-        };
-
-        // $scope.PieChartData = {
-        //     labels: [], // department names
-        //     datasets: [
-        //         {
-        //             data: [], // TotalWorking data
-        //             backgroundColor: [], // Random colors for each department.
-        //             hoverBackgroundColor: [],
-        //             borderWidth: 1,
-        //             maxBarThickness: 25,
-        //         },
-        //     ],
-        // };
-
-   //     autoLocationListFetch();
+       autoLocationListFetch();
         function autoLocationListFetch() {
             showHideLoad();
             $http({
                 method: "GET",
-                url: "dashboard/getDashboardForPlant",
+                url: "api/balance-sheets/getDataForDashBoard",
             }).then(
                 function successCallback(response) {
-                    //console.log(response);
+                    console.log(response);
                     $scope.data = response.data;
 
-                    $scope.data.vendorData.forEach((item) => {
-                        $scope.BarChartData.labels.push(item.vendor_name);
-                        $scope.BarChartData.datasets[0].data.push(item.net_weight);
+                    $scope.data.chart.forEach((item) => {
+                        const monthName = getMonthName(item.month);
+                        $scope.BarChartData.labels.push(monthName);
+                        $scope.BarChartData.datasets[0].data.push(item.profit);
                         const randomColor = getRandomColor();
                         $scope.BarChartData.datasets[0].backgroundColor.push(randomColor);
                         $scope.BarChartData.datasets[0].hoverBackgroundColor.push(
@@ -65,33 +39,6 @@ angular.module("Application")
                         );
                     });
 
-                    $scope.data.ItemData.forEach((item) => {
-                        $scope.DoughnutChartData.labels.push(item.item);
-                        $scope.DoughnutChartData.datasets[0].data.push(item.net_weight);
-
-                        // Generate a random color for each department
-                        const randomColor = getRandomColor();
-                        $scope.DoughnutChartData.datasets[0].backgroundColor.push(
-                            randomColor
-                        );
-                        $scope.DoughnutChartData.datasets[0].hoverBackgroundColor.push(
-                            randomColor
-                        );
-                    });
-
-                    // $scope.data.TypeWish.forEach((item) => {
-                    //     $scope.PieChartData.labels.push(item.type);
-                    //     $scope.PieChartData.datasets[0].data.push(item.Working);
-
-                    //     // Generate a random color for each department
-                    //     const randomColor = getRandomColor();
-                    //     $scope.PieChartData.datasets[0].backgroundColor.push(randomColor);
-                    //     $scope.PieChartData.datasets[0].hoverBackgroundColor.push(
-                    //         randomColor
-                    //     );
-                    // });
-
-                    // Create the chart after processing the data
                     createChart();
 
                     showHideLoad(true);
@@ -101,6 +48,14 @@ angular.module("Application")
                     //console.log(response.statusText);
                 }
             );
+        }
+
+        function getMonthName(monthNumber) {
+            const monthNames = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            return monthNames[monthNumber - 1]; // Adjust for zero-based index
         }
 
         function getRandomColor() {
@@ -187,76 +142,5 @@ angular.module("Application")
                     },
                 },
             });
-
-            const ctx1 = document.getElementById("myDoughnutChart");
-
-            new Chart(ctx1, {
-                type: "doughnut",
-                data: $scope.DoughnutChartData,
-                options: {
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            border: {
-                                display: false, // base line
-                            },
-                            grid: {
-                                display: false, //to hide vartical lines
-                                drawTicks: false,
-                            },
-                            ticks: {
-                                display: false, //this will show / remove only the label
-                            },
-                        },
-                    },
-                    plugins: {
-                        legend: {
-                            position: "bottom",
-                            labels: {
-                                boxWidth: 12,
-                                padding: 15,
-                            },
-                        },
-                    },
-                },
-            });
-
-            //const ctx2 = document.getElementById("myPieChart");
-
-            // new Chart(ctx2, {
-            //     type: "pie",
-            //     data: $scope.PieChartData,
-            //     options: {
-            //         maintainAspectRatio: false,
-            //         scales: {
-            //             y: {
-            //                 beginAtZero: true,
-            //                 border: {
-            //                     display: false, // base line
-            //                 },
-            //                 grid: {
-            //                     display: false, //to hide vartical lines
-            //                     drawTicks: false,
-            //                 },
-            //                 ticks: {
-            //                     display: false, //this will show / remove only the label
-            //                 },
-            //             },
-            //         },
-            //         plugins: {
-            //             legend: {
-            //                 position: "bottom",
-            //                 labels: {
-            //                     boxWidth: 12,
-            //                     boxHeight: 12,
-            //                     padding: 15,
-            //                     useBorderRadius: true,
-            //                     borderRadius: 10,
-            //                 },
-            //             },
-            //         },
-            //     },
-            // });
         }
     });

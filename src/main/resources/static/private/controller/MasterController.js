@@ -108,6 +108,7 @@ angular
         headers: {
           "Content-Type": "application/json",
         },
+        transformResponse: angular.identity,
       }).then(_success, _error);
     };
 
@@ -116,7 +117,7 @@ angular
       autoParticularsListFetch();
       $("#add_edit_dept_modal").modal("hide");
       Swal.fire({
-        text: response.data.body,
+        text: response.data,
         icon: "success",
         buttonsStyling: !1,
         confirmButtonText: "Ok, got it!",
@@ -129,7 +130,7 @@ angular
     function _error(response) {
       showHideLoad(true);
       Swal.fire({
-        text: response.data.body,
+        text: response.data,
         icon: "error",
         buttonsStyling: !1,
         confirmButtonText: "Ok, got it!",
@@ -370,9 +371,10 @@ angular
 
 
     $scope.updateTransaction = function () {
+      console.log($scope.form);
       showHideLoad();
-        var method = "PUT";
-        var url = "api/transactions/postEntry";
+      var method = "POST";
+      var url = "api/transactions/postEntry";
       $http({
         method: method,
         url: url,
@@ -386,8 +388,8 @@ angular
 
     function _success(response) {
       showHideLoad(true);
-      autoTransactionListFetch();
-      $("#edit_dept_modal").modal("hide");
+      autoBalanceListFetch();
+      $("#add_dept_modal").modal("hide");
       Swal.fire({
         text: response.data,
         icon: "success",
@@ -410,9 +412,21 @@ angular
         },
       });
     }
-    $scope.addTransaction = function (data) {
-      $scope.form={};
-      $scope.form.data=data;
+
+    $scope.getParticularDetails = function (id, data) {
+      var particular = data.find(function (item) {
+        return item.id === id;
+      });
+      $scope.form.particularName = particular.name;
+
+    }
+
+    $scope.addTransaction = function (date) {
+      $scope.form = {};
+      $scope.form.date = date;
+      $scope.form.inAmount = 0.00;
+      $scope.form.outAmount = 0.00;
+      $scope.form.qty = 0.00;
       $scope.getParticulars();
       $("#add_dept_modal").modal("show");
     };
@@ -432,6 +446,37 @@ angular
         }
       );
     }
+
+
+    $scope.closeTransaction = function (id) {
+      showHideLoad();
+      $http({
+        method: "PUT",
+        params: { id: id },
+        url: "api/balance-sheets/close",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        transformResponse: angular.identity,
+      }).then(
+        function successCallback(response) {
+          Swal.fire({
+            text: response.data,
+            icon: "success",
+            buttonsStyling: !1,
+            confirmButtonText: "Ok, got it!",
+            customClass: {
+              confirmButton: "btn btn-primary",
+            },
+          });
+          autoBalanceListFetch();
+          showHideLoad(true);
+        },
+        function errorCallback(response) {
+          //console.log(response.statusText);
+        }
+      );
+    };
 
     $scope.changeView = function (view) {
       if (view == "add" || view == "list" || view == "show") {
@@ -581,8 +626,8 @@ angular
 
     $scope.addTransaction = function () {
       showHideLoad();
-        var method = "POST";
-        var url = "api/transactions";
+      var method = "POST";
+      var url = "api/transactions";
       $http({
         method: method,
         url: url,
@@ -629,8 +674,8 @@ angular
 
     $scope.updateTransaction = function () {
       showHideLoad();
-        var method = "PUT";
-        var url = "api/transactions";
+      var method = "PUT";
+      var url = "api/transactions";
       $http({
         method: method,
         url: url,
@@ -718,4 +763,82 @@ angular
       $scope.views[view] = true;
     };
   }
-  );
+  )
+  .controller("balanceSheetController", function ($scope, $http, $timeout, DTOptionsBuilder) {
+    $scope.form = {};
+    $scope.views = {};
+    $scope.views.list = true;
+
+    autoFetchBalanceSheet();
+    function autoFetchBalanceSheet() {
+      showHideLoad();
+      $http({
+        method: "GET",
+        url: "api/balance-sheets/getBalanceSheet",
+      }).then(
+        function successCallback(response) {
+          console.log(response);
+          $scope.data = response.data;
+          showHideLoad(true);
+        },
+        function errorCallback(response) {
+          console.log(response.statusText);
+        }
+      );
+    }
+
+
+    $scope.searchByDate = function (date) {
+      showHideLoad();
+      $http({
+        method: "GET",
+        params: { date: date },
+        url: "api/balance-sheets/getBalanceSheet",
+      }).then(
+        function successCallback(response) {
+          console.log(response);
+          if(response.data == null || response.data == ''){
+            showHideLoad(true);
+           return Swal.fire({
+              text: "NO DATA AVAILABLE",
+              icon: "error",
+              buttonsStyling: !1,
+              confirmButtonText: "Ok, got it!",
+              customClass: {
+                confirmButton: "btn btn-primary",
+              },
+            });
+          }
+          $scope.data = response.data;
+          showHideLoad(true);
+        },
+        function errorCallback(response) {
+          console.log(response);
+          showHideLoad(true);
+        }
+      );
+    };
+
+    $scope.calculateProfitOrLoss = function (open, close) {
+      const profitOrLoss = close - open;
+      if (profitOrLoss > 0) {
+        return "Profit: " + profitOrLoss;
+      } else if (profitOrLoss < 0) {
+        return "Loss: " + Math.abs(profitOrLoss);
+      } else {
+        return "No Profit or Loss";
+      }
+    };
+
+    $scope.changeView = function (view) {
+      if (view == "add" || view == "list" || view == "show") {
+        $scope.form = {};
+      }
+      $scope.views.add = false;
+      $scope.views.edit = false;
+      $scope.views.list = false;
+      $scope.views[view] = true;
+    };
+  }
+  )
+  ;

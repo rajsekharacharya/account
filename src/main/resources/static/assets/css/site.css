@@ -13,6 +13,13 @@ body {
 }
 
 body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f7f6;
+  margin: 0;
+  padding: 0;
+}
+
+body {
   overflow: hidden;
 }
 
@@ -249,7 +256,6 @@ a:hover {
 }
 
 .lbl-greetings {
-  font-weight: lighter;
   color: #002644;
 }
 

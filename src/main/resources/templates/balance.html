@@ -5,7 +5,7 @@
 </html>
 
 <head>
-    <title>User Management</title>
+    <title>Balance</title>
 </head>
 
 <body>
@@ -64,9 +64,13 @@
                                                     class="lbl-btn-action"></span><span
                                                     class="icon-common icon-btn icon-edit"></span></a></span>
                                         <span class="me-2"><a title="Edit" ng-click="addTransaction(balance.date)"
+                                                class="btn btn-action btn-action-add"><span
+                                                    class="lbl-btn-action"></span><span
+                                                    class="icon-common icon-btn icon-add"></span></a></span>
+                                        <span ng-if="balance.closing === null" class="me-2"><a title="Edit" ng-click="closeTransaction(balance.id)"
                                                 class="btn btn-action btn-action-edit"><span
                                                     class="lbl-btn-action"></span><span
-                                                    class="icon-common icon-btn icon-edit"></span></a></span>
+                                                    class="icon-common icon-btn icon-stop"></span></a></span>
                                     </td>
 
                                 </tr>
@@ -163,7 +167,7 @@
                                             <select name="assetSubCatId" ng-model="form.particularId"
                                                 class="form-control"
                                                 ng-options="particular.id as particular.name for particular in particulars"
-                                                ng-change="getParticularDetails(row.particularId,particulars,row)"
+                                                ng-change="getParticularDetails(form.particularId,particulars)"
                                                 required>
                                                 <option value="" disabled selected>Please select a Particular</option>
                                             </select>

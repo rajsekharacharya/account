@@ -26,7 +26,7 @@ public class TransactionService {
 
     // Get all transactions
     public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+        return transactionRepository.findByDate(LocalDate.now().toString());
     }
 
     // Get transaction by ID
@@ -63,27 +63,37 @@ public class TransactionService {
         return ResponseEntity.status(HttpStatus.OK).body("Saved");
     }
 
-    public ResponseEntity<?> postEntry(Transaction transactionDetails) throws Exception {
-        Optional<BalanceSheet> byDate = balanceSheetRepository.findByDate(transactionDetails.getDate());
-        if (byDate.isPresent() && byDate.get().getClosing() == null) {
-            return transactionRepository.findById(transactionDetails.getId())
-                    .map(transaction -> {
-                        transaction.setDate(transactionDetails.getDate());
-                        transaction.setParticularId(transactionDetails.getParticularId());
-                        transaction.setParticularName(transactionDetails.getParticularName());
-                        transaction.setQty(transactionDetails.getQty());
-                        transaction.setInAmount(transactionDetails.getInAmount());
-                        transaction.setOutAmount(transactionDetails.getOutAmount());
-                        transaction.setActive(transactionDetails.isActive());
-                        transactionRepository.save(transaction);
-                        return ResponseEntity.status(HttpStatus.OK).body("Updated");
-                    })
-                    .orElseThrow(() -> new Exception("Transaction not found with id " + transactionDetails.getId()));
-        }
-        else{
-            return ResponseEntity.status(HttpStatus.OK).body("Done");
+    public ResponseEntity<?> postEntry(Transaction transactionDetails) {
+        Optional<BalanceSheet> balanceSheetOptional = balanceSheetRepository.findByDate(transactionDetails.getDate());
+
+        if (balanceSheetOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not Found");
         }
 
+        BalanceSheet balanceSheet = balanceSheetOptional.get();
+        transactionDetails.setActive(true);
+        Transaction savedTransaction = transactionRepository.save(transactionDetails);
+
+        if (balanceSheet.getClosing() == null) {
+            return ResponseEntity.status(HttpStatus.OK).body("Updated");
+        }
+
+        double amountChange = savedTransaction.getInAmount() - savedTransaction.getOutAmount();
+        updateBalanceSheet(balanceSheet, amountChange);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Updated");
+    }
+
+    private void updateBalanceSheet(BalanceSheet balanceSheet, double amountChange) {
+        balanceSheet.setClosing(balanceSheet.getClosing() + amountChange);
+        BalanceSheet updatedBalanceSheet = balanceSheetRepository.save(balanceSheet);
+
+        List<BalanceSheet> afterDateSheets = balanceSheetRepository.getAfterDate(updatedBalanceSheet.getDate());
+        afterDateSheets.forEach(sheet -> {
+            sheet.setOpening(sheet.getOpening() + amountChange);
+            sheet.setClosing(sheet.getClosing() + amountChange);
+            balanceSheetRepository.save(sheet);
+        });
     }
 
     // Update an existing transaction
