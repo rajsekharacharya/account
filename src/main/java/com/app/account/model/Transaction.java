@@ -33,7 +33,7 @@ public class Transaction extends Auditable<String> {
 
     private String date;
 
-    private Long particularId;
+    private Integer particularId;
 
     private String particularName;
 

@@ -79,6 +79,13 @@
             gap: 10px;
         }
 
+        .date-search-container form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+
         .date-picker {
             padding: 5px;
             border: 1px solid #ccc;
@@ -123,18 +130,20 @@
             <div class="body-area" ng-show="views.list">
                 <div class="body-area-header">
                     <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <div class="body-area-tittle">Balance</div>
+                        <div class="col-md-2">
+                            <div class="body-area-tittle">Balance Sheet</div>
                         </div>
-                        <div class="col-md-6 text-right">
-                            <!-- Date picker and search button -->
+                        <div class="col-md-10 text-right">
                             <div class="date-search-container">
-                                <input id="datepicker1" class="date-picker" ng-model="selectDate" type="text" placeholder="Select Date">
-                                <button class="search-button" ng-click="searchByDate(selectDate)">Search</button>
+                                <form ng-submit="searchByDate(selectDate)" autocomplete="off">
+                                    <input id="datepicker1" class="date-picker form-control" ng-model="selectDate" type="text" placeholder="Select Date">
+                                    <button class="search-button" type="submit">Search</button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="container">
                     <header>
                         <div>Balance Sheet</div>
@@ -142,7 +151,7 @@
             
                     <div class="date-balance">
                         <div>Date: <span id="date">{{data.balance.date}}</span></div>
-                        <div>Opening Balance: <span id="openingBalance">{{data.balance.opening}}</span></div>
+                        <div>Opening Balance: <span id="openingBalance">{{data.balance.opening.toFixed(2)}}</span></div>
                     </div>
             
                     <div class="table-container">
@@ -166,12 +175,12 @@
                                     </td>
                                     <td>
                                         <span ng-if="tnx.inAmount == 0">--</span>
-                                        <span ng-if="tnx.inAmount !== 0">{{tnx.inAmount}}</span>
+                                        <span ng-if="tnx.inAmount !== 0">{{tnx.inAmount.toFixed(2)}}</span>
                                        
                                     </td>
                                     <td>
                                         <span ng-if="tnx.outAmount == 0">--</span>
-                                        <span ng-if="tnx.outAmount !== 0">{{tnx.outAmount}}</span>
+                                        <span ng-if="tnx.outAmount !== 0">{{tnx.outAmount.toFixed(2)}}</span>
                                        
                                     </td>
                                     <td>{{tnx.balance}}</td>
@@ -181,8 +190,9 @@
                     </div>
             
                     <div class="summary">
-                        <div>Profit/Loss: <span id="profitLoss">{{ calculateProfitOrLoss(data.balance.opening,data.balance.closing) }}</span></div>
-                        <div>Closing Balance: <span id="closingBalance">{{data.balance.closing}}</span></div>
+                        <!-- <div>Profit/Loss: <span id="profitLoss">{{ calculateProfitOrLoss(data.balance.opening,data.balance.closing) }}</span></div> -->
+                        <div><span id="profitLoss"></span></div>
+                        <div>Closing Balance: <span id="closingBalance">{{data.balance.closing.toFixed(2)}}</span></div>
                     </div>
                 </div>
                 <button class="print-button" onclick="printTable()">Print</button>

@@ -24,6 +24,10 @@ public class ParticularsService {
         return particularsRepository.findAll();
     }
 
+    public List<Particulars> getAllParticularsHead() {
+        return particularsRepository.findByTypeAndActive("HEAD",true);
+    }
+
     // Get particulars by ID
     public Optional<Particulars> getParticularsById(Integer id) {
         return particularsRepository.findById(id);
@@ -64,4 +68,6 @@ public class ParticularsService {
         return ResponseEntity.status(message.equals("Not Found") ? HttpStatus.BAD_REQUEST : HttpStatus.OK)
                 .body(message);
     }
+
+
 }

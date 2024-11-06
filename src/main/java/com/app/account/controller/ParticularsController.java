@@ -3,7 +3,6 @@ package com.app.account.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +27,10 @@ public class ParticularsController {
     @GetMapping
     public List<Particulars> getAllParticulars() {
         return particularsService.getAllParticulars();
+    }
+    @GetMapping(value = "/getByType")
+    public List<Particulars> getAllParticularsHead() {
+        return particularsService.getAllParticularsHead();
     }
 
     // Get particulars by ID

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
+<html
+    th:replace="~{base-layout :: layout(~{::title},~{::style} != null ? ~{::style} : null,~{::section},~{::script} != null ? ~{::script} : null)}">
 
 <head>
     <title>Daily Balance Sheet</title>
@@ -38,7 +39,8 @@
             border-collapse: collapse;
         }
 
-        th, td {
+        th,
+        td {
             padding: 10px;
             text-align: center;
             border: 1px solid #ddd;
@@ -79,6 +81,13 @@
             gap: 10px;
         }
 
+        .date-search-container form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+
         .date-picker {
             padding: 5px;
             border: 1px solid #ccc;
@@ -104,7 +113,7 @@
 
 <body>
     <section>
-        <div ng-controller="balanceSheetController">
+        <div ng-controller="headBalanceSheetController">
             <div class="breadcrumb-container">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
@@ -114,7 +123,8 @@
                             </a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">
-                            <span class="icon-common icon-breadcrumb icon-finance"></span><span>Daily Balance Sheet</span>
+                            <span class="icon-common icon-breadcrumb icon-finance"></span><span>Daily Balance
+                                Sheet</span>
                         </li>
                     </ol>
                 </nav>
@@ -123,14 +133,23 @@
             <div class="body-area" ng-show="views.list">
                 <div class="body-area-header">
                     <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <div class="body-area-tittle">Balance</div>
+                        <div class="col-md-2">
+                            <div class="body-area-tittle">Balance Sheet</div>
                         </div>
-                        <div class="col-md-6 text-right">
-                            <!-- Date picker and search button -->
+                        <div class="col-md-10 text-right">
                             <div class="date-search-container">
-                                <input id="datepicker1" class="date-picker" ng-model="selectDate" type="text" placeholder="Select Date">
-                                <button class="search-button" ng-click="searchByDate(selectDate)">Search</button>
+                                <form ng-submit="searchByDate(particularId,startDate,endDate)" autocomplete="off">
+                                    <select name="assetSubCatId" ng-model="particularId" class="date-picker form-control"
+                                        ng-options="particular.id as particular.name for particular in particulars"
+                                        required>
+                                        <option value="" disabled selected>Please select a Particular</option>
+                                    </select>
+                                    <input id="datepicker1" class="date-picker form-control" ng-model="startDate" type="text"
+                                        placeholder="Select Date" required>
+                                    <input id="datepicker1" class="date-picker form-control" ng-model="endDate" type="text"
+                                        placeholder="Select Date" required>
+                                    <button class="search-button" type="submit">Search</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -139,16 +158,17 @@
                     <header>
                         <div>Balance Sheet</div>
                     </header>
-            
+
                     <div class="date-balance">
-                        <div>Date: <span id="date">{{data.balance.date}}</span></div>
-                        <div>Opening Balance: <span id="openingBalance">{{data.balance.opening}}</span></div>
+                        <div>Date: <span id="date">{{data.startDate}} TO {{data.endDate}}</span></div>
+                        <div>Opening Balance: <span id="openingBalance">{{data.open.toFixed(2) }}</span></div>
                     </div>
-            
+
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
+                                    <th>Date</th>
                                     <th>Particular</th>
                                     <th>Qty</th>
                                     <th>In Amount</th>
@@ -158,31 +178,33 @@
                             </thead>
                             <tbody id="transactionTable">
                                 <tr ng-repeat="tnx in data.table">
+                                    <td>{{tnx.date}}</td>
                                     <td>{{tnx.particularName}}</td>
                                     <td>
                                         <span ng-if="tnx.qty == 0">--</span>
                                         <span ng-if="tnx.qty !== 0">{{tnx.qty}}</span>
-                                       
+
                                     </td>
                                     <td>
                                         <span ng-if="tnx.inAmount == 0">--</span>
-                                        <span ng-if="tnx.inAmount !== 0">{{tnx.inAmount}}</span>
-                                       
+                                        <span ng-if="tnx.inAmount !== 0">{{tnx.inAmount.toFixed(2)}}</span>
+
                                     </td>
                                     <td>
                                         <span ng-if="tnx.outAmount == 0">--</span>
-                                        <span ng-if="tnx.outAmount !== 0">{{tnx.outAmount}}</span>
-                                       
+                                        <span ng-if="tnx.outAmount !== 0">{{tnx.outAmount.toFixed(2)}}</span>
+
                                     </td>
-                                    <td>{{tnx.balance}}</td>
+                                    <td>{{tnx.balance.toFixed(2)}}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-            
+
                     <div class="summary">
-                        <div>Profit/Loss: <span id="profitLoss">{{ calculateProfitOrLoss(data.balance.opening,data.balance.closing) }}</span></div>
-                        <div>Closing Balance: <span id="closingBalance">{{data.balance.closing}}</span></div>
+                        <!-- <div>Profit/Loss: <span id="profitLoss">{{calculateProfitOrLoss(data.open,data.close) }}</span></div> -->
+                        <div><span id="profitLoss"></span></div>
+                        <div>Closing Balance: <span id="closingBalance">{{data.close.toFixed(2)}}</span></div>
                     </div>
                 </div>
                 <button class="print-button" onclick="printTable()">Print</button>

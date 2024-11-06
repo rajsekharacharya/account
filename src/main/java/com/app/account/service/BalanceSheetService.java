@@ -12,8 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.app.account.model.BalanceSheet;
+import com.app.account.model.Particulars;
 import com.app.account.model.Transaction;
 import com.app.account.repository.BalanceSheetRepository;
+import com.app.account.repository.ParticularsRepository;
 import com.app.account.repository.TransactionRepository;
 
 @Service
@@ -23,10 +25,16 @@ public class BalanceSheetService {
     private BalanceSheetRepository balanceSheetRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private ParticularsRepository particularsRepository;
 
     // Get all balance sheets
     public List<BalanceSheet> getAllBalanceSheets() {
         return balanceSheetRepository.findAll();
+    }
+
+    public List<BalanceSheet> getMonthly() {
+        return balanceSheetRepository.getMonthly();
     }
 
     // Get balance sheet by ID
@@ -34,9 +42,15 @@ public class BalanceSheetService {
         return balanceSheetRepository.findById(id);
     }
 
+    public ResponseEntity<?> getBalanceByDate(String start, String end) {
+        return ResponseEntity.status(HttpStatus.OK).body(balanceSheetRepository.findByDateBetween(start, end));
+    }
+
     public ResponseEntity<?> getDataForDashBoard() {
-        Map<String,Object> data = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
         data.put("chart", balanceSheetRepository.getForDashboard());
+        data.put("year", balanceSheetRepository.getINOUTMoneyPresentYear());
+        data.put("month", balanceSheetRepository.getINOUTMoneyPresentMonth());
         return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
@@ -63,6 +77,46 @@ public class BalanceSheetService {
             }
             data.put("table", byDate);
             return ResponseEntity.status(HttpStatus.OK).body(data);
+        } else {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
+        }
+    }
+
+    public ResponseEntity<?> getHeadBalanceSheet(Integer particularId, String start, String end) {
+        Optional<Particulars> byId = particularsRepository.findById(particularId);
+        if (byId.isPresent()) {
+
+            Double openingBalance = byId.get().getOpeningBalance();
+            Map<String, Double> transactionSumByParticular = transactionRepository.getTransactionSumByParticular(start);
+
+            Double inAmount = transactionSumByParticular.get("inAmount");
+            Double outAmount = transactionSumByParticular.get("outAmount");
+
+            Double closetingBalance = openingBalance + inAmount - outAmount;
+
+            List<Transaction> byDateBetween = transactionRepository.findByParticularIdAndDateBetween(particularId,start, end);
+
+            Double opening = closetingBalance;
+            for (Transaction x : byDateBetween) {
+                if (x.getInAmount() > 0) {
+                    x.setBalance(opening + x.getInAmount());
+                    opening = x.getBalance();
+                }
+                if (x.getOutAmount() > 0) {
+                    x.setBalance(opening - x.getOutAmount());
+                    opening = x.getBalance();
+                }
+            }
+
+            Map<String, Object> data = new HashMap<>();
+
+            data.put("startDate", start);
+            data.put("endDate", end);
+            data.put("open", closetingBalance);
+            data.put("close", opening);
+            data.put("table", byDateBetween);
+            return ResponseEntity.status(HttpStatus.OK).body(data);
+
         } else {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
         }

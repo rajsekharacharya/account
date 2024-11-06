@@ -35,6 +35,11 @@ public class BalanceSheetController {
         return balanceSheetService.getAllBalanceSheets();
     }
 
+    @GetMapping(value = "/getMonthly")
+    public List<BalanceSheet> getMonthly() {
+        return balanceSheetService.getMonthly();
+    }
+
     // Get balance sheet by ID
     @GetMapping(value = "/byId")
     public ResponseEntity<BalanceSheet> getBalanceSheetById(@RequestParam Integer id) {
@@ -45,6 +50,15 @@ public class BalanceSheetController {
     @GetMapping(value = "/getBalanceSheet",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getBalanceSheet(@RequestParam(required = false) String date) {
         return balanceSheetService.getBalanceSheet(date);
+    }
+    @GetMapping(value = "/getHeadBalanceSheet")
+    public ResponseEntity<?> getHeadBalanceSheet(@RequestParam Integer particularId,@RequestParam String start,@RequestParam String end) {
+        return balanceSheetService.getHeadBalanceSheet(particularId,start,end);
+    }
+
+    @GetMapping(value = "/getBalanceByDate")
+    public ResponseEntity<?> getBalanceByDate(@RequestParam String start,@RequestParam String end) {
+        return balanceSheetService.getBalanceByDate(start,end);
     }
 
     // Create a new balance sheet

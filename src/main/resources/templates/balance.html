@@ -6,6 +6,42 @@
 
 <head>
     <title>Balance</title>
+    <style>
+        /* Styling for the date picker and search button */
+        .date-search-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-search-container form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .date-picker {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .search-button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .search-button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 
 <body>
@@ -33,9 +69,18 @@
                             <div class="body-area-tittle">Balance</div>
                         </div>
                         <div class="col-md-6">
-                            <div class="body-area-action">
-                                <a ng-click="AddBalance()" class="float-end btn btn-icon btn-add me-2"
-                                    title="Add Unit"><span class="icon-common icon-add"></span></a>
+                            <div class="date-search-container">
+                                <form ng-submit="searchByDate(start,end)" autocomplete="off">
+                                    <input id="datepicker1" class="date-picker" ng-model="start" type="text"
+                                        placeholder="Select Date">
+                                    <input id="datepicker1" class="date-picker" ng-model="end" type="text"
+                                        placeholder="Select Date">
+                                    <button class="search-button" type="submit">Search</button>
+                                </form>
+                                <div class="body-area-action">
+                                    <a ng-click="AddBalance()" class="float-end btn btn-icon btn-add me-2"
+                                        title="Add Unit"><span class="icon-common icon-add"></span></a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -59,20 +104,10 @@
                                     <td><span class="user-role">{{balance.opening}}</span></td>
                                     <td><span class="user-role">{{balance.closing}}</span></td>
                                     <td class="d-flex">
-                                        <span class="me-2"><a title="Edit" ng-click="editBalance(balance.id)"
-                                                class="btn btn-action btn-action-edit"><span
-                                                    class="lbl-btn-action"></span><span
-                                                    class="icon-common icon-btn icon-edit"></span></a></span>
-                                        <span class="me-2"><a title="Edit" ng-click="addTransaction(balance.date)"
-                                                class="btn btn-action btn-action-add"><span
-                                                    class="lbl-btn-action"></span><span
-                                                    class="icon-common icon-btn icon-add"></span></a></span>
-                                        <span ng-if="balance.closing === null" class="me-2"><a title="Edit" ng-click="closeTransaction(balance.id)"
-                                                class="btn btn-action btn-action-edit"><span
-                                                    class="lbl-btn-action"></span><span
-                                                    class="icon-common icon-btn icon-stop"></span></a></span>
+                                        <button type="button" class="btn btn-outline-primary me-2" ng-click="editBalance(balance.id)">Edit</button>
+                                        <button ng-if="balance.closing === null" type="button" class="btn btn-outline-danger me-2" ng-click="closeTransaction(balance.id)">Close</button>
+                                        <button type="button" class="btn btn-outline-info" ng-click="addTransaction(balance.date)">+ Transaction</button>
                                     </td>
-
                                 </tr>
                             </tbody>
                         </table>
@@ -144,7 +179,8 @@
             </div>
 
 
-            <div class="modal fade" id="add_dept_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="add_dept_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
                 <div class="modal-dialog modal-md">
                     <div class="modal-content">
                         <div class="modal-header">

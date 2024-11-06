@@ -2114,6 +2114,10 @@ input:checked + .knob:before {
   background-color: #0283CB;
 }
 
+.btn-action-danger:hover .icon-btn {
+  background-color: #ff0000;
+}
+
 .btn-action-add:hover .icon-btn {
   background-color: #00A07A;
 }

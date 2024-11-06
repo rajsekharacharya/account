@@ -2,8 +2,6 @@ package com.app.account.model;
 
 import java.time.LocalDateTime;
 
-import org.antlr.v4.runtime.misc.NotNull;
-
 import com.app.account.audit.Auditable;
 
 import jakarta.persistence.Column;

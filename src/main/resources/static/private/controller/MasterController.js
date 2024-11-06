@@ -263,7 +263,7 @@ angular
       showHideLoad();
       $http({
         method: "GET",
-        url: "api/balance-sheets",
+        url: "api/balance-sheets/getMonthly",
       }).then(
         function successCallback(response) {
           $scope.balances = response.data;
@@ -278,6 +278,23 @@ angular
     $scope.AddBalance = function () {
       $scope.form = {};
       $("#add_edit_dept_modal").modal("show");
+    };
+    $scope.searchByDate = function (start,end) {
+      showHideLoad();
+      $http({
+        method: "GET",
+        params: { start: start,end:end },
+        url: "api/balance-sheets/getBalanceByDate",
+      }).then(
+        function successCallback(response) {
+          $scope.balances = response.data;
+          showHideLoad(true);
+        },
+        function errorCallback(response) {
+          //console.log(response.statusText);
+        }
+      );
+
     };
 
     $scope.addEditSaveBalance = function () {
@@ -821,14 +838,112 @@ angular
 
     $scope.calculateProfitOrLoss = function (open, close) {
       const profitOrLoss = close - open;
+      const formattedProfitOrLoss = profitOrLoss.toFixed(2); // Round to two decimal places
       if (profitOrLoss > 0) {
-        return "Profit: " + profitOrLoss;
+        return "Profit: " + formattedProfitOrLoss;
       } else if (profitOrLoss < 0) {
-        return "Loss: " + Math.abs(profitOrLoss);
+        return "Loss: " + Math.abs(formattedProfitOrLoss);
       } else {
         return "No Profit or Loss";
       }
     };
+    
+
+    $scope.changeView = function (view) {
+      if (view == "add" || view == "list" || view == "show") {
+        $scope.form = {};
+      }
+      $scope.views.add = false;
+      $scope.views.edit = false;
+      $scope.views.list = false;
+      $scope.views[view] = true;
+    };
+  }
+  )
+  .controller("headBalanceSheetController", function ($scope, $http, $timeout, DTOptionsBuilder) {
+    $scope.form = {};
+    $scope.views = {};
+    $scope.views.list = true;
+
+    // autoFetchBalanceSheet();
+    // function autoFetchBalanceSheet() {
+    //   showHideLoad();
+    //   $http({
+    //     method: "GET",
+    //     url: "api/balance-sheets/getBalanceSheet",
+    //   }).then(
+    //     function successCallback(response) {
+    //       console.log(response);
+    //       $scope.data = response.data;
+    //       showHideLoad(true);
+    //     },
+    //     function errorCallback(response) {
+    //       console.log(response.statusText);
+    //     }
+    //   );
+    // }
+
+    autoParticularsListFetch();
+    function autoParticularsListFetch() {
+      showHideLoad();
+      $http({
+        method: "GET",
+        url: "api/particulars/getByType",
+      }).then(
+        function successCallback(response) {
+          $scope.particulars = response.data;
+          showHideLoad(true);
+        },
+        function errorCallback(response) {
+          console.log(response.statusText);
+        }
+      );
+    }
+
+
+    $scope.searchByDate = function (id,start,end) {
+      showHideLoad();
+      $http({
+        method: "GET",
+        params: { particularId:id,start:start,end:end },
+        url: "api/balance-sheets/getHeadBalanceSheet",
+      }).then(
+        function successCallback(response) {
+          console.log(response);
+          if(response.data == null || response.data == ''){
+            showHideLoad(true);
+           return Swal.fire({
+              text: "NO DATA AVAILABLE",
+              icon: "error",
+              buttonsStyling: !1,
+              confirmButtonText: "Ok, got it!",
+              customClass: {
+                confirmButton: "btn btn-primary",
+              },
+            });
+          }
+          $scope.data = response.data;
+          showHideLoad(true);
+        },
+        function errorCallback(response) {
+          console.log(response);
+          showHideLoad(true);
+        }
+      );
+    };
+
+    $scope.calculateProfitOrLoss = function (open, close) {
+      const profitOrLoss = close - open;
+      const formattedProfitOrLoss = profitOrLoss.toFixed(2); // Round to two decimal places
+      if (profitOrLoss > 0) {
+        return "Profit: " + formattedProfitOrLoss;
+      } else if (profitOrLoss < 0) {
+        return "Loss: " + Math.abs(formattedProfitOrLoss);
+      } else {
+        return "No Profit or Loss";
+      }
+    };
+    
 
     $scope.changeView = function (view) {
       if (view == "add" || view == "list" || view == "show") {
