@@ -1,3 +1,40 @@
+var lockTimeout;
+ 
+function startLockTimer() {
+    lockTimeout = setTimeout(lockSystem, 3600000);  // 1 hour (3600000 ms)
+}
+ 
+function resetLockTimer() {
+    clearTimeout(lockTimeout);  // Clear previous timeout
+    lockTimeout = setTimeout(lockSystem, 3600000);  // Restart the timer (no startLockTimer call)
+}
+ 
+function lockSystem() {
+    console.log("Session expired. Logging out...");
+    window.location.href = "logout";  // Redirect to logout page
+}
+ 
+// Start the lock timer as soon as the script loads (only once)
+startLockTimer();
+ 
+document.addEventListener("mousemove", resetLockTimer);   // Mouse movement
+document.addEventListener("keypress", resetLockTimer);    // Key press
+document.addEventListener("click", resetLockTimer);       // Click on any element
+document.addEventListener("scroll", resetLockTimer);      // Scrolling the page
+document.addEventListener("touchstart", resetLockTimer);  // Touch start on touch devices
+document.addEventListener("touchmove", resetLockTimer);   // Touch move on touch devices
+document.addEventListener("mousedown", resetLockTimer);   // Mouse button press
+document.addEventListener("mouseup", resetLockTimer);     // Mouse button release
+document.addEventListener("dblclick", resetLockTimer);    // Double-click event
+document.addEventListener("wheel", resetLockTimer);       // Mouse wheel event
+document.addEventListener("keydown", resetLockTimer);     // Key down event
+document.addEventListener("keyup", resetLockTimer);       // Key up event
+document.addEventListener("focus", resetLockTimer, true);  // Focus event
+document.addEventListener("blur", resetLockTimer, true);   // Blur event
+document.addEventListener("change", resetLockTimer);      // Change event
+
+
+
 function display_c() {
   setTimeout(display_ct, 1000); // Refresh every second
 }
